@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // An agent plugin with no model key is connect only (#2374, a Raycast
@@ -52,7 +52,7 @@ export function connect({ gateway, model, models }) {
 		t.Fatalf("fields %+v, lists models %v", a.Fields, a.ListsModels)
 	}
 	f := a.Field("provider")
-	if opts := f.Options(nil); len(opts) != 1 || opts[0].Value != magpieID {
+	if opts := f.Options(nil); len(opts) != 1 || opts[0].Value != pigeonID {
 		t.Fatalf("a model is offered to pick: %+v", opts)
 	}
 	if f.Get() != "" || a.Wired() {
@@ -81,7 +81,7 @@ export function connect({ gateway, model, models }) {
 	if !slices.Contains(ids(), "deepseek/pro") || !slices.Contains(ids(), "deepseek/flash") {
 		t.Fatalf("models: %v", ids())
 	}
-	if f.Get() != magpieID || !a.Wired() || a.Check() != "" {
+	if f.Get() != pigeonID || !a.Wired() || a.Check() != "" {
 		t.Fatalf("get %q, wired %v, check %q", f.Get(), a.Wired(), a.Check())
 	}
 

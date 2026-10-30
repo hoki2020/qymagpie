@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #1839: a model a subscription account serves says so to the Routing page,

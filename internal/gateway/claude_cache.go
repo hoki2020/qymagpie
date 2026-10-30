@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // clientCache owns the marks of an explicitly opted-in Messages request.
@@ -27,7 +27,7 @@ type clientCache struct {
 }
 
 func wantsClientCache(r *http.Request, from provider.Protocol) bool {
-	return from == provider.Anthropic && r.Header.Get("X-Magpie-Cache-Marks") == "client"
+	return from == provider.Anthropic && r.Header.Get("X-Pigeon-Cache-Marks") == "client"
 }
 
 // selected reports the mapping as soon as run selection is known. Starting
@@ -45,7 +45,7 @@ func (c *clientCache) selected(fresh bool) {
 // cacheReportTry scopes the report and selection hold to this candidate.
 // A non-Claude try leaves no report from an earlier subscription try.
 func cacheReportTry(hw *holdWriter, req *Request) {
-	hw.w.Header().Del("X-Magpie-Cache-Marks-Dropped")
+	hw.w.Header().Del("X-Pigeon-Cache-Marks-Dropped")
 	hw.alive.cacheReportUntil = time.Time{}
 	if req != nil {
 		hw.alive.cacheReportUntil = time.Now().Add(2 * time.Second)
@@ -237,9 +237,9 @@ func cacheDropped(w http.ResponseWriter, req *Request) {
 	if len(fields) > 0 {
 		value := strings.Join(fields, ",")
 		if hw, ok := w.(*holdWriter); ok {
-			hw.note("X-Magpie-Cache-Marks-Dropped", value)
+			hw.note("X-Pigeon-Cache-Marks-Dropped", value)
 		} else {
-			w.Header().Set("X-Magpie-Cache-Marks-Dropped", value)
+			w.Header().Set("X-Pigeon-Cache-Marks-Dropped", value)
 		}
 	}
 }

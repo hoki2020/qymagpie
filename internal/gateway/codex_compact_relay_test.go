@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #292: a magpie model's summary goes to a relay in front of the ChatGPT
@@ -57,7 +57,7 @@ func TestCodexCompactsThroughCodexRelay(t *testing.T) {
 		}
 	}
 	enc, _ := item["encrypted_content"].(string)
-	b, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, magpieCompaction))
+	b, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, pigeonCompaction))
 	if item["type"] != "compaction" || string(b) != "SUMMARY" || done == nil || done["id"] != "resp_r1" || done["usage"] == nil {
 		t.Errorf("events: %s", body)
 	}

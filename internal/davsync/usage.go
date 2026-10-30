@@ -8,7 +8,7 @@ package davsync
 // sealed alike, and merges the others' into its own (provider.MergeQuotaHistory)
 // for the quota cards' curves. A computer writes and deletes its own files
 // alone, so none is ever written over by another; nothing of them is in the
-// backup, nor in what is hashed to tell whether it changed. A magpie
+// backup, nor in what is hashed to tell whether it changed. A pigeon
 // before them never looks in the folder.
 
 import (
@@ -26,12 +26,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/backup"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
-// usageFolder is the folder the days go in, in magpie's.
+// usageFolder is the folder the days go in, in pigeon's.
 const (
 	usageFolder = "usage"
 	usageExt    = ".magpie-usage"
@@ -382,7 +382,7 @@ func (d *dav) write(ctx context.Context, name string, data []byte) error {
 			}
 			return nil
 		case try == 0 && (res.StatusCode == http.StatusNotFound || res.StatusCode == http.StatusConflict || res.StatusCode == http.StatusForbidden):
-			// the folder isn't there yet: magpie's, then usage in it
+			// the folder isn't there yet: pigeon's, then usage in it
 			if err := d.mkcol(ctx); err != nil {
 				return err
 			}

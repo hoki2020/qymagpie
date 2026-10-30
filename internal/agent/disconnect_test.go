@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Disconnect leaves Codex as it was before magpie was wired in (Fate on

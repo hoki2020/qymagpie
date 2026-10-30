@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // OmO (#264) is an agent of its own, wired as Pi is but in ~/.omo/agent:
@@ -61,7 +61,7 @@ func TestOmo(t *testing.T) {
 	if got["baseUrl"] != gateway.URL()+"/v1" || got["apiKey"] != gateway.Token {
 		t.Fatalf("models:\n%s", readFile(models))
 	}
-	want, _ := json.Marshal(magpieProviderJSON("pi"))
+	want, _ := json.Marshal(pigeonProviderJSON("pi"))
 	if b, _ := json.Marshal(got); string(b) != string(want) {
 		t.Fatalf("not Pi's block:\n got %s\nwant %s", b, want)
 	}

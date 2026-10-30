@@ -3,8 +3,8 @@ package davsync
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/backup"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The search APIs (#419) sync with the providers: sent without keys, the

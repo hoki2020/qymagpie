@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Settings' Codex auto-review model (#938) is set on its own: a model or

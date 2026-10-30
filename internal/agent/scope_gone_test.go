@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // wevnal is the #2055 reporter's provider, its models the ones Pi warned

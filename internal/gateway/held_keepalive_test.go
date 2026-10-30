@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // thinkingOn serves Claude thinking at length: its first events, then

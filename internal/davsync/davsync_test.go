@@ -3,7 +3,7 @@ package davsync
 import (
 	"context"
 	"fmt"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -16,13 +16,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/profile"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/backup"
+	"github.com/hoki2020/pigeon/internal/library"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/profile"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // fakeDAV is a WebDAV server with one user, keeping files in memory.

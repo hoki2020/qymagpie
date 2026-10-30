@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // remapHarness serves requests through serveSubscription with runs whose

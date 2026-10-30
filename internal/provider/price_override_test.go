@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // priceHome keeps a test off the machine's own settings, providers and

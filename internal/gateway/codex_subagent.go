@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // SubagentPick is a subagent's request put on the model the user set for
@@ -63,7 +63,7 @@ func codexSubagentPick(r *http.Request, agent, kind, asked string, body []byte) 
 	if _, off := idOff(to); off {
 		// the user disabled it (#1867): the subagent stays on its lead's
 		// model, itself refused when it is disabled too
-		pick.Kept = "it is disabled in magpie"
+		pick.Kept = "it is disabled in pigeon"
 		return pick
 	}
 	if why := provider.CodexSubagentUnserved(to); why != "" {

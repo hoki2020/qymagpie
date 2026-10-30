@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // liveFree writes the list a vendor's /models answered, where

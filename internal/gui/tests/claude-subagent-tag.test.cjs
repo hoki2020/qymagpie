@@ -62,28 +62,28 @@ function serve(lang) {
 // Expected reader-facing words, independent of the translation lookup.
 const W = {
   en: { tag: "Subagent", review: "Review",
-    moved: "Claude Desktop requested a subagent on fake/m1; magpie put it on fake/m2, the model set for its subagents.",
-    group: "Claude Desktop requested a subagent; magpie selects its model within this routing group.",
+    moved: "Claude Desktop requested a subagent on fake/m1; pigeon put it on fake/m2, the model set for its subagents.",
+    group: "Claude Desktop requested a subagent; pigeon selects its model within this routing group.",
     terminal: "Claude Code requested a subagent on fake/m1.", codex: "Codex requested a subagent on fake/m1.",
     desktop: "Claude Desktop requested a subagent on fake/m1." },
   zh: { tag: "子代理", review: "审查",
-    moved: "Claude Desktop 请求了使用 fake/m1 的子代理；magpie 将其改用 fake/m2，即为它的子代理设定的模型。",
-    group: "Claude Desktop 请求了子代理，由 magpie 在此路由组内选择模型。",
+    moved: "Claude Desktop 请求了使用 fake/m1 的子代理；pigeon 将其改用 fake/m2，即为它的子代理设定的模型。",
+    group: "Claude Desktop 请求了子代理，由 pigeon 在此路由组内选择模型。",
     terminal: "Claude Code 请求了使用 fake/m1 的子代理。", codex: "Codex 请求了使用 fake/m1 的子代理。",
     desktop: "Claude Desktop 请求了使用 fake/m1 的子代理。" },
   "zh-TW": { tag: "子代理", review: "審查",
-    moved: "Claude Desktop 請求了使用 fake/m1 的子代理；magpie 將其改用 fake/m2，即為它的子代理設定的模型。",
-    group: "Claude Desktop 請求了子代理，由 magpie 在此路由組內選擇模型。",
+    moved: "Claude Desktop 請求了使用 fake/m1 的子代理；pigeon 將其改用 fake/m2，即為它的子代理設定的模型。",
+    group: "Claude Desktop 請求了子代理，由 pigeon 在此路由組內選擇模型。",
     terminal: "Claude Code 請求了使用 fake/m1 的子代理。", codex: "Codex 請求了使用 fake/m1 的子代理。",
     desktop: "Claude Desktop 請求了使用 fake/m1 的子代理。" },
   ja: { tag: "サブエージェント", review: "レビュー",
-    moved: "Claude Desktop が fake/m1 のサブエージェントをリクエストしました。magpie はサブエージェント用に設定された fake/m2 に切り替えました。",
-    group: "Claude Desktop がサブエージェントをリクエストしました。モデルは magpie がこのルーティンググループ内で選びます。",
+    moved: "Claude Desktop が fake/m1 のサブエージェントをリクエストしました。pigeon はサブエージェント用に設定された fake/m2 に切り替えました。",
+    group: "Claude Desktop がサブエージェントをリクエストしました。モデルは pigeon がこのルーティンググループ内で選びます。",
     terminal: "Claude Code が fake/m1 のサブエージェントをリクエストしました。", codex: "Codex が fake/m1 のサブエージェントをリクエストしました。",
     desktop: "Claude Desktop が fake/m1 のサブエージェントをリクエストしました。" },
   de: { tag: "Subagent", review: "Review",
-    moved: "Claude Desktop hat einen Subagent mit fake/m1 angefordert; magpie hat ihn auf fake/m2 gesetzt, das für seine Subagenten festgelegte Modell.",
-    group: "Claude Desktop hat einen Subagenten angefordert; magpie wählt sein Modell innerhalb dieser Weiterleitungsgruppe.",
+    moved: "Claude Desktop hat einen Subagent mit fake/m1 angefordert; pigeon hat ihn auf fake/m2 gesetzt, das für seine Subagenten festgelegte Modell.",
+    group: "Claude Desktop hat einen Subagenten angefordert; pigeon wählt sein Modell innerhalb dieser Weiterleitungsgruppe.",
     terminal: "Claude Code hat einen Subagent mit fake/m1 angefordert.", codex: "Codex hat einen Subagent mit fake/m1 angefordert.",
     desktop: "Claude Desktop hat einen Subagent mit fake/m1 angefordert." },
 };
@@ -127,7 +127,7 @@ for (const engine of engines) {
           page.setDefaultTimeout(5000);
           page.on("pageerror", (e) => errors.push(e.message));
           await page.route("**/*", serve(lang));
-          await page.addInitScript((on) => localStorage.setItem("magpie.routingBySession", on ? "1" : "0"), bySession);
+          await page.addInitScript((on) => localStorage.setItem("pigeon.routingBySession", on ? "1" : "0"), bySession);
           await page.goto(url);
           return page;
         };

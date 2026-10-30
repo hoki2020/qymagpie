@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // sigStore keeps Gemini's thought signatures that a tool call's id refers
-// to (#2411), one file per signature under magpie's folder, named by its
+// to (#2411), one file per signature under pigeon's folder, named by its
 // hash: the same signature is one file however often it comes, and two
-// magpies writing it write the same bytes. A file is written whole
+// pigeons writing it write the same bytes. A file is written whole
 // (temp-and-rename) so a reader never sees half of one. A signature not
 // read for sigKeep is removed; its call then goes to Gemini as unsigned
 // history, which Gemini takes.
@@ -63,7 +63,7 @@ func keepSignature(sig string) string {
 	return key
 }
 
-// keptSignature is the signature stored under key, or "" when magpie no
+// keptSignature is the signature stored under key, or "" when pigeon no
 // longer has it or its file doesn't hash to key.
 func keptSignature(key string) string {
 	if len(key) != base64.RawURLEncoding.EncodedLen(sigKeyBytes) {

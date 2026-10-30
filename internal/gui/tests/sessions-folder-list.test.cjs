@@ -4,7 +4,7 @@
 // session's title, when and how many. Temporary folders, the disk's root and
 // apps' hidden folders wait folded under Other folders at the end. Boxes and
 // the Delete bar come with Select; a folder's Delete all is in its ⋯ menu and
-// asks in magpie's own dialog. In every language, Chromium and WebKit, wide
+// asks in pigeon's own dialog. In every language, Chromium and WebKit, wide
 // and narrow; no backend, the API is faked here.
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");

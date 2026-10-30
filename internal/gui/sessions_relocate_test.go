@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 func TestSessionsRelocateClaudeRoute(t *testing.T) {

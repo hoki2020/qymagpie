@@ -11,12 +11,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/gwmw"
+	"github.com/hoki2020/pigeon/internal/masking"
+	"github.com/hoki2020/pigeon/internal/middleware"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // echoing is a vendor that keeps what it was sent and says the last

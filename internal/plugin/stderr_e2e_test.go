@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // TestHostStartsPastAnOverlongStderrLine runs the real host with the real Bun

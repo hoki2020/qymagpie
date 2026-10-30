@@ -2,16 +2,16 @@ package gateway
 
 // GET /v1/magpie/goroutines: every goroutine of the process serving the
 // gateway, with its stack and how long it has waited, for a report of
-// magpie stuck at something while it goes on running. An app that kept
+// pigeon stuck at something while it goes on running. An app that kept
 // the partner list it had for three days could only be read by killing
-// it, which ends what was stuck (#3362); `magpie goroutines` asks the
+// it, which ends what was stuck (#3362); `pigeon goroutines` asks the
 // running process instead and writes the file the user sends.
 //
 // The dump is runtime/pprof's "goroutine" profile at debug=2, the form a
 // crash prints: each goroutine's state, its wait ("[select, 4320
 // minutes]"), its frames with source lines, and who started it. A frame's
 // arguments are words in hex, never what they point at, so it holds no
-// keys, prompts or messages; it names the source files magpie was built
+// keys, prompts or messages; it names the source files pigeon was built
 // from and the program's path.
 
 import (
@@ -25,21 +25,21 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // GoroutinesPath is where the gateway answers a goroutine dump.
 const GoroutinesPath = "/v1/magpie/goroutines"
 
 // GoroutineStatsHeader carries GoroutineStats, as JSON, beside the dump.
-const GoroutineStatsHeader = "X-Magpie-Goroutine-Stats"
+const GoroutineStatsHeader = "X-Pigeon-Goroutine-Stats"
 
 // GoroutineStats says which process the dump is of.
 type GoroutineStats struct {
 	PID        int    `json:"pid"`
 	Program    string `json:"program"`
 	Version    string `json:"version"`
-	Window     bool   `json:"window"` // the app's window or magpie web serves the gateway
+	Window     bool   `json:"window"` // the app's window or pigeon web serves the gateway
 	Uptime     string `json:"uptime"`
 	Goroutines int    `json:"goroutines"`
 }
@@ -47,12 +47,12 @@ type GoroutineStats struct {
 // goroutinesRefused says why r may not have the goroutine dump, "" when it
 // may: the same callers as the heap profile (heapRefused).
 func goroutinesRefused(r *http.Request) string {
-	return profileRefused(r, "goroutine dump", "magpie goroutines")
+	return profileRefused(r, "goroutine dump", "pigeon goroutines")
 }
 
 // dumpFirst answers the goroutine dump ahead of next, for every caller
 // goroutinesRefused lets in; everything else, the dump's refusals too, goes
-// to next as before. The dump is asked for when magpie hangs while it runs,
+// to next as before. The dump is asked for when pigeon hangs while it runs,
 // and what the gateway's requests pass through first takes locks that a
 // stuck request can hold: lanGuard's allow list reads settings.json under
 // settings' file lock, holdCatalog takes provider.Hold's and filememo's,
@@ -97,7 +97,7 @@ func (s *Server) goroutineDump(w http.ResponseWriter, r *http.Request) {
 	})
 	h := w.Header()
 	h.Set("Content-Type", "text/plain; charset=utf-8")
-	h.Set("Content-Disposition", `attachment; filename="magpie-goroutines.txt"`)
+	h.Set("Content-Disposition", `attachment; filename="pigeon-goroutines.txt"`)
 	h.Set("Cache-Control", "no-store")
 	h.Set(GoroutineStatsHeader, string(stats))
 	w.Write(buf.Bytes())

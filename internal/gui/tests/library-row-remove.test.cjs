@@ -6,7 +6,7 @@
 // and so does a hook's (the same gap). Its click opens no editor; it asks
 // first in the page (no window.confirm), naming the one it takes ("Remove
 // the MCP server exa-2?") and what goes with it: the agents it is taken
-// out of (none for one turned off), the projects magpie placed it in, its
+// out of (none for one turned off), the projects pigeon placed it in, its
 // sign-in, and that the agents' own servers stay. Cancel posts nothing;
 // Remove posts servers/remove (hooks/remove) with its name, the row goes,
 // the others stay. Chromium and WebKit, 1100px and 420px, in en, zh,
@@ -163,8 +163,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal((await sheet.locator(".ehead b").textContent()).trim(), w("Remove the MCP server {name}?", { name: "exa" }));
         assert.deepEqual(await lines(), [
           w("It is taken out of the library and out of {agents}.", { agents: "Claude Code, Codex" }),
-          w("It is taken out of the {n} projects magpie placed it in too.", { n: 1 }),
-          w("magpie's sign-in to it is forgotten too."),
+          w("It is taken out of the {n} projects pigeon placed it in too.", { n: 1 }),
+          w("pigeon's sign-in to it is forgotten too."),
           w("Servers your agents have that aren't in the library stay as they are."),
         ]);
         await sheet.locator(".bar button", { hasText: w("Cancel") }).click();

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #2274 (huangzuomin): Codex compacting through magpie on
@@ -121,7 +121,7 @@ func TestCodexCompactCutSummaryIsNoSummary(t *testing.T) {
 			f := &fake{t: t, reply: cut}
 			setup(t, provider.Responses, f)
 			code, body := codexPost(t, compact404Request)
-			if code < 400 || strings.Contains(body, magpieCompaction) {
+			if code < 400 || strings.Contains(body, pigeonCompaction) {
 				t.Fatalf("%d %s", code, body)
 			}
 		})

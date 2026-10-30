@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/daemon"
+	"github.com/hoki2020/pigeon/internal/daemon"
 )
 
 // zaidu259434 on X: magpie in WSL, its agents failed once magpie tui was

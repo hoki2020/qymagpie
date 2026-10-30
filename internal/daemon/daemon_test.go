@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // The tests run in a home of their own, with a fake systemctl, launchctl
@@ -227,7 +227,7 @@ func TestRefusedBesideAutostart(t *testing.T) {
 		t.Run(os_, func(t *testing.T) {
 			log, _ := fakes(t, os_)
 			autostartEnabled = func() bool { return true }
-			if err := Install(Options{}); err == nil || !strings.Contains(err.Error(), "magpie autostart off") {
+			if err := Install(Options{}); err == nil || !strings.Contains(err.Error(), "pigeon autostart off") {
 				t.Errorf("got %v", err)
 			}
 			if c := calls(t, log); c[0] != "" {
@@ -300,7 +300,7 @@ func TestLaunchdInstall(t *testing.T) {
 	if err != nil || !st.Running || st.PID != 777 || st.State != "running" || st.LastExit != "" {
 		t.Errorf("status %+v, %v", st, err)
 	}
-	if !strings.Contains(st.Logs, filepath.Join("Library", "Logs", "magpie", "serve.log")) {
+	if !strings.Contains(st.Logs, filepath.Join("Library", "Logs", "pigeon", "serve.log")) {
 		t.Errorf("logs %q", st.Logs)
 	}
 
@@ -337,17 +337,17 @@ func TestPick(t *testing.T) {
 		t.Skip("links")
 	}
 	dir := t.TempDir()
-	real := filepath.Join(dir, "Cellar", "magpie", "1.0", "magpie")
+	real := filepath.Join(dir, "Cellar", "pigeon", "1.0", "pigeon")
 	os.MkdirAll(filepath.Dir(real), 0o755)
 	write(t, real, "x")
 	os.Chmod(real, 0o755)
 	bin := filepath.Join(dir, "bin")
 	os.MkdirAll(bin, 0o755)
-	if err := os.Symlink(real, filepath.Join(bin, "magpie")); err != nil {
+	if err := os.Symlink(real, filepath.Join(bin, "pigeon")); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("PATH", bin)
-	if got, err := pick(real, real); err != nil || got != filepath.Join(bin, "magpie") {
+	if got, err := pick(real, real); err != nil || got != filepath.Join(bin, "pigeon") {
 		t.Errorf("got %q, %v; want the link on PATH", got, err)
 	}
 	// another magpie on PATH: this one
@@ -358,7 +358,7 @@ func TestPick(t *testing.T) {
 		t.Errorf("got %q", got)
 	}
 	for _, p := range []string{
-		filepath.Join(os.TempDir(), "go-build123", "b001", "exe", "magpie"),
+		filepath.Join(os.TempDir(), "go-build123", "b001", "exe", "pigeon"),
 		"/private/var/folders/x/T/AppTranslocation/ABC/d/magpie.app/Contents/MacOS/magpie",
 	} {
 		if _, err := pick(p, p); err == nil {

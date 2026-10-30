@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
@@ -343,7 +343,7 @@ func TestHermesKeepsTheUsersSettings(t *testing.T) {
 			if err := yaml.Unmarshal([]byte(raw), &c); err != nil {
 				t.Fatalf("%v\n%s", err, raw)
 			}
-			mp := c.Providers[magpieID]
+			mp := c.Providers[pigeonID]
 			if mp.Name != "My GW" || mp.Default != "deepseek/pro" || mp.Timeout != 900 || mp.KeyCmd != "cat ~/.gw-key" || mp.Headers["X-Mine"] != "1" {
 				t.Errorf("%s: the user's settings not kept in %s:\n%s", when, p, raw)
 			}

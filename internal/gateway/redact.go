@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/maskrec"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/gwmw"
+	"github.com/hoki2020/pigeon/internal/masking"
+	"github.com/hoki2020/pigeon/internal/maskrec"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // redacted masks a request's secrets, as the settings say, before it goes
@@ -167,7 +167,7 @@ func (e maskBlocked) Error() string {
 	if e.hit.Head != "" {
 		one = e.hit.Head + "…, " + one
 	}
-	return fmt.Sprintf("magpie held this request back: Settings › Privacy blocks %s, and it has one (%s). Nothing was sent.", e.hit.Kind, one)
+	return fmt.Sprintf("pigeon held this request back: Settings › Privacy blocks %s, and it has one (%s). Nothing was sent.", e.hit.Kind, one)
 }
 
 // blocked is the error for hits with a value to hold the request back

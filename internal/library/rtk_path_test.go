@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // TestRTKOffPath (#601): an rtk magpie finds where rtk's script puts it,

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // `magpie update` in the Docker image (/magpie, run as nonroot) failed with

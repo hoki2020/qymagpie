@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // heapDir is a home of its own and a working folder in it, the one magpie
@@ -41,7 +41,7 @@ func TestHeapHelpAndBadArgsWriteNothing(t *testing.T) {
 	before := tree(t, root)
 	for _, args := range [][]string{{"heap", "--help"}, {"heap", "-h"}, {"heap", "help"}, {"heap", "out.pb.gz", "--help"}} {
 		out, err := runOut(t, args...)
-		if err != nil || !strings.Contains(out, "usage: magpie heap [<file>]") {
+		if err != nil || !strings.Contains(out, "usage: pigeon heap [<file>]") {
 			t.Errorf("magpie %s: %v %q", strings.Join(args, " "), err, out)
 		}
 	}

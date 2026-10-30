@@ -9,13 +9,13 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/gwtool"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // The tools the user's plugins give (OpenCode's tool hook: {tool: {name:
-// tool({description, args, execute})}}) are an MCP server of magpie's
+// tool({description, args, execute})}}) are an MCP server of pigeon's
 // own, so every agent that takes an MCP server can call them, not only
 // OpenCode: Streamable HTTP at ToolsMCPPath, guarded as the search MCP
 // server is (serveMCP), each call held to the calling gateway key's limit
@@ -42,10 +42,10 @@ var (
 )
 
 // errToolsOff is what a call is answered while plugins/tools is off.
-const errToolsOff = "magpie's Plugin tools plugin is off, so no plugin's tool runs; turn it on in magpie's Settings → Plugins"
+const errToolsOff = "pigeon's Plugin tools plugin is off, so no plugin's tool runs; turn it on in pigeon's Settings → Plugins"
 
 func (s *Server) toolsMCP(w http.ResponseWriter, r *http.Request) {
-	serveMCP(w, r, "magpie's plugin tools", toolsMCPBody, s.toolsMCPCall)
+	serveMCP(w, r, "pigeon's plugin tools", toolsMCPBody, s.toolsMCPCall)
 }
 
 // mcpTool is one plugin tool as the server names it.
@@ -148,15 +148,15 @@ func (s *Server) toolsMCPCall(r *http.Request, m mcpMessage) (any, map[string]an
 		return map[string]any{
 			"protocolVersion": mcpVersion(m),
 			"capabilities":    map[string]any{"tools": map[string]any{}},
-			"serverInfo":      map[string]any{"name": "magpie-tools", "title": "Magpie Plugin Tools", "version": Version},
-			"instructions":    "The tools the plugins added to magpie give, each named <plugin>_<tool>. Add or switch plugins in magpie's Settings → Plugins.",
+			"serverInfo":      map[string]any{"name": "pigeon-tools", "title": "Pigeon Plugin Tools", "version": Version},
+			"instructions":    "The tools the plugins added to pigeon give, each named <plugin>_<tool>. Add or switch plugins in pigeon's Settings → Plugins.",
 		}, nil
 	case "ping":
 		return map[string]any{}, nil
 	case "tools/list":
 		ts, err := servedTools(r.Context())
 		if err != nil {
-			return nil, map[string]any{"code": -32603, "message": "magpie couldn't load its plugins: " + err.Error()}
+			return nil, map[string]any{"code": -32603, "message": "pigeon couldn't load its plugins: " + err.Error()}
 		}
 		list := make([]any, 0, len(ts))
 		for _, t := range ts {
@@ -184,7 +184,7 @@ func (s *Server) toolsMCPCall(r *http.Request, m mcpMessage) (any, map[string]an
 		}
 		ts, err := servedTools(r.Context())
 		if err != nil {
-			return toolResult("magpie couldn't load its plugins: "+err.Error(), true), nil
+			return toolResult("pigeon couldn't load its plugins: "+err.Error(), true), nil
 		}
 		for _, t := range ts {
 			if t.name == p.Name {

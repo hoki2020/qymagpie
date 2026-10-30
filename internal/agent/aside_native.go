@@ -12,11 +12,11 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 var asideRead = func(account string) (map[string]json.RawMessage, error) {
@@ -64,7 +64,7 @@ type asideConnection struct {
 func newAsideConnection(at place) *asideConnection {
 	id := asideChoice(at)
 	dir := asideAccountDir(at, id)
-	// what magpie remembers of an account's settings is that account's:
+	// what pigeon remembers of an account's settings is that account's:
 	// u0's keeps the name it had before there was a choice
 	record := "aside-state.json"
 	if id != 0 {
@@ -244,7 +244,7 @@ func (c *asideConnection) load() (asideRecord, error) {
 		return r, nil
 	}
 	// Legacy stash entries exist only for selections explicitly replaced by
-	// magpie. Reading them does not adopt fields with no restore point.
+	// pigeon. Reading them does not adopt fields with no restore point.
 	legacy := stashLoad()
 	for _, key := range append([]string{"model", "image"}, asideRoles...) {
 		if _, ok := r.Fields[key]; ok {
@@ -310,22 +310,22 @@ func (c *asideConnection) provider() (string, string) {
 		return "invalid", "Aside's provider configuration could not be read"
 	}
 	if p.Key == "" || p.URL == "" {
-		return "foreign", "Aside's magpie provider has no ownership credential; it will not be overwritten"
+		return "foreign", "Aside's pigeon provider has no ownership credential; it will not be overwritten"
 	}
 	if p.Key != gateway.TokenFor("aside") && p.Key != agentKeyAt("aside", c.at.gw()) {
-		return "foreign", "Aside's magpie provider belongs to another configuration; it will not be overwritten"
+		return "foreign", "Aside's pigeon provider belongs to another configuration; it will not be overwritten"
 	}
 	if !sameGateway(p.URL, c.at.v1()) {
-		return "invalid", "Aside's magpie provider points to another gateway; reconnect explicitly to use this one"
+		return "invalid", "Aside's pigeon provider points to another gateway; reconnect explicitly to use this one"
 	}
 	if p.API == "" || len(p.Models) == 0 {
-		return "invalid", "Aside's magpie provider has an incomplete model catalog; reconnect the provider"
+		return "invalid", "Aside's pigeon provider has an incomplete model catalog; reconnect the provider"
 	}
 	return "connected", ""
 }
 
 func (c *asideConnection) block() any {
-	p := magpieProviderJSONAt("pi", "aside", c.at.gw()).(map[string]any)
+	p := pigeonProviderJSONAt("pi", "aside", c.at.gw()).(map[string]any)
 	p["apiKey"] = agentKeyAt("aside", c.at.gw())
 	return p
 }
@@ -398,7 +398,7 @@ func (c *asideConnection) state() NativeState {
 		}
 		if strings.HasPrefix(value, "magpie/") && status == "disconnected" {
 			f.Status = "unavailable"
-			f.Detail = "The magpie provider is missing; reconnect the provider without changing this selection"
+			f.Detail = "The pigeon provider is missing; reconnect the provider without changing this selection"
 		}
 		if owned, ok := r.Fields[key]; ok && len(owned.Pending) > 0 {
 			f.Status = "pendingRestart"
@@ -420,7 +420,7 @@ func asideImageOptions() []Option {
 		}
 		for _, m := range gateway.Drawers(p) {
 			ref := p.ID + "/" + m.ID
-			out = append(out, Option{Value: "magpie/" + ref, Ref: ref, Label: m.Name, Group: p.Name, Icon: p.Icon, Note: "image generation · via magpie"})
+			out = append(out, Option{Value: "magpie/" + ref, Ref: ref, Label: m.Name, Group: p.Name, Icon: p.Icon, Note: "image generation · via pigeon"})
 		}
 	}
 	return out
@@ -458,7 +458,7 @@ func (c *asideConnection) validateSelection(key, value string) (string, error) {
 	if !ok || p == "" || m == "" {
 		return "", fmt.Errorf("expected provider/model")
 	}
-	if key == "image" && p == "magpie" && !asideImageOffered(value) {
+	if key == "image" && p == "pigeon" && !asideImageOffered(value) {
 		return "", fmt.Errorf("%s is not an image generation model", value)
 	}
 	return value, nil

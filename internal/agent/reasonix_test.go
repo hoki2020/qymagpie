@@ -12,13 +12,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 	"github.com/pelletier/go-toml/v2"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
 )
 
 func TestReasonixRegistered(t *testing.T) {
@@ -514,7 +514,7 @@ func TestReasonixBuiltinDefaultCanBeReselected(t *testing.T) {
 			t.Fatal(err)
 		}
 		cfg, err := readReasonix(a.Path)
-		if err != nil || cfg.DefaultModel == nil || *cfg.DefaultModel != "deepseek-flash" || cfg.magpie().Name != "" {
+		if err != nil || cfg.DefaultModel == nil || *cfg.DefaultModel != "deepseek-flash" || cfg.pigeon().Name != "" {
 			t.Fatalf("native default was not restored: %+v %v", cfg, err)
 		}
 		if _, exists := edit.GetEnvFile(env, reasonixKey); exists {
@@ -577,7 +577,7 @@ func TestReasonixConcurrentEditsAndSync(t *testing.T) {
 		break
 	}
 	cfg, err := readReasonix(a.Path)
-	if err != nil || cfg.DefaultModel == nil || *cfg.DefaultModel != "magpie/"+cfg.magpie().Default {
+	if err != nil || cfg.DefaultModel == nil || *cfg.DefaultModel != "magpie/"+cfg.pigeon().Default {
 		t.Fatalf("concurrent edits split the selected model and provider: %+v %v", cfg, err)
 	}
 	if drift := a.Check(); drift != "" {

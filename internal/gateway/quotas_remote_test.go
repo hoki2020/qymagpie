@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // remoteOnly leaves out the remote's keys' own cards (#1547).
@@ -50,7 +50,7 @@ func TestRemoteMagpieQuotas(t *testing.T) {
 	}
 	gw := httptest.NewServer(lanGuard(New().Handler()))
 	defer gw.Close()
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "sk-magpie-office", Chat: gw.URL}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "sk-magpie-office", Chat: gw.URL}); err != nil {
 		t.Fatal(err)
 	}
 	ctx := context.Background()
@@ -128,7 +128,7 @@ func TestRemoteMagpieQuotas(t *testing.T) {
 	}
 }
 
-// #1313 (jorben): a magpie in a container serves only other magpies, so
+// #1313 (jorben): a magpie in a container serves only other pigeons, so
 // nobody opens its Usage page, while its Codex account's usage is read
 // behind the requests (the account switching, CodexUsedUp). A GUI on
 // another computer with that magpie as its provider is shown the
@@ -168,7 +168,7 @@ func TestRemoteMagpieShowsBackgroundReadings(t *testing.T) {
 
 	gw := httptest.NewServer(lanGuard(New().Handler()))
 	defer gw.Close()
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "sk-magpie-office", Chat: gw.URL}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "sk-magpie-office", Chat: gw.URL}); err != nil {
 		t.Fatal(err)
 	}
 	ctx := context.Background()

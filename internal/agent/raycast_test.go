@@ -11,8 +11,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // raycastUser is a providers.yaml as the manual's examples write one
@@ -123,10 +123,10 @@ func TestRaycastProviders(t *testing.T) {
 	if f == nil || f.Get() != "" {
 		t.Fatalf("provider field: %v", f)
 	}
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != magpieID {
+	if f.Get() != pigeonID {
 		t.Fatalf("get: %q\n%s", f.Get(), readFile(path))
 	}
 
@@ -143,9 +143,9 @@ func TestRaycastProviders(t *testing.T) {
 			t.Errorf("%q is gone:\n%s", s, readFile(path))
 		}
 	}
-	m := raycastOf(got, magpieID)
+	m := raycastOf(got, pigeonID)
 	if m == nil || m.Name != "magpie" || m.BaseURL != gatewayV1() || strings.HasSuffix(m.BaseURL, "/chat/completions") ||
-		!reflect.DeepEqual(m.APIKeys, map[string]string{magpieID: gateway.TokenFor("raycast")}) {
+		!reflect.DeepEqual(m.APIKeys, map[string]string{pigeonID: gateway.TokenFor("raycast")}) {
 		t.Fatalf("magpie's entry: %+v", m)
 	}
 	ids := []string{}
@@ -187,7 +187,7 @@ func TestRaycastProviders(t *testing.T) {
 		t.Fatal(err)
 	}
 	got = raycastRead(t, path)
-	m = raycastOf(got, magpieID)
+	m = raycastOf(got, pigeonID)
 	if m == nil || !m.IncludeUserEmail || !strings.Contains(readFile(path), "# mine") {
 		t.Errorf("the user's key in magpie's entry is gone:\n%s", readFile(path))
 	}
@@ -238,11 +238,11 @@ func TestRaycastMakesAndRemovesItsFile(t *testing.T) {
 	os.WriteFile(template, []byte("# Raycast's template\nproviders: []\n"), 0o644)
 	a := raycast(home)
 	f := a.Field("provider")
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	got := raycastRead(t, path)
-	if len(got.Providers) != 1 || got.Providers[0].ID != magpieID || len(got.Providers[0].Models) == 0 {
+	if len(got.Providers) != 1 || got.Providers[0].ID != pigeonID || len(got.Providers[0].Models) == 0 {
 		t.Fatalf("made:\n%s", readFile(path))
 	}
 	if err := f.Set(""); err != nil {
@@ -257,11 +257,11 @@ func TestRaycastMakesAndRemovesItsFile(t *testing.T) {
 
 	tools := "tools:\n  web_search: raycast # shorthand\n"
 	os.WriteFile(path, []byte(tools), 0o600)
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	got = raycastRead(t, path)
-	if got.Tools["web_search"] != "raycast" || raycastOf(got, magpieID) == nil || !strings.Contains(readFile(path), "# shorthand") {
+	if got.Tools["web_search"] != "raycast" || raycastOf(got, pigeonID) == nil || !strings.Contains(readFile(path), "# shorthand") {
 		t.Fatalf("beside tools:\n%s", readFile(path))
 	}
 	if err := f.Set(""); err != nil {
@@ -275,7 +275,7 @@ func TestRaycastMakesAndRemovesItsFile(t *testing.T) {
 	// file untouched
 	odd := "providers:\n  lmstudio: {}\n"
 	os.WriteFile(path, []byte(odd), 0o600)
-	if err := f.Set(magpieID); err == nil || readFile(path) != odd {
+	if err := f.Set(pigeonID); err == nil || readFile(path) != odd {
 		t.Fatalf("a providers map: %v\n%s", err, readFile(path))
 	}
 }

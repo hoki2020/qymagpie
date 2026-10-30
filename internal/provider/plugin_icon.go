@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // PluginIcon is the icon a plugin's provider shows: the picture its plugin
@@ -127,7 +127,7 @@ func pluginOwnIcon(said string) string {
 }
 
 // RepoIcons are the Icon values of the pictures plugins not installed yet
-// give in their package.json (repositories tagged magpie-plugin), checked
+// give in their package.json (repositories tagged pigeon-plugin), checked
 // and kept as an installed plugin's are: "" where there is none to show.
 // An https picture not fetched before is waited for up to wait, so the
 // list's first answer has it (yetone: 非官方插件显示不出来 logo); one

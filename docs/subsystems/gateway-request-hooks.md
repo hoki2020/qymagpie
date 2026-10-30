@@ -7,24 +7,24 @@ execution and subsequent inference rounds belong to the client.
 ```mermaid
 sequenceDiagram
     participant Client
-    participant Magpie
+    participant Pigeon
     participant Hook as Bun gateway hook
     participant Model
-    Client->>Magpie: Request
-    Magpie->>Hook: await onRequest(body, ctx with host-derived origin)
-    Hook-->>Magpie: Context-enriched body, or original on failure
-    Magpie->>Model: One inference request
-    Model-->>Client: Live response through Magpie
-    Magpie--)Hook: onResponse(completedReply, ctx)
+    Client->>Pigeon: Request
+    Pigeon->>Hook: await onRequest(body, ctx with host-derived origin)
+    Hook-->>Pigeon: Context-enriched body, or original on failure
+    Pigeon->>Model: One inference request
+    Model-->>Client: Live response through Pigeon
+    Pigeon--)Hook: onResponse(completedReply, ctx)
     Note over Hook: Bounded best-effort notification
 ```
 
 ## Entry and request contract
 
-Declare `"magpie": {"hooks": "./context.hooks.ts"}` in package.json,
-or install a `*.hooks.js`, `.mjs`, `.ts` or `.mts` file using `magpie plugin add`.
-The names are apart from the JS gateway middleware's (`magpie.middleware`,
-its alias `magpie.gateway`, `*.gateway.js`), so a hook that imports `node:fs`
+Declare `"pigeon": {"hooks": "./context.hooks.ts"}` in package.json,
+or install a `*.hooks.js`, `.mjs`, `.ts` or `.mts` file using `pigeon plugin add`.
+The names are apart from the JS gateway middleware's (`pigeon.middleware`,
+its alias `pigeon.gateway`, `*.gateway.js`), so a hook that imports `node:fs`
 is never also loaded as middleware.
 Bun runs TypeScript directly. A gateway-only package does not need provider
 main/exports, a client MCP installation, or a client skill.

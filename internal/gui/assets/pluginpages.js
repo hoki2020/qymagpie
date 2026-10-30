@@ -2,7 +2,7 @@
 // plugin-runtime.md, P4): package.json's magpie.page, in a tab of the
 // sidebar's Plugins group, after the built-in pages. The page runs in a
 // frame sandboxed to scripts alone, in an origin of its own: it has no
-// way to the window, to magpie's API (apiFramed) or to the network (its
+// way to the window, to pigeon's API (apiFramed) or to the network (its
 // policy, pluginpage.go). What it asks of the window comes by message,
 // from that frame only, and the window answers only what the page may:
 // the theme, its own options, and the reads its package declared
@@ -38,7 +38,7 @@
     return { dark, lang: locale, tokens };
   }
 
-  function post(win, msg) { win?.postMessage({ magpie: 1, ...msg }, "*"); }
+  function post(win, msg) { win?.postMessage({ pigeon: 1, ...msg }, "*"); }
 
   // the theme or the language changed: every page open is told
   function pushTheme() {
@@ -289,7 +289,7 @@
     again.onclick = () => panelFrame(p.entry, p.context, p.body);
     card.append(again);
     p.body.replaceChildren(card);
-    console.error(`[magpie] ${p.entry.name}: panel ${p.entry.key}: ${why}`);
+    console.error(`[pigeon] ${p.entry.name}: panel ${p.entry.key}: ${why}`);
   }
 
   // a panel's frame in body, told context once it says hello

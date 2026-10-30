@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // #969 (pan17): the DeepSeek Harness desktop app, wired through magpie, failed

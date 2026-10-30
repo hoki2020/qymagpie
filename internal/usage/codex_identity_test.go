@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 func writeCodexIdentity(t *testing.T, id, session string, source any) string {

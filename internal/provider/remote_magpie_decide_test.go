@@ -12,13 +12,13 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 func TestRemoteMagpieUnlistedDecisions(t *testing.T) {
 	azureHome(t)
-	p := normalize(Provider{ID: "office", Preset: RemoteMagpiePreset, Chat: "http://127.0.0.1:1/typesafe"})
+	p := normalize(Provider{ID: "office", Preset: RemotePigeonPreset, Chat: "http://127.0.0.1:1/typesafe"})
 	if err := Save(p); err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func TestRemoteMagpieDecisionRefresh(t *testing.T) {
 		io.WriteString(w, list)
 	}))
 	t.Cleanup(up.Close)
-	if err := Save(Provider{ID: "office", Preset: RemoteMagpiePreset, Key: "remote-key", Chat: up.URL, Models: []string{"relay/typesafe/jev-router"}}); err != nil {
+	if err := Save(Provider{ID: "office", Preset: RemotePigeonPreset, Key: "remote-key", Chat: up.URL, Models: []string{"relay/typesafe/jev-router"}}); err != nil {
 		t.Fatal(err)
 	}
 	p, _ := Find("office")
@@ -133,10 +133,10 @@ func TestRemoteMagpieDecisionRefresh(t *testing.T) {
 	// All URL fields can be the entry point; the remote itself always
 	// speaks System One even behind paths resembling a vendor's API.
 	for _, p := range []Provider{
-		{Preset: RemoteMagpiePreset, Responses: up.URL + "/v1"},
-		{Preset: RemoteMagpiePreset, Anthropic: up.URL},
-		{Preset: RemoteMagpiePreset, Decide: up.URL + "/v1/systemone"},
-		{Preset: RemoteMagpiePreset, Chat: up.URL + "/typesafe"},
+		{Preset: RemotePigeonPreset, Responses: up.URL + "/v1"},
+		{Preset: RemotePigeonPreset, Anthropic: up.URL},
+		{Preset: RemotePigeonPreset, Decide: up.URL + "/v1/systemone"},
+		{Preset: RemotePigeonPreset, Chat: up.URL + "/typesafe"},
 	} {
 		p = normalize(p)
 		u, err := p.DecideURL(context.Background())
@@ -165,7 +165,7 @@ func TestRemoteMagpieEndpointTests(t *testing.T) {
 				io.WriteString(w, `{"choices":[{"message":{"content":"hello"}}]}`)
 			}))
 			t.Cleanup(up.Close)
-			if err := Save(Provider{ID: "office", Preset: RemoteMagpiePreset, Chat: up.URL, Key: "remote-key"}); err != nil {
+			if err := Save(Provider{ID: "office", Preset: RemotePigeonPreset, Chat: up.URL, Key: "remote-key"}); err != nil {
 				t.Fatal(err)
 			}
 			p, _ := Find("office")

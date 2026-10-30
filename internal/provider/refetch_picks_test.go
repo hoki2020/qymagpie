@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/agentenv"
 )
 
 // A remote magpie that offers fewer models, one of its providers renamed:
@@ -48,7 +48,7 @@ func TestRefreshDropsPicksTheListNoLongerHas(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	if err := Save(Provider{ID: "remote", Name: "Remote", Preset: RemoteMagpiePreset, Chat: srv.URL, Key: "sk-remote"}); err != nil {
+	if err := Save(Provider{ID: "remote", Name: "Remote", Preset: RemotePigeonPreset, Chat: srv.URL, Key: "sk-remote"}); err != nil {
 		t.Fatal(err)
 	}
 	fetch := func() error {

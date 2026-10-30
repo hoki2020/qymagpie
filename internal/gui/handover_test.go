@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // A restart that hands the gateway over waits only for the bridge's

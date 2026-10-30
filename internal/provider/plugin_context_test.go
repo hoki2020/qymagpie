@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // clinePlugin is Cline's plugin signed in, its models as its feed lists

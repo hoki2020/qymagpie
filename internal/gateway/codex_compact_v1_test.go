@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #1301: Codex compacts remotely (compaction v2: a compaction_trigger on
@@ -43,7 +43,7 @@ func TestCodexCompactionTriggerOnV1(t *testing.T) {
 		t.Fatalf("Codex wants exactly one compaction output item, got %v\n%s", done, body)
 	}
 	enc, _ := done[0]["encrypted_content"].(string)
-	if b, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, magpieCompaction)); string(b) != "SUMMARY" {
+	if b, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, pigeonCompaction)); string(b) != "SUMMARY" {
 		t.Errorf("compaction holds %q", enc)
 	}
 
@@ -54,7 +54,7 @@ func TestCodexCompactionTriggerOnV1(t *testing.T) {
 	if code != 200 {
 		t.Fatalf("%d %s", code, body)
 	}
-	if strings.Contains(string(f.got), magpieCompaction) || !strings.Contains(string(f.got), "SUMMARY") {
+	if strings.Contains(string(f.got), pigeonCompaction) || !strings.Contains(string(f.got), "SUMMARY") {
 		t.Errorf("relay got %s", f.got)
 	}
 }

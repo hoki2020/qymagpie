@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// raise sends s to magpie again with its handling put back to the default,
+// raise sends s to pigeon again with its handling put back to the default,
 // which ends the process.
 func raise(s os.Signal) {
 	n, ok := s.(syscall.Signal)

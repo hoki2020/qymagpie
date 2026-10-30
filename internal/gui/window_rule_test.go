@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // The window opens at the size it was last given, the default before

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"strings"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // grokToolPatterns is body with each "pattern" in its tools' schemas

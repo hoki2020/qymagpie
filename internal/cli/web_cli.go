@@ -7,16 +7,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yetone/magpie/internal/daemon"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/gui"
-	"github.com/yetone/magpie/internal/stats"
+	"github.com/hoki2020/pigeon/internal/daemon"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gui"
+	"github.com/hoki2020/pigeon/internal/stats"
 )
 
-// webAddr is where `magpie web` listens unless told: beside the gateway.
+// webAddr is where `pigeon web` listens unless told: beside the gateway.
 const webAddr = "127.0.0.1:3430"
 
-// webCmd: magpie web [--addr host:port] [--lan] [--no-open] [--gateway]
+// webCmd: pigeon web [--addr host:port] [--lan] [--no-open] [--gateway]
 // [--tls-cert <file> --tls-key <file>] —
 // the app's window in a browser, for a computer that can't show the app;
 // --gateway shows it in gateway mode (gui.WebGateway) unless Settings says
@@ -42,7 +42,7 @@ func webCmd(args []string) error {
 		case a == "--gateway":
 			gui.WebGateway.Store(true)
 		default:
-			return fmt.Errorf("magpie web: unknown %q · magpie web [--addr host:port] [--lan] [--no-open] [--gateway] [--tls-cert <file> --tls-key <file>], MAGPIE_WEB_KEY to keep one key", a)
+			return fmt.Errorf("pigeon web: unknown %q · pigeon web [--addr host:port] [--lan] [--no-open] [--gateway] [--tls-cert <file> --tls-key <file>], MAGPIE_WEB_KEY to keep one key", a)
 		}
 	}
 	if lan && addr == webAddr {
@@ -53,8 +53,8 @@ func webCmd(args []string) error {
 	// it serves, is the one to open
 	if a, k := daemon.Web(); a != "" && gateway.ServedBy().Running {
 		link := webLink(a, k)
-		fmt.Println(green.Render("●"), "the magpie service serves this page:", bold.Render(link))
-		fmt.Println(muted.Render("  magpie daemon web off turns it off"))
+		fmt.Println(green.Render("●"), "the pigeon service serves this page:", bold.Render(link))
+		fmt.Println(muted.Render("  pigeon daemon web off turns it off"))
 		if open {
 			openInBrowser(link)
 		}
@@ -65,17 +65,17 @@ func webCmd(args []string) error {
 		return err
 	}
 	if !w.ServesGateway() {
-		// another magpie has the gateway (the service, magpie serve, the
+		// another pigeon has the gateway (the service, pigeon serve, the
 		// app): this page shows its settings and accounts, read from the
 		// same files, and takes the gateway up when that one stops
 		o := gateway.ServedBy()
-		who := "another magpie"
+		who := "another pigeon"
 		if o.Version != "" {
 			who += " (" + o.Version + ")"
 		}
 		fmt.Println(muted.Render("  the gateway on " + gateway.URL() + " is served by " + who + "; this page shows the same settings and accounts, and serves the gateway once that one stops"))
 		if st, err := daemon.Get(); err == nil && st.Running {
-			fmt.Println(muted.Render("  to have the service serve this page itself: magpie daemon web on"))
+			fmt.Println(muted.Render("  to have the service serve this page itself: pigeon daemon web on"))
 		}
 	}
 	printWeb(w)
@@ -87,7 +87,7 @@ func webCmd(args []string) error {
 
 // printWeb prints where a started page is, and what its link carries.
 func printWeb(w *gui.Web) {
-	fmt.Println(green.Render("●"), "magpie web on", bold.Render(w.Link))
+	fmt.Println(green.Render("●"), "pigeon web on", bold.Render(w.Link))
 	if l := tlsLine(); l != "" {
 		fmt.Println(l)
 	}
@@ -114,9 +114,9 @@ func printWeb(w *gui.Web) {
 // lanWarning is said wherever the page is served on the network.
 func lanWarning() string {
 	if gateway.TLSOn() {
-		return "anyone with the link can change magpie and see its keys"
+		return "anyone with the link can change pigeon and see its keys"
 	}
-	return "anyone with the link can change magpie and see its keys, and the network carries it unencrypted (--tls-cert and --tls-key serve it over https)"
+	return "anyone with the link can change pigeon and see its keys, and the network carries it unencrypted (--tls-cert and --tls-key serve it over https)"
 }
 
 // webLink is the link to a page served on addr with key, from this
@@ -162,9 +162,9 @@ func proxyLink(key string) string {
 	return strings.TrimRight(u.String(), "/") + key
 }
 
-// serveCmd: magpie serve [--web[=host:port]] — the gateway, and with
-// --web magpie web's page from the same process: what the service runs
-// (`magpie daemon install --web`), so the page shows the gateway that
+// serveCmd: pigeon serve [--web[=host:port]] — the gateway, and with
+// --web pigeon web's page from the same process: what the service runs
+// (`pigeon daemon install --web`), so the page shows the gateway that
 // serves the agents, its routing included (HuanCheng on Discord).
 func serveCmd(args []string) error {
 	args, err := tlsFlags(args)
@@ -179,10 +179,10 @@ func serveCmd(args []string) error {
 		case strings.HasPrefix(a, "--web="):
 			web = strings.TrimPrefix(a, "--web=")
 			if _, _, err := net.SplitHostPort(web); err != nil {
-				return fmt.Errorf("magpie serve: --web=%s isn't host:port", web)
+				return fmt.Errorf("pigeon serve: --web=%s isn't host:port", web)
 			}
 		default:
-			return fmt.Errorf("magpie serve: unknown %q · magpie serve [--web[=host:port]] [--tls-cert <file> --tls-key <file>]", a)
+			return fmt.Errorf("pigeon serve: unknown %q · pigeon serve [--web[=host:port]] [--tls-cert <file> --tls-key <file>]", a)
 		}
 	}
 	if web == "" {
@@ -194,14 +194,14 @@ func serveCmd(args []string) error {
 		return err
 	}
 	public := advertisedURL()
-	fmt.Println(green.Render("●"), "magpie gateway on", bold.Render(gateway.URL()))
+	fmt.Println(green.Render("●"), "pigeon gateway on", bold.Render(gateway.URL()))
 	fmt.Println(muted.Render("  OpenAI  "), public+"/v1/chat/completions", muted.Render("·"), public+"/v1/responses")
 	fmt.Println(muted.Render("  Anthropic"), public+"/v1/messages")
 	if l := tlsLine(); l != "" {
 		fmt.Println(l)
 	}
 	if !w.ServesGateway() {
-		fmt.Println(amber.Render("!"), "another magpie serves the gateway there: this one serves it once that one stops")
+		fmt.Println(amber.Render("!"), "another pigeon serves the gateway there: this one serves it once that one stops")
 	}
 	printWeb(w)
 	return w.Wait()

@@ -10,7 +10,7 @@ package autostart
 #import <ServiceManagement/ServiceManagement.h>
 
 // SMAppService is macOS 13's; before it there is nothing to ask (-1)
-static long magpieLegacyStatus(const char *path) {
+static long pigeonLegacyStatus(const char *path) {
 	if (@available(macOS 13.0, *)) {
 		@autoreleasepool {
 			NSURL *u = [NSURL fileURLWithPath:[NSString stringWithUTF8String:path]];
@@ -28,6 +28,6 @@ func init() {
 	legacyStatus = func(path string) int {
 		p := C.CString(path)
 		defer C.free(unsafe.Pointer(p))
-		return int(C.magpieLegacyStatus(p))
+		return int(C.pigeonLegacyStatus(p))
 	}
 }

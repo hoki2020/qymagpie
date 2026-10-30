@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // A gateway key held to some accounts (#905) is served by those alone:
@@ -507,7 +507,7 @@ func TestGatewayKeyAccountsVideoOnAnAllowedKey(t *testing.T) {
 		io.WriteString(w, `{"id":"vid-1"}`)
 	}))
 	t.Cleanup(up.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset,
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset,
 		Chat: up.URL + "/v1", Key: "kA", Keys: []provider.KeyAccount{{Key: "kB"}}, Models: []string{"grok-imagine-video"}}); err != nil {
 		t.Fatal(err)
 	}

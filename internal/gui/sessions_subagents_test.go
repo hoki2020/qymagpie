@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 // The Sessions page reads a subagent's conversation by its session and its

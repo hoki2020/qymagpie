@@ -11,8 +11,8 @@ import (
 )
 
 // Gateway is the asynchronous request-hook entry a package runs in Bun:
-// package.json magpie.hooks, or a *.hooks.{js,mjs,ts,mts} file. Unlike
-// middleware (magpie.middleware/magpie.gateway, *.gateway.js), it can await
+// package.json pigeon.hooks, or a *.hooks.{js,mjs,ts,mts} file. Unlike
+// middleware (pigeon.middleware/pigeon.gateway, *.gateway.js), it can await
 // I/O and observe the completed exchange; the names never overlap, so one
 // file is never loaded as both.
 func Gateway(target string) string {
@@ -31,15 +31,15 @@ func Gateway(target string) string {
 		return ""
 	}
 	var pkg struct {
-		Magpie struct {
+		Pigeon struct {
 			Hooks string `json:"hooks"`
 		} `json:"magpie"`
 	}
 	b, err := os.ReadFile(filepath.Join(target, "package.json"))
-	if err != nil || json.Unmarshal(b, &pkg) != nil || strings.TrimSpace(pkg.Magpie.Hooks) == "" {
+	if err != nil || json.Unmarshal(b, &pkg) != nil || strings.TrimSpace(pkg.Pigeon.Hooks) == "" {
 		return ""
 	}
-	return filepath.Join(target, filepath.FromSlash(strings.TrimSpace(pkg.Magpie.Hooks)))
+	return filepath.Join(target, filepath.FromSlash(strings.TrimSpace(pkg.Pigeon.Hooks)))
 }
 
 // GatewayOnly distinguishes request hooks from packages that also serve a

@@ -7,7 +7,7 @@ import (
 	"context"
 	"slices"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // handOver is HandOver: a var so a test can see it asked.
@@ -210,7 +210,7 @@ func AddPlugins(ctx context.Context, es []plugin.Entry) (added []string, failed 
 // NotSignedIn is the subscriptions among ps (as a backup or a sync brings
 // them: their model picks and settings alone) that no account here is
 // signed in to: they are listed once one is, and are to be signed in to on
-// this computer. A subscription the user removed from magpie is not one.
+// this computer. A subscription the user removed from pigeon is not one.
 func NotSignedIn(ps []Provider) []string {
 	have := map[string]bool{}
 	for _, p := range All() {

@@ -5,10 +5,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
-// Models are magpie's models the agent is set to, as catalog ids
+// Models are pigeon's models the agent is set to, as catalog ids
 // (provider/model, group/<id>), each once: the agent's own models aside.
 // Usage stats count them (internal/stats).
 func (a *Agent) Models() []string {
@@ -31,7 +31,7 @@ func (a *Agent) Models() []string {
 	vals := a.Values()
 	for _, f := range a.Fields {
 		v := vals[f.Key]
-		if !magpieValue(a, f, v, vals) {
+		if !pigeonValue(a, f, v, vals) {
 			continue
 		}
 		m, _, _ := a.split(v)
@@ -49,15 +49,15 @@ func (a *Agent) Models() []string {
 	return out
 }
 
-// modelRef is v as a catalog id when it names one of magpie's models or
+// modelRef is v as a catalog id when it names one of pigeon's models or
 // groups, as an agent spells it (magpie/…, Claude Code's [1m]); "" else.
 func modelRef(v string) string {
 	v = strings.TrimSuffix(strings.TrimSpace(v), "[1m]")
-	v = strings.TrimPrefix(v, magpieID+"/")
+	v = strings.TrimPrefix(v, pigeonID+"/")
 	if provider.IsGroupRef(v) {
 		return provider.CanonicalRef(v) // a found group by one id, whichever it was set to
 	}
-	if isMagpie(v) {
+	if isPigeon(v) {
 		return v
 	}
 	return ""

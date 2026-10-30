@@ -99,7 +99,7 @@ var evalCases = []evalCase{
 	{
 		ID: "home-path", From: "611b9e173",
 		Text: "cd /Users/jdoe/workspace/projects/magpie && go test ./internal/redact",
-		Keep: []evalValue{{V: "jdoe", Kind: "PERSON"}, {V: "magpie", Kind: "PERSON"}},
+		Keep: []evalValue{{V: "jdoe", Kind: "PERSON"}, {V: "pigeon", Kind: "PERSON"}},
 	},
 	{
 		ID: "grep-pattern", From: "611b9e173",

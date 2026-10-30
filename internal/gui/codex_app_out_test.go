@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // The Codex app left unable to send on its used-up ChatGPT account is

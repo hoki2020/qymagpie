@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/appdir"
 )
 
 func codexConfigPath() string {
@@ -45,7 +45,7 @@ func readCodexConfig(path string) ([]AppImport, error) {
 		}
 		it := AppImport{Ref: id, From: "config.toml"}
 		if id == "magpie" {
-			it.Provider, it.Skip = Provider{Name: name}, "it points at magpie itself"
+			it.Provider, it.Skip = Provider{Name: name}, "it points at pigeon itself"
 			out = append(out, it)
 			continue
 		}

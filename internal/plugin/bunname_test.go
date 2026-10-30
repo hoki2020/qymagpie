@@ -22,8 +22,8 @@ func TestBunDownloadedAsMagpieBun(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if filepath.Base(exe) != magpieBun() || asked.Load() != 1 {
-		t.Fatalf("Bun = %s after %d downloads, want one named %s", exe, asked.Load(), magpieBun())
+	if filepath.Base(exe) != pigeonBun() || asked.Load() != 1 {
+		t.Fatalf("Bun = %s after %d downloads, want one named %s", exe, asked.Load(), pigeonBun())
 	}
 	if _, err := os.Stat(filepath.Join(filepath.Dir(exe), bunExe())); !os.IsNotExist(err) {
 		t.Fatalf("a bun beside magpie-bun: %v", err)
@@ -48,7 +48,7 @@ func TestBunDownloadedBeforeTakesTheName(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if b, _ := os.ReadFile(exe); filepath.Base(exe) != magpieBun() || string(b) != "downloaded before" || asked.Load() != 0 {
+	if b, _ := os.ReadFile(exe); filepath.Base(exe) != pigeonBun() || string(b) != "downloaded before" || asked.Load() != 0 {
 		t.Fatalf("Bun = %s holding %q after %d downloads", exe, b, asked.Load())
 	}
 	if _, err := os.Stat(old); !os.IsNotExist(err) {
@@ -88,7 +88,7 @@ func TestHostRunsAsMagpieBun(t *testing.T) {
 	if h == nil || h.cmd.Process == nil {
 		t.Fatal("no host running")
 	}
-	if got := filepath.Base(h.cmd.Path); got != magpieBun() {
+	if got := filepath.Base(h.cmd.Path); got != pigeonBun() {
 		t.Fatalf("the host runs %s", h.cmd.Path)
 	}
 	if runtime.GOOS == "windows" {

@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/codexcat"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The Codex CLI that names magpie its provider reads its models from
@@ -57,7 +57,7 @@ func TestCodexCatalogTiersReachDisk(t *testing.T) {
 
 	// the file offers each model what GET /v1/codex/models offers it
 	shown, _ := provider.CatalogFor("codex")
-	if disk, api := codexcat.ServiceTiers(magpieModels("codex")), codexcat.ServiceTiers(provider.CodexCatalog(shown)); !reflect.DeepEqual(disk, api) {
+	if disk, api := codexcat.ServiceTiers(pigeonModels("codex")), codexcat.ServiceTiers(provider.CodexCatalog(shown)); !reflect.DeepEqual(disk, api) {
 		t.Errorf("tiers in magpie-models.json %v, in /v1/codex/models %v", disk, api)
 	}
 }

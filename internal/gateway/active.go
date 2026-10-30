@@ -114,7 +114,7 @@ func noteRoute(ctx context.Context, rt *Route) {
 }
 
 // panicEnded is what a route ended by endBroken says.
-const panicEnded = "magpie broke off this request: an internal error (in magpie's log)"
+const panicEnded = "pigeon broke off this request: an internal error (in pigeon's log)"
 
 // endBroken ends every route begun for f that its handler left in flight
 // when it panicked, and each of their tries still out: net/http recovers

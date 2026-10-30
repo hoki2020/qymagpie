@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // Claude Code sends this tool only inline, not also in the top-level tools.

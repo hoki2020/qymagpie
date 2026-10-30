@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/netproxy"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // sandbox gives the test its own magpie folders and the Bun on PATH; a

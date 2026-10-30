@@ -37,7 +37,7 @@ func TestNewToolsListedBeforeTheAnswer(t *testing.T) {
 	defer func() { os.Stdin, os.Stdout = oldIn, oldOut }()
 	// handed the callback as magpie hands it: in a file (#1546)
 	callbackPath := filepath.Join(dir, "callback")
-	os.WriteFile(callbackPath, []byte(cb.URL+"/_magpie/claude-mcp/tok"), 0o600)
+	os.WriteFile(callbackPath, []byte(cb.URL+"/_pigeon/claude-mcp/tok"), 0o600)
 	go func() { _ = RunMCP([]string{callbackPath, toolsPath}); outW.Close() }()
 	lines := make(chan map[string]any, 16)
 	go func() {

@@ -90,7 +90,7 @@ func remoteQuotaHome(t *testing.T, peer http.Handler) {
 	azureHome(t)
 	srv := httptest.NewServer(peer)
 	t.Cleanup(srv.Close)
-	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemoteMagpiePreset, Key: "sk-magpie-office", Chat: srv.URL}); err != nil {
+	if err := Save(Provider{ID: "office", Name: "Office", Preset: RemotePigeonPreset, Key: "sk-magpie-office", Chat: srv.URL}); err != nil {
 		t.Fatal(err)
 	}
 	ForgetRemoteCardsForTest()
@@ -168,7 +168,7 @@ func TestRemoteMagpieCardRefresh(t *testing.T) {
 	remoteQuotaHome(t, peer)
 	ctx := context.Background()
 	cs := peerCards(RemoteCards(ctx))
-	if len(cs) != 1 || cs[0].Provider != "office" || cs[0].Error != errRemoteNothingRead || cs[0].Icon != "magpie" {
+	if len(cs) != 1 || cs[0].Provider != "office" || cs[0].Error != errRemoteNothingRead || cs[0].Icon != "pigeon" {
 		t.Fatalf("nothing read there: %+v", cs)
 	}
 	peer.Lock()
@@ -204,7 +204,7 @@ func TestRemoteMagpieUnreachable(t *testing.T) {
 	peer.Lock()
 	peer.status = http.StatusBadGateway
 	peer.Unlock()
-	if cs := remoteCards(ctx, remoteMagpies()[0], true); len(cs) != 1 || cs[0].Provider != "office/codex" || cs[0].Error != "" {
+	if cs := remoteCards(ctx, remotePigeons()[0], true); len(cs) != 1 || cs[0].Provider != "office/codex" || cs[0].Error != "" {
 		t.Errorf("last cards not kept: %+v", cs)
 	}
 	ForgetRemoteCardsForTest()

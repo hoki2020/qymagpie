@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // fakeOpenRouter answers for openrouter.ai: its chat models at /models,

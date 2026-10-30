@@ -2,7 +2,7 @@
 // A session in a WSL distro is deleted from the Sessions page as this
 // computer's are (TJHHHH: 请问是否可以增加wsl内对于会话的删除呢): its row has
 // its box beside the WSL badge, its folder's box picks it, and the bar's
-// Delete asks in magpie's own dialog and posts sessions/delete with its id;
+// Delete asks in pigeon's own dialog and posts sessions/delete with its id;
 // no note says WSL's can't be deleted. In English and Chinese; no backend,
 // the API is faked here.
 const assert = require("node:assert/strict");

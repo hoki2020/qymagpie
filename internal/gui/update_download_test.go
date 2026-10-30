@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // #2296 (meifu2027): on a metered network or a proxy billed by traffic,

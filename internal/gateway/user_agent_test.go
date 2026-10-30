@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // uaVendor is a key+URL vendor on every API magpie forwards to one: it
@@ -185,7 +185,7 @@ func TestUserAgentFor(t *testing.T) {
 		{"opencode", provider.Provider{Chat: "https://opencode.ai/zen/v1", PassUserAgent: true}, magpie},
 		{"cline", provider.Provider{Preset: "clinepass", Chat: "https://api.cline.bot/api/v1", PassUserAgent: true}, magpie},
 		{"kilo", provider.Provider{Preset: "kilo", Chat: "https://api.kilo.ai/api/gateway", PassUserAgent: true}, magpie},
-		{"remote magpie", provider.Provider{Preset: provider.RemoteMagpiePreset, Chat: "http://10.0.0.2:3425/v1", PassUserAgent: true}, magpie},
+		{"remote pigeon", provider.Provider{Preset: provider.RemotePigeonPreset, Chat: "http://10.0.0.2:3425/v1", PassUserAgent: true}, magpie},
 	} {
 		if got := userAgentFor(tt.p, pi); got != tt.want {
 			t.Errorf("%s: %q, want %q", tt.name, got, tt.want)

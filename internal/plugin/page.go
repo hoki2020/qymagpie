@@ -10,23 +10,23 @@ import (
 	"strings"
 )
 
-// WindowSpec is what a plugin adds to magpie's window: its page
-// (package.json's magpie.page), its panels in magpie's own pages
-// (magpie.panels), the items it adds to magpie's menus (magpie.actions),
+// WindowSpec is what a plugin adds to pigeon's window: its page
+// (package.json's magpie.page), its panels in pigeon's own pages
+// (magpie.panels), the items it adds to pigeon's menus (magpie.actions),
 // and the reads magpie.permissions asks for, which its page and its
 // panels share.
 type WindowSpec struct {
 	Page   *PageSpec // nil when it adds no page of its own
 	Panels []PanelSpec
-	// Actions are its items in magpie's menus, each opening its page;
+	// Actions are its items in pigeon's menus, each opening its page;
 	// none without a page
 	Actions []ActionSpec
-	// Reads are the reads it asked for that magpie has (PageReads), in
+	// Reads are the reads it asked for that pigeon has (PageReads), in
 	// the order asked.
 	Reads []string
 }
 
-// PageSpec is a plugin's own page in magpie's window.
+// PageSpec is a plugin's own page in pigeon's window.
 type PageSpec struct {
 	Title string // "" when it names none
 	// Titles are its title in other languages, by the window's language
@@ -40,7 +40,7 @@ type PageSpec struct {
 	Replaces string
 }
 
-// PanelSpec is a panel a plugin adds to one of magpie's own pages: a
+// PanelSpec is a panel a plugin adds to one of pigeon's own pages: a
 // part of that page, drawn by the plugin's HTML in a frame of its own.
 type PanelSpec struct {
 	Slot   string // one of PanelSlots
@@ -50,7 +50,7 @@ type PanelSpec struct {
 	Dir    string // the folder the panel's files are served from: File's
 }
 
-// ActionSpec is an item a plugin adds to one of magpie's menus
+// ActionSpec is an item a plugin adds to one of pigeon's menus
 // (ActionMenus). Picking it opens the plugin's page, which is told the
 // action's id and the row it was picked on (magpie.onAction).
 type ActionSpec struct {
@@ -76,7 +76,7 @@ const maxActions = 8
 // magpie.permissions. None of them carries a secret.
 var PageReads = []string{"usage:summary", "providers:list"}
 
-// PanelSlots are the places in magpie's own pages a plugin's panel can
+// PanelSlots are the places in pigeon's own pages a plugin's panel can
 // go: under the Agents page's list, at the end of the Usage page, on
 // Settings' Plugins tab, and in a provider's editor (which tells the
 // panel the provider's id and name).
@@ -88,7 +88,7 @@ var Replaceable = []string{"sessions", "library", "routing", "usage"}
 
 // titles are a page's or a panel's titles by language, without the empty
 // ones, or nil: magpie.page.titles {"zh": "…"}. title stays a string
-// beside them, so a magpie that knows no titles still reads the package,
+// beside them, so a pigeon that knows no titles still reads the package,
 // and titles that aren't an object of strings leave the page as it was.
 func titles(raw json.RawMessage) map[string]string {
 	var m map[string]any
@@ -113,12 +113,12 @@ func titles(raw json.RawMessage) map[string]string {
 // maxPanels is how many panels one plugin adds, at most.
 const maxPanels = 8
 
-// Window is what a plugin at target adds to magpie's window, or nil when
+// Window is what a plugin at target adds to pigeon's window, or nil when
 // it adds nothing: package.json's magpie.page {title, file, icon,
 // replaces}, magpie.panels [{slot, file, title}] and magpie.actions [{id,
 // menu, title}]. A file outside the
 // plugin's folder, or not .html, is no page or panel; a panel in a slot
-// magpie doesn't have is left out, and so is a replaces of a page that
+// pigeon doesn't have is left out, and so is a replaces of a page that
 // can't be replaced. only is whether it is nothing else: no OpenCode
 // plugin for the host to load (no main, no exports).
 func Window(target string) (w *WindowSpec, only bool) {
@@ -143,7 +143,7 @@ func Window(target string) (w *WindowSpec, only bool) {
 	var pkg struct {
 		Main    string          `json:"main"`
 		Exports json.RawMessage `json:"exports"`
-		Magpie  struct {
+		Pigeon  struct {
 			Page        *part    `json:"page"`
 			Panels      []part   `json:"panels"`
 			Actions     []part   `json:"actions"`
@@ -154,7 +154,7 @@ func Window(target string) (w *WindowSpec, only bool) {
 		return nil, false
 	}
 	w = &WindowSpec{}
-	if pg := pkg.Magpie.Page; pg != nil {
+	if pg := pkg.Pigeon.Page; pg != nil {
 		if file, ok := htmlInside(target, pg.File); ok {
 			p := &PageSpec{Title: strings.TrimSpace(pg.Title), Titles: titles(pg.Titles), File: file, Dir: filepath.Dir(file)}
 			// the icon is served with the page, so it sits in the page's folder
@@ -169,7 +169,7 @@ func Window(target string) (w *WindowSpec, only bool) {
 			w.Page = p
 		}
 	}
-	for _, pn := range pkg.Magpie.Panels {
+	for _, pn := range pkg.Pigeon.Panels {
 		if len(w.Panels) == maxPanels {
 			break
 		}
@@ -182,7 +182,7 @@ func Window(target string) (w *WindowSpec, only bool) {
 	}
 	// an action opens the plugin's page, so a plugin with none has no
 	// action; an id given twice is the first's
-	for _, a := range pkg.Magpie.Actions {
+	for _, a := range pkg.Pigeon.Actions {
 		if w.Page == nil || len(w.Actions) == maxActions {
 			break
 		}
@@ -195,7 +195,7 @@ func Window(target string) (w *WindowSpec, only bool) {
 	if w.Page == nil && len(w.Panels) == 0 {
 		return nil, false
 	}
-	for _, r := range pkg.Magpie.Permissions {
+	for _, r := range pkg.Pigeon.Permissions {
 		if slices.Contains(PageReads, r) && !slices.Contains(w.Reads, r) {
 			w.Reads = append(w.Reads, r)
 		}

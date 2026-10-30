@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // claudeBinHome is a Windows home with no Claude Code folder, no

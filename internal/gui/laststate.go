@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // The last-known state (#1519, fatkun). state() reads every agent's config
@@ -32,7 +32,7 @@ var lastState struct {
 }
 
 // stateFile is the last-known state, with the version that wrote it: an
-// older magpie's is not drawn by a newer page.
+// older pigeon's is not drawn by a newer page.
 type stateFile struct {
 	Version string    `json:"version"`
 	State   stateJSON `json:"state"`

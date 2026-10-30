@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // pemPair writes a self-signed certificate and its key into dir.

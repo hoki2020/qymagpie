@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The number Claude Desktop's menu says beside a Claude model it names
@@ -50,7 +50,7 @@ func TestProviderModelsSayDesktopNumber(t *testing.T) {
 	for _, e := range provider.Catalog() {
 		if e.ID == "relay/claude-opus-5-5" {
 			id := gateway.DesktopID(e)
-			rest, cut := strings.CutPrefix(id, "magpie-")
+			rest, cut := strings.CutPrefix(id, "pigeon-")
 			n, _, ok := strings.Cut(rest, ".anthropic.claude-opus-5-5")
 			if !cut || !ok || n == "" {
 				t.Fatalf("Desktop is shown %s, want magpie-<n>.anthropic.claude-opus-5-5", id)

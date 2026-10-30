@@ -3,7 +3,7 @@ package sqlitedb
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 func TestMain(m *testing.M) { testenv.Main(m) }

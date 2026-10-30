@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 // A group's speed says how many replies it is of, and a group none of whose

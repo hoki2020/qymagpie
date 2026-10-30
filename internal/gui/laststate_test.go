@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // forgetLastState is a new run: nothing kept in memory, the file read

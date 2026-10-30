@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // saidArgs is what a command printed, which is where the wire name is
@@ -184,7 +184,7 @@ func TestModelPricesCmd(t *testing.T) {
 	if !strings.Contains(out, "no model is priced by you yet") {
 		t.Errorf("with nothing priced: %q; want the machine told none is", out)
 	}
-	if !strings.Contains(out, "magpie model price <provider/model>") {
+	if !strings.Contains(out, "pigeon model price <provider/model>") {
 		t.Errorf("with nothing priced: %q; want the hint at how to price one", out)
 	}
 
@@ -381,7 +381,7 @@ func TestModelHelpNamesThePricesListing(t *testing.T) {
 	}
 	var line string
 	for _, l := range strings.Split(out, "\n") {
-		if strings.HasPrefix(strings.TrimSpace(l), "magpie model prices") {
+		if strings.HasPrefix(strings.TrimSpace(l), "pigeon model prices") {
 			line = l
 			break
 		}
@@ -389,7 +389,7 @@ func TestModelHelpNamesThePricesListing(t *testing.T) {
 	if line == "" {
 		t.Fatalf("the help names no `magpie model prices`:\n%s", out)
 	}
-	if !strings.HasPrefix(line, "  magpie model prices") {
+	if !strings.HasPrefix(line, "  pigeon model prices") {
 		t.Errorf("%q; want it listed among the other magpie model commands", line)
 	}
 }
@@ -408,19 +408,19 @@ func TestModelUsageAlignsEveryDescription(t *testing.T) {
 		if line == "" {
 			break // the end of the commands; what follows is prose of its own
 		}
-		if !strings.HasPrefix(line, "  magpie ") {
+		if !strings.HasPrefix(line, "  pigeon ") {
 			at := len(line) - len(strings.TrimLeft(line, " "))
 			if col >= 0 && at != col {
 				t.Errorf("a line a description runs on to starts at column %d, want %d: %q", at, col, line)
 			}
 			continue
 		}
-		rest := line[len("  magpie"):]
+		rest := line[len("  pigeon"):]
 		at := strings.Index(rest, "  ")
 		if at < 0 {
 			continue // the command is too long for a description beside it
 		}
-		at += len("  magpie") + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
+		at += len("  pigeon") + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
 		if col < 0 {
 			col = at
 		} else if at != col {
@@ -599,7 +599,7 @@ func TestModelLimitCmd(t *testing.T) {
 		}
 		// the refusal is a command to paste, not a flag to find in the
 		// help: "a/m --reset" leaves the reader to work out the verb
-		if !strings.Contains(err.Error(), "magpie model "+c.verb+" a/m --reset") {
+		if !strings.Contains(err.Error(), "pigeon model "+c.verb+" a/m --reset") {
 			t.Errorf("%s of 0 tokens: %q; it does not give the command that takes one away", c.what, err.Error())
 		}
 	}
@@ -945,7 +945,7 @@ func TestModelLimitCmdSaysWhenThereIsNoLimitToTakeAway(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s a/m --reset: %q; want it to say the model has no limit of its own", verb, out)
 		}
-		if !strings.Contains(err.Error(), "magpie model "+verb+" 'a/*' --reset") {
+		if !strings.Contains(err.Error(), "pigeon model "+verb+" 'a/*' --reset") {
 			t.Errorf("%s a/m --reset: %q; want it to point at the provider's own every-model value", verb, err)
 		}
 		if out, err := said(t, func() error { return modelCmd([]string{verb, "a/*", "--reset"}) }); err != nil {
@@ -977,7 +977,7 @@ func TestModelLimitCmdZeroNamesEveryModelOfTheProvider(t *testing.T) {
 		if err == nil {
 			t.Fatalf("%s 'a/*' 0 was accepted", verb)
 		}
-		if !strings.Contains(err.Error(), "magpie model "+verb+" 'a/*' --reset") {
+		if !strings.Contains(err.Error(), "pigeon model "+verb+" 'a/*' --reset") {
 			t.Errorf("%s 'a/*' 0: %q; the command it gives has its wildcard quoted", verb, err)
 		}
 		if !strings.Contains(err.Error(), "every model of a") {
@@ -1050,7 +1050,7 @@ func TestModelUsageGivesEveryCommandADescription(t *testing.T) {
 	}
 	seen := 0
 	for i, line := range rows {
-		if !strings.HasPrefix(line, "  magpie model ") {
+		if !strings.HasPrefix(line, "  pigeon model ") {
 			continue
 		}
 		seen++
@@ -1068,15 +1068,15 @@ func TestModelUsageGivesEveryCommandADescription(t *testing.T) {
 // to leave one.
 func usageColumn(rows []string) int {
 	for _, l := range rows {
-		if !strings.HasPrefix(l, "  magpie model ") {
+		if !strings.HasPrefix(l, "  pigeon model ") {
 			continue
 		}
-		rest := l[len("  magpie"):]
+		rest := l[len("  pigeon"):]
 		at := strings.Index(rest, "  ")
 		if at < 0 {
 			continue // the command is too long for a description beside it
 		}
-		return len("  magpie") + at + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
+		return len("  pigeon") + at + len(rest[at:]) - len(strings.TrimLeft(rest[at:], " "))
 	}
 	return -1
 }
@@ -1085,7 +1085,7 @@ func usageColumn(rows []string) int {
 // text beside it, or, where the command fills the column, the lines under it
 // the description runs on to.
 func usageDescription(rows []string, i, col int) string {
-	rest := rows[i][len("  magpie"):]
+	rest := rows[i][len("  pigeon"):]
 	if at := strings.Index(rest, "  "); at >= 0 {
 		return strings.TrimSpace(rest[at:])
 	}
@@ -1192,7 +1192,7 @@ func TestModelLimitCmdSaysWhatALimitIsInTheVerbOfItsOwnCommand(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s a/m --reset: %v; the limit set just now cannot be taken off", tc.verb, err)
 		}
-		if !strings.Contains(out, "magpie model "+tc.verb+" a/m says what it "+tc.says+" now") {
+		if !strings.Contains(out, "pigeon model "+tc.verb+" a/m says what it "+tc.says+" now") {
 			t.Errorf("%s a/m --reset: %q; it does not say the limit in the verb of its own command", tc.verb, out)
 		}
 		other := "answers with"
@@ -1963,7 +1963,7 @@ func TestModelWireResetUnderAProviderShownAsTheGoneId(t *testing.T) {
 // its text up under the line above rather than under the command it belongs
 // to, which is how the wire lines read until they were put in line.
 func TestModelUsageLinesUpItsDescriptions(t *testing.T) {
-	const cmd = "  magpie model "
+	const cmd = "  pigeon model "
 	// where a description starts: past the command and the run of spaces
 	// after it, or — for a wrapped description — at its own first letter
 	startsAt := func(l string) (int, bool) {
@@ -2024,7 +2024,7 @@ func TestModelUsageLinesUpItsDescriptions(t *testing.T) {
 // description is taken from the first space past it — which is where the
 // layout puts it, and which a reader reads as readily as any other line.
 func TestModelUsageGivesEveryCommandItsOwnDescription(t *testing.T) {
-	const cmd = "  magpie model "
+	const cmd = "  pigeon model "
 	// words a sentence cannot end on, which is what a description is left
 	// reading as when the line it carried on into was somebody else's. A
 	// preposition like "by" is not one of them: a description can end on it

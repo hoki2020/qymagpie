@@ -23,7 +23,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/stringke";
 const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills` });
-// the screenshot's five, as magpie's sync words them
+// the screenshot's five, as pigeon's sync words them
 const builtIn = ["docx", "frontend-design", "pdf", "pptx", "xlsx"];
 const desktopProblems = builtIn.map((n) => ({ agent: "claude-desktop", what: "skill:" + n, error: "Claude Desktop already has a skill of its own called " + n, own: true }));
 const problem = { agent: "claude", what: "skill:impeccable", error: "Claude Code already has a skill of its own called impeccable", own: true };

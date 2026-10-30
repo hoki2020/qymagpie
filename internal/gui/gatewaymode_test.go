@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Gateway mode (Player on Discord): magpie web with no agents on its

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/library"
+	"github.com/hoki2020/pigeon/internal/backup"
+	"github.com/hoki2020/pigeon/internal/library"
 )
 
 // filled is n bytes that differ from seed to seed and part to part.

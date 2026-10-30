@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A remote magpie is added from the TUI with its address, as the app's
@@ -102,7 +102,7 @@ func TestTUIAddListSaysRemoteMagpieIsAnotherComputers(t *testing.T) {
 	home(t)
 	m := press(t, model{w: 120, h: 40}, "2", "a")
 	for _, o := range m.pk.items {
-		if o.Value != provider.RemoteMagpiePreset {
+		if o.Value != provider.RemotePigeonPreset {
 			continue
 		}
 		if o.Note != "Remote magpie · another computer's magpie, shared on its network" {

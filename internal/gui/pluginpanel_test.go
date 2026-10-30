@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // copyTree copies a testdata folder to to.

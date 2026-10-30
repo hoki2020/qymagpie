@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 const chatGPTAuth = `{"tokens":{"access_token":"x","id_token":"x.e30.x"}}`
@@ -172,7 +172,7 @@ func TestCodexSyncMendsGoneCatalog(t *testing.T) {
 		if g := namesGone(home); g != "" {
 			t.Fatalf("config.toml still names %s:\n%s", g, read())
 		}
-		if p, _ := edit.GetTOMLTop(filepath.Join(home, ".codex", "config.toml"), "model_provider"); p != magpieID {
+		if p, _ := edit.GetTOMLTop(filepath.Join(home, ".codex", "config.toml"), "model_provider"); p != pigeonID {
 			t.Fatalf("magpie is no longer the provider:\n%s", read())
 		}
 	})

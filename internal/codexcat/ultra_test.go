@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // A model offering Codex's Ultra that no ChatGPT account answers for

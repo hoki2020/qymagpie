@@ -394,7 +394,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       const first = await open("en", "light");
       await first.p.locator("#ledMetric .opt").nth(1).click();
       await first.p.locator("#ledSplit .opt").nth(SPLIT.provider).click();
-      await first.p.evaluate(() => localStorage.setItem("magpie.ledSplit", "provider"));
+      await first.p.evaluate(() => localStorage.setItem("pigeon.ledSplit", "provider"));
       const second = await open("en", "light", { ctx: first.context });
       assert.equal(await second.p.locator("#ledMetric .opt.on").textContent(), "Cost");
       assert.equal(await second.p.locator("#ledSplit .opt.on").textContent(), "Model");

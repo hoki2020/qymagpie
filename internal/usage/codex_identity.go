@@ -8,7 +8,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 func codexIdentityRow(row Row, actor string, identities map[string]sessions.CodexIdentity) Row {

@@ -9,7 +9,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // copilotJBUser is byok.json as the Copilot language server 1.545.1 (in the
@@ -61,10 +61,10 @@ func TestCopilotJetBrains(t *testing.T) {
 	if f == nil || f.Get() != "" || a.Wired() || a.Detected() {
 		t.Fatalf("before: %v %v %v", f, a.Wired(), a.Detected())
 	}
-	if err := a.Apply("provider", magpieID); err != nil {
+	if err := a.Apply("provider", pigeonID); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != magpieID || !a.Wired() || !a.Detected() {
+	if f.Get() != pigeonID || !a.Wired() || !a.Detected() {
 		t.Fatalf("after: %q %v %v", f.Get(), a.Wired(), a.Detected())
 	}
 	if d := a.Check(); d != "" {
@@ -91,7 +91,7 @@ func TestCopilotJetBrains(t *testing.T) {
 		APIType   string `json:"apiType"`
 	}
 	strictJSON(t, file["magpie-provider-config"], &cfg)
-	if cfg.GroupName != magpieID || cfg.APIType != "chatCompletions" {
+	if cfg.GroupName != pigeonID || cfg.APIType != "chatCompletions" {
 		t.Errorf("provider config: %s", file["magpie-provider-config"])
 	}
 	var key string
@@ -165,7 +165,7 @@ func TestCopilotJetBrainsNewFile(t *testing.T) {
 	home := syncHome(t)
 	path := filepath.Join(home, ".config", "github-copilot", "byok.json")
 	a := copilotJetBrainsAt(path, func() bool { return true })
-	if err := a.Apply("provider", magpieID); err != nil {
+	if err := a.Apply("provider", pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	var file map[string]json.RawMessage

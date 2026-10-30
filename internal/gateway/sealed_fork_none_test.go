@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // forkNoneTask is the first request Codex 0.162 (rust-v0.162.0-alpha.17.2)

@@ -1,17 +1,15 @@
 //go:build ignore
 
-// Icon generator. Everything magpie shows is drawn from one bird: a round
-// little magpie in profile, tail cocked, black and white, on a 44-unit grid.
-// magpie.svg is the full drawing, its belly, shoulder and the slits in its
-// tail cut out of the black; the app tile uses it from 64px up.
-// magpie-small.svg drops the eye, which would only be a speck; the tray and
-// the smaller tiles use it, and so does the header in
-// internal/gui/assets/index.html.
+// Icon generator. Everything pigeon shows is drawn from one mark: a pigeon
+// in flight, an envelope in its beak, cut out of a black tile on a 44-unit
+// grid. pigeon-tile.svg is that tile, which the tray, its flap, the app icon
+// and the Dock's layered icon use; pigeon.svg is the bird alone, which the
+// header mark and the pages of the site use.
 //
 //	go run build/icon/gen.go tray internal/gui/tray.png     # 44px black template icon (macOS menu bar)
 //	go run build/icon/gen.go tray-flap internal/gui/trayflap # its frames when clicked (a size after the folder for a bigger look)
 //	go run build/icon/gen.go app 64 internal/gui/icon.png   # app icon at a given size
-//	make icons                                              # regenerates all of them plus magpie.icns
+//	make icons                                              # regenerates all of them plus pigeon.icns
 package main
 
 import (
@@ -28,10 +26,8 @@ import (
 )
 
 var (
-	//go:embed magpie.svg
-	fullSVG string
-	//go:embed magpie-small.svg
-	smallSVG string
+	//go:embed pigeon-tile.svg
+	tileSVG string
 )
 
 func main() {
@@ -79,11 +75,12 @@ func main() {
 // 感觉这只鸟有些大); at .8 it is about 18pt by 14pt, centred.
 const trayK = 0.8
 
-// tray draws the silhouette as a macOS template image (black + alpha).
+// tray draws the tile with the bird cut out of it as a macOS template image
+// (black + alpha).
 func tray() image.Image {
 	const S = 44
 	off := S / 2 * (1 - trayK)
-	cov := coverage(parse(smallSVG), S, 8, trayK, off, off)
+	cov := coverage(parse(tileSVG), S, 8, trayK, off, off)
 	img := image.NewNRGBA(image.Rect(0, 0, S, S))
 	for i, a := range cov {
 		img.SetNRGBA(i%S, i/S, color.NRGBA{0, 0, 0, uint8(a*255 + 0.5)})
@@ -91,82 +88,42 @@ func tray() image.Image {
 	return img
 }
 
-// The tray bird's flap is the header logo's (internal/gui/assets/app.css,
-// .logo.wag): the drawing cut into body, tail and wing by the same clip
-// paths, each piece turned about the same point through the same keyframes
-// over the same .9s, cubic-bezier(.3, 0, .3, 1) between each two of them,
-// and the whole bird bobbing about its feet. Keep the two alike.
+// The tray tile's flap: the bird cut out of it turns about its middle as the
+// tile is clicked, through these keyframes over .9s, eased with
+// cubic-bezier(.3, 0, .3, 1) between each two of them, the still tile at
+// both ends.
 const (
 	flapSecs  = 0.9
 	flapEvery = 0.03 // a frame every 30ms: internal/gui's flap plays them so
-	// the clip paths of index.html's #bird-body (even-odd: the wing is cut
-	// out of it), #bird-tail and #bird-wing, their H and V written as L for
-	// parse
-	clipBody = "M16 0L44 0L44 44L0 44L0 26.4L10.6 26.4L13 24.2L16 19Z M29.8 18.3L26 19L22 21L17 23.5L14.6 24.7L10.6 26.4L6 29V32L9 31.5L12.5 32L16.4 31.8L19 31.4L24 28.8L28.5 24L30.6 21.4Z"
-	clipTail = "M0 0L17 0L17.2 19.6L14 25L10.6 26.4L0 26.4Z"
-	clipWing = "M29.8 18.3L26 19L22 21L17 23.5L14.6 24.7L10.6 26.4L6 29V32L9 31.5L12.5 32L16.4 31.8L19 31.4L24 28.8L28.5 24L30.6 21.4Z"
 )
 
 // A keyframe: at is the fraction of the animation, deg the rotation.
 type key struct{ at, deg float64 }
 
 var (
-	wingKeys = []key{{0, 0}, {.12, 10}, {.26, -3}, {.40, 8}, {.56, -2}, {.72, 3}, {1, 0}}
-	tailKeys = []key{{0, 0}, {.18, 16}, {.36, -7}, {.54, 9}, {.72, -3}, {.86, 2}, {1, 0}}
-	bobKeys  = []key{{0, 0}, {.18, -4}, {.40, 2}, {.62, -1}, {1, 0}}
-	// transform-origin, in the viewBox
-	wingAt, tailAt, bobAt = [2]float64{30, 19.8}, [2]float64{14, 22}, [2]float64{26, 38}
+	flapKeys = []key{{0, 0}, {.18, -5}, {.40, 3}, {.62, -2}, {1, 0}}
+	// the bird's middle, in the viewBox
+	birdAt = [2]float64{23, 21}
 )
 
 // trayFlap writes the frames the tray icon plays when it is clicked,
-// flap-01.png on, one every flapEvery of the animation, the still bird at
+// flap-01.png on, one every flapEvery of the animation, the still tile at
 // both ends left out.
 func trayFlap(dir string, S int) error {
-	bird := parse(smallSVG)
-	body, tail, wing := parse(`d="`+clipBody+`"`), parse(`d="`+clipTail+`"`), parse(`d="`+clipWing+`"`)
+	tile := parse(tileSVG)
+	frame, bird := tile[:1], tile[1:]
 	n := int(math.Round(flapSecs / flapEvery))
-	const ss = 8
-	k := float64(S) / 44
+	k := float64(S) / 44 * trayK
+	o := float64(S) / 2 * (1 - trayK)
 	for f := 1; f < n; f++ {
 		t := float64(f) / float64(n)
-		bob, tl, wg := keyed(bobKeys, t), keyed(tailKeys, t), keyed(wingKeys, t)
-		// each piece is the bird and its clip path both turned as CSS turns
-		// the piece's group: the bob outside, the piece's own turn inside
-		m := func(rings [][][2]float64, at [2]float64, deg float64) []bool {
-			moved := make([][][2]float64, len(rings))
-			for i, r := range rings {
-				moved[i] = make([][2]float64, len(r))
-				for j, p := range r {
-					q := turn(turn(p, at, deg), bobAt, bob)
-					// shrunk about the middle, as tray() draws the still bird
-					moved[i][j] = [2]float64{22 + (q[0]-22)*trayK, 22 + (q[1]-22)*trayK}
-				}
-			}
-			return mask(moved, S*ss, k*ss)
-		}
-		pieces := [][2][]bool{
-			{m(bird, tailAt, 0), m(body, tailAt, 0)},
-			{m(bird, tailAt, tl), m(tail, tailAt, tl)},
-			{m(bird, wingAt, wg), m(wing, wingAt, wg)},
-		}
-		N := S * ss
+		deg := keyed(flapKeys, t)
+		// the frame stays, the bird cut out of it turns
+		rings := append(append([][][2]float64{}, frame...), turned(bird, birdAt, deg)...)
+		cov := coverage(rings, S, 8, k, o, o)
 		img := image.NewNRGBA(image.Rect(0, 0, S, S))
-		for py := 0; py < S; py++ {
-			for px := 0; px < S; px++ {
-				hit := 0
-				for sy := 0; sy < ss; sy++ {
-					for sx := 0; sx < ss; sx++ {
-						i := (py*ss+sy)*N + px*ss + sx
-						for _, pc := range pieces {
-							if pc[0][i] && pc[1][i] {
-								hit++
-								break
-							}
-						}
-					}
-				}
-				img.SetNRGBA(px, py, color.NRGBA{0, 0, 0, uint8(float64(hit)/(ss*ss)*255 + 0.5)})
-			}
+		for i, a := range cov {
+			img.SetNRGBA(i%S, i/S, color.NRGBA{0, 0, 0, uint8(a*255 + 0.5)})
 		}
 		out, err := os.Create(fmt.Sprintf("%s/flap-%02d.png", dir, f))
 		if err != nil {
@@ -179,6 +136,18 @@ func trayFlap(dir string, S int) error {
 		}
 	}
 	return nil
+}
+
+// turned copies rings turned about at by deg degrees.
+func turned(rings [][][2]float64, at [2]float64, deg float64) [][][2]float64 {
+	out := make([][][2]float64, len(rings))
+	for i, r := range rings {
+		out[i] = make([][2]float64, len(r))
+		for j, p := range r {
+			out[i][j] = turn(p, at, deg)
+		}
+	}
+	return out
 }
 
 // keyed is the rotation at t of keyframes played as CSS plays them, each
@@ -218,42 +187,14 @@ func turn(p, o [2]float64, deg float64) [2]float64 {
 	return [2]float64{o[0] + dx*c - dy*s, o[1] + dx*s + dy*c}
 }
 
-// mask is which of an n×n grid of samples, k to a unit, fall in the
-// rings, even-odd.
-func mask(rings [][][2]float64, n int, k float64) []bool {
-	out := make([]bool, n*n)
-	var xs []float64
-	for y := 0; y < n; y++ {
-		v := (float64(y) + 0.5) / k
-		xs = xs[:0]
-		for _, r := range rings {
-			for i, j := 0, len(r)-1; i < len(r); j, i = i, i+1 {
-				a, b := r[j], r[i]
-				if (a[1] > v) != (b[1] > v) {
-					xs = append(xs, (a[0]+(v-a[1])*(b[0]-a[0])/(b[1]-a[1]))*k)
-				}
-			}
-		}
-		sort.Float64s(xs)
-		for i := 0; i+1 < len(xs); i += 2 {
-			lo := int(math.Max(0, math.Ceil(xs[i]-0.5)))
-			hi := int(math.Min(float64(n), math.Ceil(xs[i+1]-0.5)))
-			for x := lo; x < hi; x++ {
-				out[y*n+x] = true
-			}
-		}
-	}
-	return out
-}
-
-// glyph is the bird alone, black on clear, as big on an n-pixel canvas as
-// app draws it on its tile: the layer of build/darwin/AppIcon.icon, which
-// macOS 26 lays on a tile of its own, light or dark (#117).
+// glyph is the tile, black on clear, as big on an n-pixel canvas as app
+// draws it on its tile: the layer of build/darwin/AppIcon.icon, which macOS
+// 26 lays on a tile of its own, light or dark (#117).
 func glyph(n int) image.Image {
 	S := float64(n)
 	k := S * 0.8 / 44
 	o := S/2 - 22*k
-	cov := coverage(parse(fullSVG), n, 4, k, o, o)
+	cov := coverage(parse(tileSVG), n, 4, k, o, o)
 	img := image.NewNRGBA(image.Rect(0, 0, n, n))
 	for i, a := range cov {
 		img.SetNRGBA(i%n, i/n, color.NRGBA{0, 0, 0, uint8(a*255 + 0.5)})
@@ -262,7 +203,7 @@ func glyph(n int) image.Image {
 }
 
 // app draws a rounded square, white shading to the palest grey, with the
-// bird on it in ink.
+// black tile, the bird cut out of it, on it.
 func app(n int, dark bool) image.Image {
 	S := float64(n)
 	// macOS icon grid: the squircle occupies ~80% of the canvas
@@ -275,41 +216,36 @@ func app(n int, dark bool) image.Image {
 	if n <= 64 {
 		ss = 8
 	}
-	// under 64px the eye is a grey speck; leave it out
-	shape := fullSVG
-	if n < 64 {
-		shape = smallSVG
-	}
-	bird := coverage(parse(shape), n, ss, k, o, o)
+	mark := coverage(parse(tileSVG), n, ss, k, o, o)
 	bg1, bg2 := 0xff, 0xec // top, bottom
 	ink := 0x16
 	if dark {
-		// the Dock's dark appearance (macOS 26): the bird in white on a
-		// dark tile, as macOS would otherwise darken the tile under a black
+		// the Dock's dark appearance (macOS 26): the tile in white on a
+		// dark squircle, as macOS would otherwise darken the tile under the
 		// bird and lose it (#117)
-		bg1, bg2, ink = 0x3a, 0x22, 0xf4
+		bg1, bg2, ink = 0x22, 0x0e, 0xf2
 	}
 	img := image.NewNRGBA(image.Rect(0, 0, n, n))
 	for y := 0; y < n; y++ {
 		for x := 0; x < n; x++ {
-			var tile float64
+			var squircle float64
 			for sy := 0; sy < ss; sy++ {
 				for sx := 0; sx < ss; sx++ {
 					fx := float64(x) + (float64(sx)+0.5)/float64(ss)
 					fy := float64(y) + (float64(sy)+0.5)/float64(ss)
 					if roundRect(fx, fy, inset, inset, side, side, radius) {
-						tile++
+						squircle++
 					}
 				}
 			}
-			if tile == 0 {
+			if squircle == 0 {
 				continue
 			}
 			t := float64(y) / S
 			bg := float64(bg1)*(1-t) + float64(bg2)*t
-			a := bird[y*n+x]
+			a := mark[y*n+x]
 			g := uint8(bg*(1-a) + float64(ink)*a + 0.5)
-			img.SetNRGBA(x, y, color.NRGBA{g, g, g, uint8(tile / float64(ss*ss) * 255)})
+			img.SetNRGBA(x, y, color.NRGBA{g, g, g, uint8(squircle / float64(ss*ss) * 255)})
 		}
 	}
 	return img

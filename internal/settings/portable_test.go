@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // A data folder beside magpie takes every file of its own (#508): the

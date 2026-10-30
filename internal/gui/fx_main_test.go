@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/fx"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/fx"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // TestMain keeps the rate off the network: a state read with no rate cached

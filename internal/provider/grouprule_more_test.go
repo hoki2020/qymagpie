@@ -140,7 +140,7 @@ func TestRuledEntrySeveralModels(t *testing.T) {
 // it hasn't is left out of the rule, and the rule goes when none is here.
 func TestSharedGroupRuleSeveralModels(t *testing.T) {
 	shareHome(t, Provider{ID: "mine", Name: "Mine", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"x", "y"}})
-	text, _ := json.Marshal(SharedGroup{Magpie: ShareMark, Version: ShareVersion, Group: Group{
+	text, _ := json.Marshal(SharedGroup{Pigeon: ShareMark, Version: ShareVersion, Group: Group{
 		ID: "theirs", Name: "Theirs", Members: []string{"relay/x", "gone/z", "relay/y"}, Routing: Ordered,
 		Rules: []Rule{
 			{Use: "gone/z", More: []string{"relay/y", "relay/x"}, Tokens: 1000},

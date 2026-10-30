@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/desktopdir"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/desktopdir"
 )
 
 var callT0 = time.Date(2026, 9, 20, 10, 0, 0, 0, time.UTC)

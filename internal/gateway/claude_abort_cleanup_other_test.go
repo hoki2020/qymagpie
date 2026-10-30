@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 // Ending a Claude Code run lets it clean up first: one holding its OAuth

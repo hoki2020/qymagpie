@@ -2,9 +2,9 @@
 // What WorkBuddy requests cost in the plan's credits (#2512, wwcraft_ on
 // Discord: the Usage page should say the credits spent by model, agent and
 // session). Each reply says it as usage.credit, the figure WorkBuddy's own
-// app shows on a reply as "Credits Consumed"; magpie keeps it on the row and
+// app shows on a reply as "Credits Consumed"; pigeon keeps it on the row and
 // the Usage page's ranking says the sum on its line of numbers, the
-// Sessions page on the line of where magpie routed the session. A group no
+// Sessions page on the line of where pigeon routed the session. A group no
 // reply said credits for says none, not 0. Every language, Chromium and
 // WebKit; no backend, the API is faked.
 const assert = require("node:assert/strict");

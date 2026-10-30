@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // useKimiCodeCatalog puts testdata/kimi_code_catalog.json in the catalog

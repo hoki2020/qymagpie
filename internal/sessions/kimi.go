@@ -47,7 +47,7 @@ import (
 // written without one (forkedFrom set, no marker) counts from its createdAt,
 // which Kimi sets after the copy.
 //
-// Unlike the call reader, a call made through magpie's own entry (a model
+// Unlike the call reader, a call made through pigeon's own entry (a model
 // keyed magpie/<provider>/<model>) counts here, as the session's own spend,
 // under <provider>/<model>.
 //

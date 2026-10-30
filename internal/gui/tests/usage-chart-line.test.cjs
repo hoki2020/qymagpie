@@ -243,8 +243,8 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
 
     await t.test("a kept value that isn't line, or a read that throws, is columns", async () => {
       for (const init of [
-        () => localStorage.setItem("magpie.ledChart", "pie"),
-        () => { const get = Storage.prototype.getItem; Storage.prototype.getItem = function (k) { if (k === "magpie.ledChart") throw new Error("denied"); return get.call(this, k); }; },
+        () => localStorage.setItem("pigeon.ledChart", "pie"),
+        () => { const get = Storage.prototype.getItem; Storage.prototype.getItem = function (k) { if (k === "pigeon.ledChart") throw new Error("denied"); return get.call(this, k); }; },
       ]) {
         const ctx = await browser.newContext({ viewport: { width: 1180, height: 760 }, reducedMotion: "reduce" });
         await ctx.addInitScript(init);

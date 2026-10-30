@@ -21,7 +21,7 @@ func TestInstallPrunesBunsCache(t *testing.T) {
 	if err := os.MkdirAll(Dir(), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	os.WriteFile(filepath.Join(Dir(), "package.json"), []byte(`{"name":"magpie-plugins","private":true}`), 0o644)
+	os.WriteFile(filepath.Join(Dir(), "package.json"), []byte(`{"name":"pigeon-plugins","private":true}`), 0o644)
 	cache := installCacheDir()
 	scope := filepath.Join(cache, "@magpie-community")
 	ver := func(name, v string) string {

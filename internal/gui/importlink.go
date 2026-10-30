@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // An import link (magpie://import?…, see provider.ParseImport) is parsed

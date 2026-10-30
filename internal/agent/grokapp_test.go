@@ -10,9 +10,9 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // grokAppConfig is agent-home/config.toml as Grok App 0.2.39 writes it
@@ -330,7 +330,7 @@ func TestGrokAppDisconnectPutsTheRouteBack(t *testing.T) {
 	if err := a.Connect(); err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetTOMLKey(path, "models", "default", magpieID); err != nil { // Use on magpie
+	if err := edit.SetTOMLKey(path, "models", "default", pigeonID); err != nil { // Use on magpie
 		t.Fatal(err)
 	}
 	forget("grok-app:" + path + ":default")

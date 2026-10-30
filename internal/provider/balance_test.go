@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/agentenv"
 )
 
 func TestBalanceReaders(t *testing.T) {

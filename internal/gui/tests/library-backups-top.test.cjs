@@ -3,7 +3,7 @@
 // very foot, under a long list, and was hard to find. It is at the top of
 // every tab now, in the strip that stays as the page scrolls, right after
 // Library folder, with the same look; nothing is left at the foot. It
-// opens magpie's backups folder, waits for the library like Library folder
+// opens pigeon's backups folder, waits for the library like Library folder
 // does, fits a narrow window and browser without wrapping, and has no left
 // border. In every language, in both engines. No backend: the API is faked
 // here.
@@ -26,11 +26,11 @@ const view = {
 };
 
 const words = {
-  en: { backups: "Backups", folder: "Library folder", note: "magpie keeps a copy of every file before it writes it." },
-  zh: { backups: "备份", folder: "资源库文件夹", note: "magpie 写入任何文件前都会先备份一份。" },
-  "zh-TW": { backups: "備份", folder: "資源庫資料夾", note: "magpie 寫入任何檔案前都會先備份一份。" },
-  ja: { backups: "バックアップ", folder: "ライブラリフォルダ", note: "magpie はファイルに書き込む前に必ずコピーを保存します。" },
-  de: { backups: "Backups", folder: "Bibliotheksordner", note: "magpie sichert jede Datei, bevor es sie schreibt." },
+  en: { backups: "Backups", folder: "Library folder", note: "pigeon keeps a copy of every file before it writes it." },
+  zh: { backups: "备份", folder: "资源库文件夹", note: "pigeon 写入任何文件前都会先备份一份。" },
+  "zh-TW": { backups: "備份", folder: "資源庫資料夾", note: "pigeon 寫入任何檔案前都會先備份一份。" },
+  ja: { backups: "バックアップ", folder: "ライブラリフォルダ", note: "pigeon はファイルに書き込む前に必ずコピーを保存します。" },
+  de: { backups: "Backups", folder: "Bibliotheksordner", note: "pigeon sichert jede Datei, bevor es sie schreibt." },
 };
 
 function serve(lang, web, opened, held) {

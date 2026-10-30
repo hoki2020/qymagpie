@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // fakeReach answers reachProbe from answers (a base missing is down), and
@@ -75,7 +75,7 @@ func codexAt(t *testing.T, base string) (string, func() string) {
 	if err := edit.SetTOMLTop(cx.Path, edit.KV{Path: "openai_base_url", Value: base + gateway.CodexPath}); err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetTOMLKey(cx.Path, "model_providers."+magpieID, "base_url", base+"/v1"); err != nil {
+	if err := edit.SetTOMLKey(cx.Path, "model_providers."+pigeonID, "base_url", base+"/v1"); err != nil {
 		t.Fatal(err)
 	}
 	if c := codex(home).Check(); c != "" {

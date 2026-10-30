@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/hoki2020/pigeon/internal/lastgood"
+	"github.com/hoki2020/pigeon/internal/steady"
 )
 
 // #1505: a Windows machine that went down mid-write left logins.json at

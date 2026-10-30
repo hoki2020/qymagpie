@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // desktopPicker is Claude Desktop's tIt (index.chunk-D3OyLXgG.js, 2.7032):

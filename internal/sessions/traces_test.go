@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 func traceLine(t *testing.T, c *traceCursor, at time.Time, typ string, payload any, bodies bool) []TraceSpan {

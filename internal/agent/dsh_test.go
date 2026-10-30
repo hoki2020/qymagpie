@@ -9,9 +9,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func TestDsh(t *testing.T) {
@@ -193,7 +193,7 @@ func TestDshModelLimits(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	b, _ := yaml.Marshal(dshRouteConfig(magpieModels("dsh"), "", gateway.URL()))
+	b, _ := yaml.Marshal(dshRouteConfig(pigeonModels("dsh"), "", gateway.URL()))
 	s := string(b)
 	want := `    - id: v/see
       name: see · V
@@ -273,7 +273,7 @@ func TestDshSetEffortLeavesALegacyEntryWithNoCatalogAlone(t *testing.T) {
 	t.Setenv("DSH_HOME", "")
 	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
 	t.Setenv("XDG_CACHE_HOME", filepath.Join(home, ".cache"))
-	if n := len(magpieModels("dsh")); n != 0 {
+	if n := len(pigeonModels("dsh")); n != 0 {
 		t.Fatalf("a catalog to write from: %d models", n)
 	}
 	dir := filepath.Join(home, ".dsh")
@@ -360,14 +360,14 @@ func TestDshToldTheWindowSetForACustomProvider(t *testing.T) {
 			Models: []string{"deepseek-v4.1-flash-free"}, Contexts: c.cx}); err != nil {
 			t.Fatal(err)
 		}
-		r := dshRouteConfig(magpieModels("dsh"), "", gateway.URL())
+		r := dshRouteConfig(pigeonModels("dsh"), "", gateway.URL())
 		if len(r.Models) != 1 || r.Models[0].ID != "relay/deepseek-v4.1-flash-free" {
 			t.Fatalf("%v: models %+v", c.cx, r.Models)
 		}
 		if m := r.Models[0]; m.ContextWindow != c.window || m.MaxTokens != c.limit {
 			t.Errorf("%v: dsh told contextWindow %d, maxTokens %d; want %d, %d", c.cx, m.ContextWindow, m.MaxTokens, c.window, c.limit)
 		}
-		lines := strings.Join(dshProviderLines("high", magpieModels("dsh"), gateway.URL()), "\n") + "\n"
+		lines := strings.Join(dshProviderLines("high", pigeonModels("dsh"), gateway.URL()), "\n") + "\n"
 		if !strings.Contains(lines, "contextWindow: "+strconv.Itoa(c.window)+"\n") {
 			t.Errorf("%v: llm-deepseek entry, want contextWindow: %d:\n%s", c.cx, c.window, lines)
 		}

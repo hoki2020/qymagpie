@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/otlp"
-	"github.com/yetone/magpie/internal/pluginrt"
-	"github.com/yetone/magpie/internal/testenv"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/otlp"
+	"github.com/hoki2020/pigeon/internal/pluginrt"
+	"github.com/hoki2020/pigeon/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 func TestMain(m *testing.M) { testenv.Main(m) }

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The Codex app on Windows with its agent in WSL reads Windows'
@@ -40,7 +40,7 @@ func TestCodexWSLAppAddressKept(t *testing.T) {
 	if err := edit.SetTOMLTop(cx.Path, edit.KV{Path: "model_catalog_json", Value: "magpie-models.json"}, edit.KV{Path: "openai_base_url", Value: wsl + gateway.CodexPath}); err != nil {
 		t.Fatal(err)
 	}
-	if err := edit.SetTOMLKey(cx.Path, "model_providers."+magpieID, "base_url", wsl+"/v1"); err != nil {
+	if err := edit.SetTOMLKey(cx.Path, "model_providers."+pigeonID, "base_url", wsl+"/v1"); err != nil {
 		t.Fatal(err)
 	}
 	cx = codex(home)

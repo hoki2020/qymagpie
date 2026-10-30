@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Remote media uses the remote's images and videos APIs, including edits,
@@ -22,7 +22,7 @@ func TestRemoteMagpieMedia(t *testing.T) {
 	up := newGrokMedia(t)
 	remote := httptest.NewServer(New().Handler())
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemoteMagpiePreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemotePigeonPreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
 		t.Fatal(err)
 	}
 	p, _ := provider.Find("office")
@@ -108,7 +108,7 @@ func TestRemoteMagpieVideoContentCaller(t *testing.T) {
 		io.WriteString(w, "fake-mp4-bytes")
 	})))
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemoteMagpiePreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemotePigeonPreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
 		t.Fatal(err)
 	}
 	p, _ := provider.Find("office")

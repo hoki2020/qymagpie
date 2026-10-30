@@ -3,8 +3,8 @@ package usage
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 func TestSessionOfficialLoginRequiresMatchedAccount(t *testing.T) {

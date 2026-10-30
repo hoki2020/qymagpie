@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // A relay whose one key serves a model only on Anthropic's messages, while

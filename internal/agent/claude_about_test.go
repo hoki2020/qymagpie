@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // claudeAboutSetup is #1227's settings.json before magpie: every tier on the

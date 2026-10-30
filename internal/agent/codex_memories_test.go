@@ -29,7 +29,7 @@ func TestCodexMemoriesModel(t *testing.T) {
 		t.Error("a magpie model was taken before Codex runs through magpie")
 	}
 	for _, o := range mem.Options(nil) {
-		if isMagpie(o.Value) {
+		if isPigeon(o.Value) {
 			t.Errorf("magpie model offered before Codex runs through magpie: %s", o.Value)
 		}
 	}

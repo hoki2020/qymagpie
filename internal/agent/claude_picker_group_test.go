@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // yanjieee (#1575): with one subscription's 30 models and a routing group,
@@ -69,7 +69,7 @@ func TestClaudePickerListsRoutingGroups(t *testing.T) {
 		t.Fatalf("picker has %d options, want the group and 30 models: %v", len(opts), listed())
 	}
 	// the group, first, as the model Claude Code was set to is spelled
-	if g := opts[0]; g["model"] != main || g["label"] != "Auto DeepSeek · routing group" || g["description"] != "via magpie" {
+	if g := opts[0]; g["model"] != main || g["label"] != "Auto DeepSeek · routing group" || g["description"] != "via pigeon" {
 		t.Fatalf("first option %v, want the group as %q: %v", g, main, listed())
 	}
 	for _, m := range models {

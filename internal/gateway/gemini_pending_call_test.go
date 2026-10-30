@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // geminiPairingUpstream is a Gemini API that reads its histories as

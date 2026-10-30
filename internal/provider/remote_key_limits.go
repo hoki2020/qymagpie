@@ -12,14 +12,14 @@ import (
 	"time"
 )
 
-// A remote magpie's gateway keys (#1547, PennyVibe): a computer that uses
-// another magpie with a gateway key that magpie gave it saw the other
-// magpie's subscriptions on its Usage page, but not what the key itself
+// A remote pigeon's gateway keys (#1547, PennyVibe): a computer that uses
+// another pigeon with a gateway key that pigeon gave it saw the other
+// pigeon's subscriptions on its Usage page, but not what the key itself
 // may still spend there. Each key of a remote-magpie provider now has a
 // card of its own: its limit, what it used and has left of it, the period
 // and when it resets, or "no limit".
 //
-// The other magpie tells a key its own limit and nothing else
+// The other pigeon tells a key its own limit and nothing else
 // (RemoteKeyLimitPath, answered by the gateway's keyLimit for the key the
 // request carries, and only that one). So each key is asked with itself:
 // a key never sees another key's numbers, here or there.
@@ -32,8 +32,8 @@ const RemoteKeyLimitPath = "/v1/magpie/limit"
 // a card the remote has.
 const remoteKeyCard = "~keys"
 
-// errRemoteNoKeyLimit is a remote magpie too old to tell a key its limit.
-const errRemoteNoKeyLimit = "remote magpie is too old to tell this key's limit; update magpie on that computer"
+// errRemoteNoKeyLimit is a remote pigeon too old to tell a key its limit.
+const errRemoteNoKeyLimit = "remote pigeon is too old to tell this key's limit; update pigeon on that computer"
 
 // GatewayKeyLimit is a remote gateway key's limit as its card carries it.
 // Windows on the card show each cap; this says what they don't.
@@ -59,7 +59,7 @@ type GatewayKeyLimit struct {
 
 // remoteKeyAnswer is RemoteKeyLimitPath's answer (budget.Status, as the
 // gateway's keyLimit sends it): Limit the one holding the key most,
-// Limits each of its limits (#2227), from a magpie that has them.
+// Limits each of its limits (#2227), from a pigeon that has them.
 type remoteKeyAnswer struct {
 	Limited *bool            `json:"limited"`
 	Key     string           `json:"key"`
@@ -161,7 +161,7 @@ func remoteKeyCardOf(ctx context.Context, p Provider, name, key string, fresh bo
 		c.Unlock()
 	}
 	from := remoteName(p)
-	q := SubscriptionQuota{Provider: p.ID + "/" + remoteKeyCard, Name: from, Icon: "magpie", User: name, Kind: "plan", From: from, Windows: []QuotaWindow{}}
+	q := SubscriptionQuota{Provider: p.ID + "/" + remoteKeyCard, Name: from, Icon: "pigeon", User: name, Kind: "plan", From: from, Windows: []QuotaWindow{}}
 	if r.got == nil {
 		q.Error = r.err
 		return q
@@ -186,7 +186,7 @@ func keyLimitCard(a *remoteKeyAnswer) (*GatewayKeyLimit, []QuotaWindow) {
 	}
 	g := &GatewayKeyLimit{Limited: true, Period: l.Period, Days: l.Days, Hours: l.Hours, Start: l.Start, Reset: l.Reset, Calls: l.Calls, Spent: l.Spent, Unpriced: l.Unpriced}
 	all := a.Limits
-	if len(all) == 0 { // a magpie from before #2227 tells one
+	if len(all) == 0 { // a pigeon from before #2227 tells one
 		all = []remoteKeyLimit{*l}
 	}
 	var ws []QuotaWindow
@@ -266,9 +266,9 @@ func askRemoteKeyLimit(ctx context.Context, p Provider, key string) (*remoteKeyA
 	}
 	var a remoteKeyAnswer
 	if err := json.Unmarshal(b, &a); err != nil || a.Limited == nil {
-		// not the answer of a magpie's keyLimit: something else at that
+		// not the answer of a pigeon's keyLimit: something else at that
 		// address, or a reply cut short
-		return nil, fmt.Errorf("%s answered its key's limit in a form magpie doesn't read", remoteName(p))
+		return nil, fmt.Errorf("%s answered its key's limit in a form pigeon doesn't read", remoteName(p))
 	}
 	return &a, nil
 }

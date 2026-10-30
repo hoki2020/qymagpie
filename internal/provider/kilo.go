@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
-// KiloVersion is the Kilo CLI release magpie says it is to the Kilo
+// KiloVersion is the Kilo CLI release pigeon says it is to the Kilo
 // Gateway.
 const KiloVersion = "7.8.3"
 

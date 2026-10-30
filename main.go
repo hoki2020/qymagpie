@@ -1,11 +1,11 @@
-// magpie — one place to pick every agent's model. The commands live in
+// pigeon — one place to pick every agent's model. The commands live in
 // internal/cli; this is only where the binary starts.
 package main
 
 import (
-	"github.com/yetone/magpie/internal/cli"
+	"github.com/hoki2020/pigeon/internal/cli"
 	// the built-in plugins, registered with the runtime (internal/pluginrt)
-	_ "github.com/yetone/magpie/plugins/all"
+	_ "github.com/hoki2020/pigeon/plugins/all"
 )
 
 // version is set at build time: -ldflags "-X main.version=…" (Makefile,

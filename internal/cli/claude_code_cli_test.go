@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/claudecode"
-	"github.com/yetone/magpie/internal/libc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/claudecode"
+	"github.com/hoki2020/pigeon/internal/libc"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // claudeCodeOut runs `magpie claude-code args…` and gives what it printed.

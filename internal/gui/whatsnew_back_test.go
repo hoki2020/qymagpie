@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // Settings' What's new offers, besides the notes since the last update,

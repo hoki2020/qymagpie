@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // wslMore is each CLI #515 brings into WSL distros: the file under the
@@ -179,7 +179,7 @@ func TestWSLMoreAgentsPick(t *testing.T) {
 			if !mirrored && strings.Contains(body, "127.0.0.1") {
 				t.Fatalf("%s: this machine's address under NAT:\n%s", c.id, body)
 			}
-			if v := a.Field("model").Get(); !usesMagpie(v) {
+			if v := a.Field("model").Get(); !usesPigeon(v) {
 				t.Fatalf("%s: model %q", c.id, v)
 			}
 			if a.Check != nil {
@@ -259,7 +259,7 @@ func TestWSLMoreAgentsStopped(t *testing.T) {
 		if body := readFile(filepath.Join(root, "home", "me", filepath.FromSlash(c.file))); !strings.Contains(body, "glm-4.6") {
 			t.Fatalf("%s: nothing written to %s", c.id, c.file)
 		}
-		if v := a.Field("model").Get(); !usesMagpie(v) {
+		if v := a.Field("model").Get(); !usesPigeon(v) {
 			t.Fatalf("%s: last seen %q", c.id, v)
 		}
 	}
@@ -399,7 +399,7 @@ func TestWSLGemini(t *testing.T) {
 	if msg := a.Check(); msg != "" {
 		t.Fatal(msg)
 	}
-	if v := a.Field("provider").Get(); v != magpieID {
+	if v := a.Field("provider").Get(); v != pigeonID {
 		t.Fatalf("auth %q", v)
 	}
 	if err := a.Field("model").Set("gemini-2.5-pro"); err != nil {
@@ -463,7 +463,7 @@ func TestWSLGeminiAddressMoved(t *testing.T) {
 	}
 	d.Gateway = "172.29.0.1"
 	a := wslAgent(k, d)
-	if v := a.Field("provider").Get(); v != magpieID {
+	if v := a.Field("provider").Get(); v != pigeonID {
 		t.Fatalf("auth %q", v)
 	}
 	if a.Check() == "" {

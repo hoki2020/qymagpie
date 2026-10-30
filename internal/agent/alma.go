@@ -1,7 +1,7 @@
 package agent
 
 // Alma (a desktop AI chat app) keeps its providers and settings in the app,
-// not in a file magpie can edit: they are reached through its local REST API
+// not in a file pigeon can edit: they are reached through its local REST API
 // (http://localhost:23001, while Alma runs).
 //
 //	GET  /api/providers              [{"id","name","type","baseURL","enabled","models":["<id>",…],"availableModels":[{"id","name",…}]},…]
@@ -13,9 +13,9 @@ package agent
 //	GET  /api/settings, PUT it back  the whole settings; chat.defaultModel is "<providerId>:<model>",
 //	                                 imageGen.model the same ("" for Auto)
 //
-// magpie is one provider there, named magpie, of type openai at the
+// pigeon is one provider there, named pigeon, of type openai at the
 // gateway's /v1; choosing one of its models makes it Alma's default model,
-// and the model magpie draws with Alma's image generation model when Alma
+// and the model pigeon draws with Alma's image generation model when Alma
 // has none picked (almaSetImage).
 // Alma not running is no error: there is nothing to read or keep current.
 
@@ -35,9 +35,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // almaAPI is where Alma's API answers. Under test it is nothing, so no test
@@ -56,7 +56,7 @@ var almaClient = &http.Client{Timeout: 1500 * time.Millisecond}
 // errAlmaDown is Alma not answering.
 var errAlmaDown = errors.New("Alma isn't running — open Alma and try again")
 
-// almaProvider is what magpie reads of one of Alma's providers.
+// almaProvider is what pigeon reads of one of Alma's providers.
 type almaProvider struct {
 	ID      string           `json:"id"`
 	Name    string           `json:"name"`
@@ -71,7 +71,7 @@ type almaProvider struct {
 // almaModelIDs is a provider's models, the ids Alma offers. Alma keeps
 // them as ids or, for some providers, as the models themselves
 // ({"id","name","enabled","capabilityOverrides",…}), and reads either as
-// its id; so does magpie — one provider listing objects left every one
+// its id; so does pigeon — one provider listing objects left every one
 // of Alma's unread ("cannot unmarshal object into Go struct field
 // almaProvider.models of type string"), and Alma showed as not set.
 type almaModelIDs []string
@@ -140,7 +140,7 @@ var almaRead struct {
 }
 
 // almaReadFor is how long almaLook takes an answer as current. Tests,
-// which change their fake Alma behind magpie's back, see every change.
+// which change their fake Alma behind pigeon's back, see every change.
 var almaReadFor = func() time.Duration {
 	if testing.Testing() {
 		return 0
@@ -218,11 +218,11 @@ func almaProvidersSeen() ([]almaProvider, error) {
 	return ps, err
 }
 
-// almaMagpie is magpie's provider among Alma's: the one named magpie, or
+// almaPigeon is pigeon's provider among Alma's: the one named pigeon, or
 // an OpenAI-shaped one at the gateway. Nil if there is none.
-func almaMagpie(ps []almaProvider) *almaProvider {
+func almaPigeon(ps []almaProvider) *almaProvider {
 	for i := range ps {
-		if ps[i].Name == magpieID && (ps[i].Type == "openai" || ps[i].Type == "custom") {
+		if ps[i].Name == pigeonID && (ps[i].Type == "openai" || ps[i].Type == "custom") {
 			return &ps[i]
 		}
 	}
@@ -234,11 +234,11 @@ func almaMagpie(ps []almaProvider) *almaProvider {
 	return nil
 }
 
-// almaModels is magpie's catalog as Alma is shown it: the ids Alma offers,
-// and each one's name and what magpie knows it can do (almaCaps).
+// almaModels is pigeon's catalog as Alma is shown it: the ids Alma offers,
+// and each one's name and what pigeon knows it can do (almaCaps).
 func almaModels() (ids []string, known []map[string]any) {
 	ids, known = []string{}, []map[string]any{}
-	for _, m := range magpieModels("alma") {
+	for _, m := range pigeonModels("alma") {
 		ids = append(ids, m.ID)
 		k := map[string]any{"id": m.ID, "name": m.Name}
 		if caps := almaCaps(m); len(caps) > 0 {
@@ -246,7 +246,7 @@ func almaModels() (ids []string, known []map[string]any) {
 		}
 		known = append(known, k)
 	}
-	// the model magpie draws with, which Alma offers for its image
+	// the model pigeon draws with, which Alma offers for its image
 	// generation, said to make images (Settings › Image Generation lists
 	// a provider's models that make images, and shows one it doesn't list
 	// as unavailable)
@@ -273,10 +273,10 @@ var almaLevels = []string{"low", "medium", "high", "xhigh", "max"}
 
 // almaCaps is what Alma is told of m, as the model's capabilityOverrides.
 // Alma works a model's capabilities out from models.dev by its id, and
-// magpie's ids (codex/gpt-5.5) aren't models.dev's, so such a model came
+// pigeon's ids (codex/gpt-5.5) aren't models.dev's, so such a model came
 // out with no reasoning and Alma offered no thinking for it (#730). A model
 // that reasons says so, with those of its levels Alma knows, and its
-// window, output limit and images when magpie knows them.
+// window, output limit and images when pigeon knows them.
 func almaCaps(m catalog.Model) map[string]any {
 	caps := map[string]any{}
 	if m.Reasoning || len(m.Efforts) > 0 {
@@ -300,10 +300,10 @@ func almaCaps(m catalog.Model) map[string]any {
 	if n := maxTokens(m); n > 0 {
 		caps["maxOutputTokens"] = n
 	}
-	// what a call costs, as magpie's usage pages count it: Alma prices a
-	// model by models.dev's id too, so it counted every one of magpie's at
+	// what a call costs, as pigeon's usage pages count it: Alma prices a
+	// model by models.dev's id too, so it counted every one of pigeon's at
 	// $0, "unpriced" (#919). Its pricing is USD per million tokens, as
-	// magpie's is, with one cache write price: the 5-minute one.
+	// pigeon's is, with one cache write price: the 5-minute one.
 	if p := m.Price; p != nil {
 		pr := map[string]any{"input": p.Input, "output": p.Output}
 		if p.CacheRead > 0 {
@@ -319,7 +319,7 @@ func almaCaps(m catalog.Model) map[string]any {
 
 // almaWithOverrides is known with each model's overrides laid over the ones
 // it has in Alma: the overrides sent take the place of a model's, so one
-// the user set there that magpie says nothing of (functionCalling,
+// the user set there that pigeon says nothing of (functionCalling,
 // pricing) is sent back as it was.
 func almaWithOverrides(p *almaProvider, known []map[string]any) []map[string]any {
 	had := map[string]map[string]any{}
@@ -335,7 +335,7 @@ func almaWithOverrides(p *almaProvider, known []map[string]any) []map[string]any
 		o := had[id]
 		mine, ok := k["capabilityOverrides"].(map[string]any)
 		if len(o) == 0 || !ok {
-			// nothing of magpie's to say: no overrides sent, and Alma
+			// nothing of pigeon's to say: no overrides sent, and Alma
 			// keeps the model's own
 			out[i] = k
 			continue
@@ -358,7 +358,7 @@ func almaWithOverrides(p *almaProvider, known []map[string]any) []map[string]any
 }
 
 // almaSameModels reports whether Alma already offers these models, in this
-// order, each under its name and with what magpie says of it.
+// order, each under its name and with what pigeon says of it.
 func almaSameModels(p *almaProvider, ids []string, known []map[string]any) bool {
 	if !slices.Equal(p.Models, ids) || len(p.Known) != len(known) {
 		return false
@@ -379,7 +379,7 @@ func almaSameModels(p *almaProvider, ids []string, known []map[string]any) bool 
 }
 
 // sameJSONValue reports whether a and b read the same as JSON: a value
-// read back from Alma (float64, []any) against one magpie made (int,
+// read back from Alma (float64, []any) against one pigeon made (int,
 // []string).
 func sameJSONValue(a, b any) bool {
 	x, err1 := json.Marshal(a)
@@ -387,7 +387,7 @@ func sameJSONValue(a, b any) bool {
 	return err1 == nil && err2 == nil && bytes.Equal(x, y)
 }
 
-// almaSyncModels puts magpie's catalog into its provider in Alma, if it
+// almaSyncModels puts pigeon's catalog into its provider in Alma, if it
 // isn't there already.
 func almaSyncModels(p *almaProvider) error {
 	ids, known := almaModels()
@@ -397,17 +397,17 @@ func almaSyncModels(p *almaProvider) error {
 	return almaDo("PUT", "/api/providers/"+p.ID+"/models", map[string]any{"models": ids, "availableModels": almaWithOverrides(p, known)}, nil)
 }
 
-// almaWire makes sure Alma has magpie's provider, pointed at the gateway,
+// almaWire makes sure Alma has pigeon's provider, pointed at the gateway,
 // turned on and listing the catalog, and returns its id.
 func almaWire() (string, error) {
 	ps, err := almaProviders()
 	if err != nil {
 		return "", err
 	}
-	p := almaMagpie(ps)
+	p := almaPigeon(ps)
 	if p == nil {
 		var made almaProvider
-		if err := almaDo("POST", "/api/providers", map[string]any{"name": magpieID, "type": "openai",
+		if err := almaDo("POST", "/api/providers", map[string]any{"name": pigeonID, "type": "openai",
 			"apiKey": almaKey(), "baseURL": gatewayV1(), "enabled": true}, &made); err != nil {
 			return "", err
 		}
@@ -416,8 +416,8 @@ func almaWire() (string, error) {
 			if ps, err = almaProviders(); err != nil {
 				return "", err
 			}
-			if p = almaMagpie(ps); p == nil {
-				return "", errors.New("Alma didn't keep magpie's provider")
+			if p = almaPigeon(ps); p == nil {
+				return "", errors.New("Alma didn't keep pigeon's provider")
 			}
 			made = *p
 		}
@@ -433,12 +433,12 @@ func almaWire() (string, error) {
 	return p.ID, almaSyncModels(p)
 }
 
-// almaKey is the key magpie's provider in Alma is given. Alma's requests
+// almaKey is the key pigeon's provider in Alma is given. Alma's requests
 // carry the AI SDK's User-Agent and nothing of Alma's, so the key is how
 // the gateway knows them for Alma's.
 func almaKey() string { return agentKey("alma") }
 
-// almaKeyed gives magpie's provider the key almaKey in place of one magpie
+// almaKeyed gives pigeon's provider the key almaKey in place of one pigeon
 // gave it before: gateway.Token, from before there was one, or the key
 // named for Alma while the gateway's address beyond loopback wants the LAN
 // key, or the other way round (#1647); a key Alma gives back some other way
@@ -500,13 +500,13 @@ func almaImage(s map[string]any) string {
 	return v
 }
 
-// almaSetImage makes the model magpie draws with Alma's image generation
-// model (Sorghum on Discord), on magpie's provider pid, when Alma has one
-// of magpie's that magpie no longer offers it (the drawer it was given
+// almaSetImage makes the model pigeon draws with Alma's image generation
+// model (Sorghum on Discord), on pigeon's provider pid, when Alma has one
+// of pigeon's that pigeon no longer offers it (the drawer it was given
 // before, almaModels) or, with fill, none picked (Auto): fill is the user
-// choosing one of magpie's models for Alma, not Sync, which leaves an Auto
-// the user may have gone back to. One the user picked, theirs or magpie's,
-// is left as it is. Nothing when magpie draws with none.
+// choosing one of pigeon's models for Alma, not Sync, which leaves an Auto
+// the user may have gone back to. One the user picked, theirs or pigeon's,
+// is left as it is. Nothing when pigeon draws with none.
 func almaSetImage(pid string, fill bool) error {
 	d := gateway.Drawer()
 	if d == "" {
@@ -547,8 +547,8 @@ func almaPutImage(s map[string]any, v string) error {
 	return almaDo("PUT", "/api/settings", s, nil)
 }
 
-// almaGet is Alma's default model, one of magpie's as magpie/<model>. With
-// Alma not running it is what magpie last set there, so that isn't taken
+// almaGet is Alma's default model, one of pigeon's as magpie/<model>. With
+// Alma not running it is what pigeon last set there, so that isn't taken
 // for something else having changed it.
 func almaGet() string {
 	s, err := almaSettingsSeen()
@@ -564,8 +564,8 @@ func almaGet() string {
 	if err != nil {
 		return appliedOf("alma").Fields["model"]
 	}
-	if p := almaMagpie(ps); p != nil && p.ID == pid {
-		return magpieID + "/" + model
+	if p := almaPigeon(ps); p != nil && p.ID == pid {
+		return pigeonID + "/" + model
 	}
 	return v
 }
@@ -573,7 +573,7 @@ func almaGet() string {
 func almaSet(v string) error {
 	if v == "" {
 		// back to Alma's own: its default model is its to pick, and
-		// magpie's provider comes out
+		// pigeon's provider comes out
 		s, err := almaSettings()
 		if err != nil {
 			return err
@@ -582,7 +582,7 @@ func almaSet(v string) error {
 		if err != nil {
 			return err
 		}
-		p := almaMagpie(ps)
+		p := almaPigeon(ps)
 		if p == nil {
 			return nil
 		}
@@ -591,7 +591,7 @@ func almaSet(v string) error {
 				return err
 			}
 		}
-		// an image generation model of magpie's goes back to Auto too
+		// an image generation model of pigeon's goes back to Auto too
 		if pid, _, _ := strings.Cut(almaImage(s), ":"); pid == p.ID {
 			if s, err = almaSettings(); err != nil {
 				return err
@@ -602,7 +602,7 @@ func almaSet(v string) error {
 		}
 		return almaDo("DELETE", "/api/providers/"+p.ID, nil, nil)
 	}
-	if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok {
+	if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok {
 		id, err := almaWire()
 		if err != nil {
 			return err
@@ -631,7 +631,7 @@ func almaOwn() []Option {
 	}
 	ps, _ := almaProvidersSeen()
 	mine := ""
-	if p := almaMagpie(ps); p != nil {
+	if p := almaPigeon(ps); p != nil {
 		mine = p.ID
 	}
 	var out []Option
@@ -653,7 +653,7 @@ func almaOwn() []Option {
 // folder elsewhere. On Linux alma-server, Alma without a desktop, keeps it
 // in ALMA_DATA_DIR, else $XDG_DATA_HOME/alma (~/.local/share/alma), and
 // answers on the same port: with only the desktop's folder looked for it
-// was never found, so its magpie provider never got Alma's key and its
+// was never found, so its pigeon provider never got Alma's key and its
 // requests read as the AI SDK's (Lutra.x on Discord). The desktop's folder
 // comes first; "" when neither is there.
 func almaDir(goos string) string {
@@ -700,7 +700,7 @@ func alma() *Agent {
 			if err != nil {
 				return ""
 			}
-			p := almaMagpie(ps)
+			p := almaPigeon(ps)
 			if p == nil {
 				return ""
 			}
@@ -708,7 +708,7 @@ func alma() *Agent {
 				return ""
 			}
 			if !p.Enabled {
-				return "Alma's magpie provider is turned off, so Alma won't use its models"
+				return "Alma's pigeon provider is turned off, so Alma won't use its models"
 			}
 			return wiringOff("Alma", "providers", func(k string) (string, bool) { return p.BaseURL, p.BaseURL != "" },
 				"baseURL", gatewayV1())
@@ -721,7 +721,7 @@ func alma() *Agent {
 			if err != nil {
 				return nil // not running: nothing to keep current
 			}
-			p := almaMagpie(ps)
+			p := almaPigeon(ps)
 			if p == nil {
 				return nil
 			}
@@ -738,7 +738,7 @@ func alma() *Agent {
 			Get: almaGet,
 			Set: almaSet,
 			Options: func(map[string]string) []Option {
-				return append(almaOwn(), viaMagpie("alma", magpieID+"/")...)
+				return append(almaOwn(), viaPigeon("alma", pigeonID+"/")...)
 			},
 		}},
 	}

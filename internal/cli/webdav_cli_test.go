@@ -12,9 +12,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/davsync"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/davsync"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // webdavHome is a machine of its own: no agent on it, no gateway at the

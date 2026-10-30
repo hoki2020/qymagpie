@@ -7,7 +7,7 @@ package gateway
 // has no bucket and RequestArchiveLocal is on, in the same file on this
 // computer (archive_local.go): the call's date,
 // in UTC, and an id of its own, sent back on the response as
-// X-Magpie-Archive-Id. The call, and its rows in the usage log, carry
+// X-Pigeon-Archive-Id. The call, and its rows in the usage log, carry
 // "<date>/<id>", for the Gateway and Usage pages to read it back by.
 //
 // The bodies are kept whole, not as Recent calls has them (the first 256
@@ -32,8 +32,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/redact"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/redact"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Putter is a bucket the archive is written to.
@@ -47,7 +47,7 @@ type Putter interface {
 var ArchiveBucket func() (Putter, bool)
 
 // ArchiveHeader carries a call's archive id on its response.
-const ArchiveHeader = "X-Magpie-Archive-Id"
+const ArchiveHeader = "X-Pigeon-Archive-Id"
 
 // archiveQueue is how many calls wait for their upload at most: their
 // bodies wait in files, so only their headers are held, however fast calls
@@ -135,8 +135,8 @@ func discardArchive(res *captureResponseWriter) {
 }
 
 // ArchiveName is where the archive keeps the call named "<date>/<id>",
-// under the bucket's magpie folder; false for a name not of that shape,
-// which is never one magpie made.
+// under the bucket's pigeon folder; false for a name not of that shape,
+// which is never one pigeon made.
 func ArchiveName(date, id string) (string, bool) {
 	if _, err := time.Parse("2006-01-02", date); err != nil || len(id) == 0 || len(id) > 64 {
 		return "", false

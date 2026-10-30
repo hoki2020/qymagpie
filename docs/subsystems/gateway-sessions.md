@@ -3,13 +3,13 @@
 The Sessions API combines file-backed native sessions with a read-only
 projection of gateway usage records. A gateway session identity is exactly
 `AgentOf(record.Agent) + record.Session`, where the session is the one the
-client sent (`X-Magpie-Session`, or its own session header), whatever it starts
-with. The response returns that id in `X-Magpie-Session`; listed browser
-origins can read this header through CORS. magpie never makes up an id for a
+client sent (`X-Pigeon-Session`, or its own session header), whatever it starts
+with. The response returns that id in `X-Pigeon-Session`; listed browser
+origins can read this header through CORS. pigeon never makes up an id for a
 request without one, so such a request has no session and its text is not
 recorded: text kept under an id nothing lists couldn't be opened. Prompt text,
 caller keys and network addresses are never used to guess conversation ownership.
-So the configs magpie writes have each agent name its session: Pi's provider
+So the configs pigeon writes have each agent name its session: Pi's provider
 block sets `compat.sendSessionAffinityHeaders` (`x-session-affinity` on Chat and
 Messages; Responses sends `session_id` anyway), and omp 16.0.6 and later gets
 `compat.promptCacheSessionHeader: x-session-affinity`. A user's own
@@ -23,23 +23,23 @@ lookups use the cached identity index. Native exclusions are applied per caller.
 
 WorkBuddy and CodeBuddy Code name their conversation in `X-Conversation-ID`.
 The gateway reads it as a native session header, after the existing native
-headers; `X-Magpie-Session` still overrides the recorded session without
+headers; `X-Pigeon-Session` still overrides the recorded session without
 changing its native identity. The per-turn `X-Conversation-Request-ID`,
 per-message `X-Conversation-Message-ID` and `X-Parent-Conversation-ID` do not
 identify the current session. This lets Routing group requests by the same id
 the native WorkBuddy session reader already knows; old requests without a
 recorded session remain unnamed. See `TestWorkBuddySessionHeader`,
-`TestWorkBuddySessionThroughGateway` and `TestRemoteMagpieKeepsTheSession`.
+`TestWorkBuddySessionThroughGateway` and `TestRemotePigeonKeepsTheSession`.
 
 DSH names its session in `x-deepseek-harness-session-id`, read the same way
 after the others, and marks a request that compacts its context with
 `x-deepseek-harness-compact` (#2505). `callKind` records such a call as
 `compact`, the Requests list's Compaction; a value of `0`, `false`, `no` or
 `off` is no mark, and a request without one is never taken for a compaction
-by its prompt. `passOnCaller` sends the mark on to a remote magpie beside
+by its prompt. `passOnCaller` sends the mark on to a remote pigeon beside
 the session, and no vendor is sent either (`TestDshMarksSessionAndCompaction`).
 Both are read on Messages and Responses as on Chat Completions, which a
-user's own llm-deepseek row pointed at magpie relies on (#3298,
+user's own llm-deepseek row pointed at pigeon relies on (#3298,
 `TestDshMarksOnEveryRoute`).
 
 When the same identity is present in a native session, the native session wins
@@ -52,7 +52,7 @@ Gateway projections have no path,
 resume command or terminal action: the agent's own files of them are not on
 this computer. Their rows carry `gateway: true`; the Sessions page groups them
 under "Seen through the gateway" rather than "No folder", and their size is the
-text magpie recorded of them (`sessions.GatewaySizes`), shown only when there
+text pigeon recorded of them (`sessions.GatewaySizes`), shown only when there
 is some. The overview's top summaries (`MergeExternalStats`) carry
 `gateway: true` too, and Usage › Sessions names such a row "Gateway session"
 where a folder would be, with "(prompt not recorded)" when no text was kept,
@@ -63,7 +63,7 @@ models, token totals, start/last timestamps and effective prices come from the
 same usage records used by Usage and stats endpoints.
 
 A model the user counts under another id (`usageAliases` in settings.json,
-`magpie model alias`; [`provider.UsageAlias`](../../internal/provider/usagealias.go))
+`pigeon model alias`; [`provider.UsageAlias`](../../internal/provider/usagealias.go))
 is merged after pricing, never before: `buildGatewaySessions` prices each
 record by its own model and keys its day and model rows by the alias, and
 `sessions.List`, `Get`, `Find` and the stats (`aliasStats` in
@@ -102,7 +102,7 @@ capabilities to a gateway row. Verification: `TestDesktopSessionTitles`,
 
 A gateway projection can be deleted (lc on Discord). `sessions.DeleteGateway`
 moves its recorded text folders (`gateway-conversations/<date>/<identity hash>`)
-into magpie's session trash under `trash/sessions/gateway/`, with a note
+into pigeon's session trash under `trash/sessions/gateway/`, with a note
 marked `gateway`, and adds `{agent, id, last}` to
 `gateway-sessions-hidden.json` in the config directory. `/api/sessions` and
 `/api/sessions/manage` leave out a hidden session up to that last request; a
@@ -138,7 +138,7 @@ applies: on an agent whose list has gateway sessions (`gateway` on a
 is kept. Its "Delete saved conversations…" shows while
 `/api/sessions/manage`'s `recorded` says some text is kept
 (`sessions.HasGatewayConversations`, true when the folder can't be read), and
-asks in magpie's own dialog first. `Settings.GatewayConversations` is machine-local consent:
+asks in pigeon's own dialog first. `Settings.GatewayConversations` is machine-local consent:
 `settings.SetGatewayConversations` updates it under the settings file lock.
 Other Settings saves retain the latest stored consent under that lock, so an
 older snapshot cannot re-enable recording after it is stopped. `KeepOwn`
@@ -168,7 +168,7 @@ session synchronization, and existing S3 archives are not imported.
 [`SaveGatewayTurn`](../../internal/sessions/gateway.go) stores normalized,
 scrubbed exchanges in one append-only `turns.jsonl` per
 `gateway-conversations/<UTC date>/<identity hash>/` under
-the Magpie config directory, using 0700 directories and 0600 files. Each line is
+the Pigeon config directory, using 0700 directories and 0600 files. Each line is
 one bounded turn; legacy per-turn JSON files remain readable until they expire.
 An incomplete final append is omitted from reads (marked truncated) and removed
 before the next append; complete earlier lines remain available. No headers are
@@ -206,9 +206,9 @@ cannot replace content fetched after clearing the store.
 `GET /api/sessions/markdown` and `POST /api/sessions/export` take the same
 choice: a native session is written from its file (`sessions.WriteMarkdown`),
 and otherwise a known gateway session from what its transcript reads
-(`sessions.WriteGatewayMarkdown`, "Recorded by: magpie's gateway", with a note
-when turns or a part's end weren't kept). A magpie that others reach as a
-remote magpie has no file of their agents' sessions, so this is the only way
+(`sessions.WriteGatewayMarkdown`, "Recorded by: pigeon's gateway", with a note
+when turns or a part's end weren't kept). A pigeon that others reach as a
+remote pigeon has no file of their agents' sessions, so this is the only way
 it can export them. Verification: `TestGatewaySessionExportsMarkdown`.
 
 A gateway session without a saved Desktop name is titled by what it was
@@ -303,7 +303,7 @@ What a conversion carries:
   custom tool, MCP tools) is written as the agent's own text: its name,
   input and result in fences. A result is cut at 64 KiB.
 - **Not carried:** thinking, reasoning, signatures and encrypted content, and
-  a compaction encrypted by OpenAI. Of compactions, only magpie's own
+  a compaction encrypted by OpenAI. Of compactions, only pigeon's own
   summary is read.
 
 What it writes:
@@ -319,7 +319,7 @@ What it writes:
   (`CodexProviderIn`), so the thread is listed under the provider in use.
   `response_item`s are written, plus the `event_msg` user and agent messages
   the TUI shows as history. Codex indexes the file into its state database
-  itself on resume, so magpie writes no index. `codex resume <id>` opens it.
+  itself on resume, so pigeon writes no index. `codex resume <id>` opens it.
 
 The source file is only read. The new file is written to a temp file
 beside it, synced and renamed, and is never written over an existing path.
@@ -372,7 +372,7 @@ only key, and a key told nothing, each red when its check is removed.
 
 ### Calls read from the agents' own files
 
-A call an agent made without magpie reaches Usage only when its own files
+A call an agent made without pigeon reaches Usage only when its own files
 are read (`sessions.Calls`, from `callSources` in
 [`calls.go`](../../internal/sessions/calls.go)). The readers are Claude
 Code's, Claude Desktop's and Cowork's, Codex's (and both in WSL), and,
@@ -386,9 +386,9 @@ Code's (#1779; its sessions are on the Sessions page too, from the same
 [`calls_kimi.go`](../../internal/sessions/calls_kimi.go)) and Pi's and
 omp's, here and in WSL (#1951,
 [`calls_pi.go`](../../internal/sessions/calls_pi.go)). Each skips the
-calls the agent made through magpie's own entry, which the gateway logged
+calls the agent made through pigeon's own entry, which the gateway logged
 with the account that answered: Kimi Code's are the ones whose
-`usage.record` model begins `magpie/`. Kimi Code's calls are its
+`usage.record` model begins `pigeon/`. Kimi Code's calls are its
 `usage.record`s in every agent's `wire.jsonl` under
 `$KIMI_CODE_HOME/sessions` (else `~/.kimi-code`), protocols 1.4 and 1.5;
 a fork repeats its parent's records, so each is keyed by agent, time,
@@ -396,7 +396,7 @@ model and usage and counted once. Pi's and omp's calls are the session
 files' assistant messages, and the calls beside them that Sessions counts
 too ("usage" and omp's "model_usage" entries, a compaction's, a branch
 summary's and a tool result's usage, on the model and provider in use);
-the provider `magpie` (or `dial`) is magpie's entry, a failed call has no
+the provider `pigeon` (or `dial`) is pigeon's entry, a failed call has no
 usage, and a fork's copy of its parent's entries (written before its
 header) is the parent's. The other agents the Sessions page reads (Cline,
 Qoder, Grok, Droid, Cursor, Hermes, Alma) have no reader yet (#1607). The
@@ -422,7 +422,7 @@ read keeps the rows read before. A row whose conversation has its
 `conversations/<id>.db` and no transcript (#1718; that database is protobuf,
 not read) is listed from the row alone: title, folder, `last_modified_time`,
 no tokens and no conversation to open (`readable`). Resume is `agy --conversation <id>`, which
-picks it up from any folder; when agy is set to use magpie it is the
+picks it up from any folder; when agy is set to use pigeon it is the
 agent's launch command (the gateway's variables and `--model`) with
 `--conversation` after it (`sessions.AgyStart`, set by package agent).
 Subagents (`parent_conversation_id`) and agy in WSL are not read.
@@ -451,7 +451,7 @@ answer equals the whole ledger's), and `sessions-overview-once.test.cjs`.
 
 `POST /v1/magpie/usage/requests`
 ([`internal/gateway/usage_ingest.go`](../../internal/gateway/usage_ingest.go),
-#1874) takes calls that never went through magpie, from an app that sends
+#1874) takes calls that never went through pigeon, from an app that sends
 them straight to its vendor, so the Usage page covers them too. The body is
 one record or an array of up to 5000 (32 MiB at most), in `usage.jsonl`'s
 shape: `t`, `agent`, `provider`, `model` and `rid` are required; `in`,
@@ -481,7 +481,7 @@ however old, so a client's history can be backfilled.
   each record's `index`, `rid` and `status`, so a re-run of a batch is
   safe.
 - **Pricing:** a record with `cost` keeps it (`Record.OwnCost`, the
-  `rowOwnCost` flag on a packed row). Without one it is priced at magpie's
+  `rowOwnCost` flag on a packed row). Without one it is priced at pigeon's
   own prices, like a gateway row.
 - **Speed:** `first_text_ms` and `flow_ms` (#2637) mean what they do in
   `usage.jsonl` (`Record.FirstText`, `Record.Flow`), so a reported row's
@@ -508,12 +508,12 @@ however old, so a client's history can be backfilled.
 concurrent posts beside the gateway's own writes, and a backfill of a full
 5000-record batch landing on the right 7d/30d/all days.
 
-### Requests magpie sends on its own
+### Requests pigeon sends on its own
 
 The provider editor's Test, Detect APIs and per-model detection, and a
 model list's refresh, reach the vendor outside any agent's turn (neiko and
 gys619 on Discord: a test left no trace). Each such request is one row of
-`usage.jsonl` with `source: "probe"`, agent `magpie`, the provider's id
+`usage.jsonl` with `source: "probe"`, agent `pigeon`, the provider's id
 (the host for one not yet saved), its account, model, endpoint, status,
 time and the error clipped to 500 bytes, and a `kind` saying what it was
 for: `provider_test`, `api_detect` or `model_list`
@@ -538,7 +538,7 @@ for: `provider_test`, `api_detect` or `model_list`
   them to no total, cell, group, chart or filter count; `?via=` other than
   all leaves them out.
 - **Showing:** the row's badge is the kind's name ("Test", "Detect APIs",
-  "Model list", from `purposeKinds`), and its tooltip and the "magpie's
+  "Model list", from `purposeKinds`), and its tooltip and the "pigeon's
   own" badge's say it counts in no total (`probeWhy` in
   `plugins/usage/page.js`).
 

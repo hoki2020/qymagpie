@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hoki2020/pigeon/internal/catalog"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/catalog"
 )
 
 // OpenCode Zen's free models are listed: magpie asks them as OpenCode does

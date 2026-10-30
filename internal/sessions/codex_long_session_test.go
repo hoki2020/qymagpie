@@ -35,7 +35,7 @@ func longRollout(from, to int) []string {
 }
 
 // longSessionCalls is past the shared revision budget: about six index
-// entries a call (yetone/magpie-releases#24's session was longer still).
+// entries a call (yetone/pigeon-releases#24's session was longer still).
 const longSessionCalls = 2000
 
 // TestLongCodexSessionAppendReadsOnlyTheAppend: a Codex session being
@@ -127,7 +127,7 @@ func TestLongCodexSessionAppendReadsOnlyTheAppend(t *testing.T) {
 
 // BenchmarkLongCodexSessionAppend is one turn appended to a long Codex
 // session, then read by the Requests reader and the summary, as a tray poll
-// does while Codex runs (yetone/magpie-releases#24).
+// does while Codex runs (yetone/pigeon-releases#24).
 func BenchmarkLongCodexSessionAppend(b *testing.B) {
 	d := setupCalls(b)
 	path := filepath.Join(d.codex, "sessions", "rollout-2026-09-20T10-00-00-0190aaaa-1111-7222-8333-444455556666.jsonl")

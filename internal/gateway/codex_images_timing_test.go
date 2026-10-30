@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // computerUseShots are n distinct w×h JPEG screenshots as data URLs: a

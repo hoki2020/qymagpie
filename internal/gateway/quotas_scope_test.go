@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #2216 (Kenoia): a key held to models or accounts on a shared magpie was
@@ -257,7 +257,7 @@ func TestRemoteMagpieShowsHeldKeyItsQuotas(t *testing.T) {
 	ctx := t.Context()
 	shown := func(secret string) []string {
 		t.Helper()
-		if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: secret, Chat: gw.URL}); err != nil {
+		if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: secret, Chat: gw.URL}); err != nil {
 			t.Fatal(err)
 		}
 		provider.ForgetRemoteCardsForTest()

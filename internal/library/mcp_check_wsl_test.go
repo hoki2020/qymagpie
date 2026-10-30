@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/hoki2020/pigeon/internal/wslrun"
 )
 
 // wslCheck is a Windows machine with WSL whose running distros are up;

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // Changing Pi's thinking level writes defaultThinkingLevel alone, and only

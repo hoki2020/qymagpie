@@ -3,9 +3,9 @@ package profile
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/library"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // inUse is which of the saved profiles InUse names, read as the GUI's state

@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// In magpie web at phone width, the Gateway page's Connect menus (the
+// In pigeon web at phone width, the Gateway page's Connect menus (the
 // address, the gateway key) shut again as soon as they opened, with or
 // without MAGPIE_PUBLIC_URL (found during #1551). The phone header takes two
 // rows, so Connect is below the fold, and a scroll of the view that wasn't

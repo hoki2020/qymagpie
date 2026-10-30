@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/hoki2020/pigeon/internal/mcpauth"
+	"github.com/hoki2020/pigeon/internal/mcpauth/mcpauthtest"
 )
 
 // Every server out of the library at once (#1027), each as RemoveServer

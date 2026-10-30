@@ -35,7 +35,7 @@ func codexHistory(n int) []byte {
 
 // TestScrubRunsTheRulesOnceAString: a history sent again on the next turn
 // has the rules run only over what it did not have before
-// (yetone/magpie-releases#24), and comes out as it did.
+// (yetone/pigeon-releases#24), and comes out as it did.
 func TestScrubRunsTheRulesOnceAString(t *testing.T) {
 	scrubMemo.reset()
 	first := codexHistory(40)

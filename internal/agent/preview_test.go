@@ -107,7 +107,7 @@ func TestDryRunKnowsTheAskersProviders(t *testing.T) {
 		dryProviders = nil
 		disconnectDryRun = false
 	})
-	if isMagpie("elsewhere/gpt-x") {
+	if isPigeon("elsewhere/gpt-x") {
 		t.Fatal("an unknown provider's model is magpie's")
 	}
 	p := filepath.Join(t.TempDir(), dryProvidersFile)
@@ -116,7 +116,7 @@ func TestDryRunKnowsTheAskersProviders(t *testing.T) {
 	}
 	t.Setenv(dryProvidersVar, p)
 	_ = DryRun("no-such-agent")
-	if !isMagpie("elsewhere/gpt-x") || isMagpie("third/gpt-x") || isMagpie("elsewhere") {
+	if !isPigeon("elsewhere/gpt-x") || isPigeon("third/gpt-x") || isPigeon("elsewhere") {
 		t.Fatalf("held %v", dryProviders)
 	}
 }

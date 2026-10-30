@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/filelock"
+	"github.com/hoki2020/pigeon/internal/filelock"
 )
 
 // anotherMagpieRefreshing holds lock as another magpie mid-refresh would

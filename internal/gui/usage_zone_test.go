@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // The Usage page's routes read days and hours in the zone the page names

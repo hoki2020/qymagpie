@@ -1,6 +1,6 @@
 package cli
 
-// magpie heap: a Go heap profile of the running magpie, for a report of it
+// pigeon heap: a Go heap profile of the running pigeon, for a report of it
 // holding too much memory. A macOS `sample` of the app shows Go's frames
 // as ???, so the profile is asked of the process itself, through the
 // gateway it serves on this computer (gateway.HeapPath, loopback only).
@@ -17,40 +17,40 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
-const heapUsage = `usage: magpie heap [<file>]
-  a Go heap profile of the magpie serving the gateway on this computer (the app, the
-  menu bar, magpie serve or magpie web), for a report of magpie using too much memory.
-  It is written to <file>, else to magpie-heap-<date>-<time>.pb.gz in this folder, and
-  never over a file that is there. magpie then prints the file and the process's memory
+const heapUsage = `usage: pigeon heap [<file>]
+  a Go heap profile of the pigeon serving the gateway on this computer (the app, the
+  menu bar, pigeon serve or pigeon web), for a report of pigeon using too much memory.
+  It is written to <file>, else to pigeon-heap-<date>-<time>.pb.gz in this folder, and
+  never over a file that is there. pigeon then prints the file and the process's memory
   as Go counts it (its heap, what it took from the system, its goroutines): send both.
   The profile holds where memory was allocated (function names, source lines, sizes) and
-  the path of the magpie program, not keys or messages; go tool pprof <file> reads it.
+  the path of the pigeon program, not keys or messages; go tool pprof <file> reads it.
   It asks the gateway at the port in Settings' Gateway address (or MAGPIE_ADDR) over loopback.`
 
 // heapWait bounds the ask: the profile runs a collection first, which on a
 // heap of gigabytes takes a while.
 const heapWait = 2 * time.Minute
 
-// heapCmd: magpie heap [<file>]
+// heapCmd: pigeon heap [<file>]
 func heapCmd(args []string) error {
 	file := ""
 	for _, a := range args {
 		switch {
 		case strings.HasPrefix(a, "-") && a != "-":
-			return fmt.Errorf("unknown flag %s: nothing was written (magpie heap [<file>])", a)
+			return fmt.Errorf("unknown flag %s: nothing was written (pigeon heap [<file>])", a)
 		case a == "-" || strings.TrimSpace(a) == "":
-			return fmt.Errorf("%q is not a file name: nothing was written (magpie heap [<file>])", a)
+			return fmt.Errorf("%q is not a file name: nothing was written (pigeon heap [<file>])", a)
 		case file != "":
-			return errors.New("magpie heap takes one file: nothing was written (magpie heap [<file>])")
+			return errors.New("pigeon heap takes one file: nothing was written (pigeon heap [<file>])")
 		default:
 			file = a
 		}
 	}
 	if file == "" {
-		file = "magpie-heap-" + time.Now().Format("20060102-150405") + ".pb.gz"
+		file = "pigeon-heap-" + time.Now().Format("20060102-150405") + ".pb.gz"
 	}
 	prof, stats, err := fetchHeap(gateway.URL())
 	if err != nil {
@@ -59,7 +59,7 @@ func heapCmd(args []string) error {
 	f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
 		if errors.Is(err, os.ErrExist) {
-			return fmt.Errorf("%s is there already: name another file (magpie heap <file>)", file)
+			return fmt.Errorf("%s is there already: name another file (pigeon heap <file>)", file)
 		}
 		return err
 	}
@@ -88,7 +88,7 @@ func fetchHeap(base string) ([]byte, gateway.HeapStats, error) {
 	c := &http.Client{Timeout: heapWait}
 	res, err := c.Get(base + gateway.HeapPath)
 	if err != nil {
-		return nil, st, fmt.Errorf("no magpie answers at %s, so there is nothing to profile: is magpie running? (%v)", base, err)
+		return nil, st, fmt.Errorf("no pigeon answers at %s, so there is nothing to profile: is pigeon running? (%v)", base, err)
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
@@ -96,7 +96,7 @@ func fetchHeap(base string) ([]byte, gateway.HeapStats, error) {
 		return nil, st, fmt.Errorf("the profile from %s was cut off: %w", base, err)
 	}
 	if res.StatusCode == http.StatusNotFound {
-		return nil, st, fmt.Errorf("the magpie at %s is older than this one and has no heap profile: update it, then run magpie heap again", base)
+		return nil, st, fmt.Errorf("the pigeon at %s is older than this one and has no heap profile: update it, then run pigeon heap again", base)
 	}
 	if res.StatusCode != http.StatusOK {
 		var e struct {
@@ -108,25 +108,25 @@ func fetchHeap(base string) ([]byte, gateway.HeapStats, error) {
 		if json.Unmarshal(body, &e) == nil && e.Error.Message != "" {
 			msg = e.Error.Message
 		}
-		return nil, st, fmt.Errorf("the magpie at %s answered %s: %s", base, res.Status, msg)
+		return nil, st, fmt.Errorf("the pigeon at %s answered %s: %s", base, res.Status, msg)
 	}
 	if !bytes.HasPrefix(body, []byte{0x1f, 0x8b}) {
-		return nil, st, fmt.Errorf("what %s answered is not a heap profile (%d bytes): is it magpie?", base, len(body))
+		return nil, st, fmt.Errorf("what %s answered is not a heap profile (%d bytes): is it pigeon?", base, len(body))
 	}
 	if err := json.Unmarshal([]byte(res.Header.Get(gateway.HeapStatsHeader)), &st); err != nil {
-		return nil, st, fmt.Errorf("the magpie at %s sent no memory numbers with its profile: %v", base, err)
+		return nil, st, fmt.Errorf("the pigeon at %s sent no memory numbers with its profile: %v", base, err)
 	}
 	return body, st, nil
 }
 
-// heapSummary is the lines magpie heap prints of st.
+// heapSummary is the lines pigeon heap prints of st.
 func heapSummary(st gateway.HeapStats) string {
 	var b strings.Builder
 	who := st.Program
 	if st.Window {
 		who += ", with a window"
 	}
-	fmt.Fprintf(&b, "  process     %d (%s) magpie %s, up %s\n", st.PID, who, st.Version, st.Uptime)
+	fmt.Fprintf(&b, "  process     %d (%s) pigeon %s, up %s\n", st.PID, who, st.Version, st.Uptime)
 	fmt.Fprintf(&b, "  HeapAlloc   %s (live after a collection: %s)\n", bytesSize(st.HeapAlloc), bytesSize(st.LiveHeap))
 	fmt.Fprintf(&b, "  HeapInuse   %s\n", bytesSize(st.HeapInuse))
 	fmt.Fprintf(&b, "  HeapSys     %s (idle %s, of it returned to the system %s)\n", bytesSize(st.HeapSys), bytesSize(st.HeapIdle), bytesSize(st.HeapReleased))

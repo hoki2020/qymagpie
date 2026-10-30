@@ -10,9 +10,9 @@ const sum = (rows) => ({
 
 function fixture(lang, theme, events, options = {}) {
   let keys = [
-    { id: "laptop", name: "Laptop", masked: "sk-magpie-key-…111111" },
-    { id: "server", name: "Server", masked: "sk-magpie-key-…222222" },
-    { id: "work", name: "Work", masked: "sk-magpie-key-…333333" },
+    { id: "laptop", name: "Laptop", masked: "sk-pigeon-key-…111111" },
+    { id: "server", name: "Server", masked: "sk-pigeon-key-…222222" },
+    { id: "work", name: "Work", masked: "sk-pigeon-key-…333333" },
   ];
   // options.keys is the test's own list: [] for the empty Gateway keys
   if (options.keys) keys = options.keys;
@@ -73,12 +73,12 @@ function fixture(lang, theme, events, options = {}) {
       let key = keys.find((k) => k.id === lanKeyID);
       if (lan && (!key || body.newKey)) {
         if (!key) {
-          key = { id: "lan-key-" + (++serial), name: "Magpie" };
+          key = { id: "lan-key-" + (++serial), name: "Pigeon" };
           lanKeyID = key.id;
           keys.push(key);
         }
         lanSecret = "fixture-lan-" + (++rotations);
-        key.masked = "sk-magpie-key-…" + lanSecret.slice(-6);
+        key.masked = "sk-pigeon-key-…" + lanSecret.slice(-6);
       }
       return json(lanState());
     }
@@ -118,14 +118,14 @@ function fixture(lang, theme, events, options = {}) {
         const id = "new-key-" + (++serial);
         secret = body.secret?.trim() || "fixture-created-" + serial;
         secrets.set(id, secret);
-        keys.push({ id, name: body.name, masked: body.secret ? "…" + secret.slice(-4) : "sk-magpie-key-…created" });
+        keys.push({ id, name: body.name, masked: body.secret ? "…" + secret.slice(-4) : "sk-pigeon-key-…created" });
       }
       if (action === "rename-key") k.name = body.name;
       if (action === "rotate-key") {
         secret = "fixture-rotated-" + (++rotations);
         secrets.set(k.id, secret);
         if (k.id === lanKeyID) lanSecret = secret;
-        k.masked = "sk-magpie-key-…" + secret.slice(-6);
+        k.masked = "sk-pigeon-key-…" + secret.slice(-6);
       }
       if (action === "remove-key") keys = keys.filter((v) => v !== k);
       if (action === "on-key" || action === "off-key") k.off = action === "off-key";

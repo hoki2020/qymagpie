@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // TestDshMaxReachesOutputEffortModels: pi-ai asks a model on Messages for a

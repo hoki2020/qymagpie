@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // DevEco Code (#1885) keeps OpenCode's config shape in ~/.config/deveco:
@@ -48,7 +48,7 @@ func TestDevEcoConfigAsItFindsIt(t *testing.T) {
 func TestDevEcoKeyNamesIt(t *testing.T) {
 	syncHome(t)
 	key := func(id string) any {
-		return magpieProviderJSONFor("opencode", id).(map[string]any)["options"].(map[string]any)["apiKey"]
+		return pigeonProviderJSONFor("opencode", id).(map[string]any)["options"].(map[string]any)["apiKey"]
 	}
 	if got := key("deveco"); got != gateway.TokenFor("deveco") {
 		t.Errorf("deveco's key %v", got)
@@ -86,7 +86,7 @@ func TestDevEcoConnectKeepsTheUsersOwn(t *testing.T) {
 		t.Fatal(err)
 	}
 	get := func(k string) string { v, _ := edit.GetJSON(cfg, k); return v }
-	if m := get("model"); !strings.HasPrefix(m, magpieID+"/") {
+	if m := get("model"); !strings.HasPrefix(m, pigeonID+"/") {
 		t.Fatalf("model %q after connecting", m)
 	}
 	if k := get("provider.magpie.options.apiKey"); k != gateway.TokenFor("deveco") {

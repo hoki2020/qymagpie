@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // #1823 (mdwsk88): HasApp read the developer's own /Applications, so on a

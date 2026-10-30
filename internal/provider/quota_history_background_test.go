@@ -15,7 +15,7 @@ import (
 
 // A background reading of an account is a point of the account's quota
 // history too, as a Usage-page reading is: a magpie only ever serving
-// other magpies has nobody on its Usage page, so its routing read each
+// other pigeons has nobody on its Usage page, so its routing read each
 // account every few minutes while GET /v1/magpie/quotas/history stayed
 // empty (#1313; yetone on #1317).
 func TestBackgroundLoginReadNotesQuotaHistory(t *testing.T) {

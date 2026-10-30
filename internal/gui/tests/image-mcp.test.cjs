@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// magpie's image generation as an MCP server (JonahFu on X): Settings ›
+// pigeon's image generation as an MCP server (JonahFu on X): Settings ›
 // Models has an "Image generation MCP server" row, after image
 // recognition's, with the gateway's address of it, /mcp/magpie/image, to
 // copy into any agent, and says what its tools give back and that a

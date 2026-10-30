@@ -2,11 +2,11 @@ package provider
 
 // A provider of the user's own can keep its model list up to date by itself
 // and take the models it newly lists by rule (#2135: relays of 10–70
-// models, run headless under `magpie serve`, whose new models never reached
+// models, run headless under `pigeon serve`, whose new models never reached
 // the list until Fetch models was clicked, and were then picked one by one).
 //
 //   - RefreshEvery: the gateway fetches the list again once it is that old
-//     (KeepListsFresh), exactly as Fetch models or `magpie provider refresh`
+//     (KeepListsFresh), exactly as Fetch models or `pigeon provider refresh`
 //     does (Refetch), so a model the vendor drops leaves the picks as it does
 //     there.
 //   - AutoInclude: patterns over a model's id. A model a fetch lists that
@@ -33,7 +33,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/beat"
+	"github.com/hoki2020/pigeon/internal/beat"
 )
 
 // MinRefreshEvery is the shortest RefreshEvery: a vendor's list changes
@@ -52,13 +52,13 @@ func ParseRefreshEvery(s string) (time.Duration, error) {
 	if n, ok := strings.CutSuffix(s, "d"); ok {
 		days, err := strconv.ParseFloat(n, 64)
 		if err != nil {
-			return 0, fmt.Errorf("%q is not a time magpie can read: write it as 30m, 6h or 1d", s)
+			return 0, fmt.Errorf("%q is not a time pigeon can read: write it as 30m, 6h or 1d", s)
 		}
 		d = time.Duration(days * float64(24*time.Hour))
 	} else {
 		var err error
 		if d, err = time.ParseDuration(s); err != nil {
-			return 0, fmt.Errorf("%q is not a time magpie can read: write it as 30m, 6h or 1d", s)
+			return 0, fmt.Errorf("%q is not a time pigeon can read: write it as 30m, 6h or 1d", s)
 		}
 	}
 	if d < MinRefreshEvery {
@@ -67,34 +67,34 @@ func ParseRefreshEvery(s string) (time.Duration, error) {
 	return d, nil
 }
 
-// RemoteMagpieEvery is how often, as RefreshEvery writes it, the gateway
-// fetches a Remote magpie's list when its user set no RefreshEvery. Its list is the other magpie's
+// RemotePigeonEvery is how often, as RefreshEvery writes it, the gateway
+// fetches a Remote pigeon's list when its user set no RefreshEvery. Its list is the other pigeon's
 // models as they are now: a model that comes there later (a ZCode gift
 // plan's GLM-5.3-Trial, listed once its plugin read the gift; a provider,
-// plugin or routing group added there) reached this magpie only when
+// plugin or routing group added there) reached this pigeon only when
 // Fetch models was pressed in its editor, and a trial a day long could
 // pass unseen (6igsteven on Discord, 10-24). It is a list on the other
-// computer's magpie, read from its memory, so asking it often costs
-// nothing a vendor sees. "off" (magpie provider refresh-every <id> off)
+// computer's pigeon, read from its memory, so asking it often costs
+// nothing a vendor sees. "off" (pigeon provider refresh-every <id> off)
 // asks it only when told, as before.
-const RemoteMagpieEvery = "10m"
+const RemotePigeonEvery = "10m"
 
 // RefreshSchedule is the schedule the provider's list is fetched on, as
-// written: its user's, or a Remote magpie's default (RemoteMagpieEvery)
+// written: its user's, or a Remote pigeon's default (RemotePigeonEvery)
 // when its user set none; "" for only when asked.
 func (p Provider) RefreshSchedule() string {
 	if !p.ownList() {
 		return ""
 	}
-	if strings.TrimSpace(p.RefreshEvery) == "" && p.IsRemoteMagpie() {
-		return RemoteMagpieEvery
+	if strings.TrimSpace(p.RefreshEvery) == "" && p.IsRemotePigeon() {
+		return RemotePigeonEvery
 	}
 	return p.RefreshEvery
 }
 
 // RefreshInterval is how often the gateway fetches the provider's list by
 // itself: 0 for only when asked, and for one RefreshEvery can't be read.
-// A Remote magpie with none set is fetched every RemoteMagpieEvery.
+// A Remote pigeon with none set is fetched every RemotePigeonEvery.
 func (p Provider) RefreshInterval() time.Duration {
 	if !p.ownList() {
 		return 0
@@ -115,7 +115,7 @@ func (p Provider) ownList() bool {
 // errNotOwnList is why an account's or a plugin's provider takes neither
 // setting.
 func errNotOwnList(p Provider) error {
-	return fmt.Errorf("%s's list is fetched for it by magpie (or by its plugin): a schedule and rules are for a provider of your own", p.Name)
+	return fmt.Errorf("%s's list is fetched for it by pigeon (or by its plugin): a schedule and rules are for a provider of your own", p.Name)
 }
 
 // SetRefreshEvery sets how often the gateway fetches the provider's list by
@@ -135,15 +135,15 @@ func SetRefreshEvery(id, every string) error {
 	p.RefreshEvery = ""
 	if d > 0 {
 		p.RefreshEvery = strings.ToLower(strings.TrimSpace(every))
-	} else if p.IsRemoteMagpie() {
-		// kept as said: none set is RemoteMagpieEvery for a Remote magpie
+	} else if p.IsRemotePigeon() {
+		// kept as said: none set is RemotePigeonEvery for a Remote pigeon
 		p.RefreshEvery = "off"
 	}
 	return Save(*p)
 }
 
 // CleanAutoInclude are AutoInclude's patterns as they are kept: trimmed,
-// each once, every one one magpie can read. A pattern is a glob with * in
+// each once, every one one pigeon can read. A pattern is a glob with * in
 // it (any run of characters, in any case: "gpt-*", "*claude*") or a
 // regular expression after "re:" that matches the whole id.
 func CleanAutoInclude(in []string) ([]string, error) {
@@ -154,7 +154,7 @@ func CleanAutoInclude(in []string) ([]string, error) {
 			continue
 		}
 		if !IsPattern(p) {
-			return nil, fmt.Errorf("%q is a model's id, not a rule: a rule has a * in it, or starts with %s (magpie provider models <id> +%s picks that one)", p, RegexpPrefix, p)
+			return nil, fmt.Errorf("%q is a model's id, not a rule: a rule has a * in it, or starts with %s (pigeon provider models <id> +%s picks that one)", p, RegexpPrefix, p)
 		}
 		if _, err := compilePattern(p); err != nil {
 			return nil, err
@@ -265,8 +265,8 @@ var listRetry = 15 * time.Minute
 var listsEvery = time.Minute
 
 // KeepListsFresh fetches the list of each provider of the user's own that
-// has a RefreshEvery once its list is that old, run by the magpie serving
-// the gateway (`magpie serve`, the app).
+// has a RefreshEvery once its list is that old, run by the pigeon serving
+// the gateway (`pigeon serve`, the app).
 func KeepListsFresh(ctx context.Context) {
 	t := time.NewTimer(30 * time.Second)
 	defer t.Stop()
@@ -290,7 +290,7 @@ func refreshDueLists(ctx context.Context, now time.Time) []string {
 	// the user's own providers alone, as All lists them: only those keep a
 	// list on a schedule (ownList), and All asks every agent for its
 	// sign-in, the Claude keychain's `security` among them, each minute
-	// of an idle magpie (#3185)
+	// of an idle pigeon (#3185)
 	f := load()
 	own, _ := ownOf(f)
 	for _, p := range ordered(own, f.Order) {

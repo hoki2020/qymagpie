@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/appdir"
 )
 
 func TestCodexFingerprintsPrivateAndPersistent(t *testing.T) {

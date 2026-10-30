@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // An agent the user pointed at magpie on another machine (coeo91 on
@@ -34,7 +34,7 @@ func TestSyncKeepsAnAddressOnAnotherMachine(t *testing.T) {
 		var key, want string
 		for _, g := range a.Fields {
 			for _, o := range g.Options(a.Values()) {
-				if want == "" && (o.Ref == "fake/m1" || o.Value == magpieID) {
+				if want == "" && (o.Ref == "fake/m1" || o.Value == pigeonID) {
 					key, want = g.Key, o.Value
 				}
 			}

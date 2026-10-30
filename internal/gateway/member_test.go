@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
 )
 
 // A reply from a group says which member answered it (#822): its

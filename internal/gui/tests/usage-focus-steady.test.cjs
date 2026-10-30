@@ -2,7 +2,7 @@
 // The window focused again, or shown again, reads what the page shows anew,
 // and must not blank or rebuild a chart that didn't change. Under a window
 // manager whose focus follows the mouse (Hyprland on omarchy; Zhenzhen on
-// Discord) the pointer crossing from a terminal into magpie focuses it every
+// Discord) the pointer crossing from a terminal into pigeon focuses it every
 // time, and the Usage page's bars flashed: the Overview put its skeleton up,
 // hid the chart and drew it again from nothing. Now the Overview, the
 // Requests tab and the tray panel's Usage tab keep their bars (the same

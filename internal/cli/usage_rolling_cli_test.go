@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	stats "github.com/yetone/magpie/internal/usage"
+	stats "github.com/hoki2020/pigeon/internal/usage"
 )
 
 // magpie usage --last and --days read a rolling window ending now (#2075):

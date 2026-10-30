@@ -7,9 +7,9 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Sorghum on Discord: each of magpie's models in Kimi Code has the name
@@ -71,7 +71,7 @@ func TestKimiNamesAndOutput(t *testing.T) {
 			return c.Models
 		}
 		labels := map[string]string{}
-		for _, m := range magpieModels("kimi") {
+		for _, m := range pigeonModels("kimi") {
 			labels[m.ID] = m.Name
 		}
 		out := func(m model) int {

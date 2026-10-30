@@ -10,8 +10,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // openPencilUser is settings.json as OpenPencil saves it
@@ -108,7 +108,7 @@ func openPencilRead(t *testing.T, path string) (magpie openPencilEntryDoc, other
 		if e.ID == nil || e.DisplayName == nil || e.Kind == nil || e.BaseURL == nil || e.Enabled == nil {
 			t.Fatalf("entry without a required field: %s", raw)
 		}
-		if *e.ID != magpieID {
+		if *e.ID != pigeonID {
 			others = append(others, raw)
 			continue
 		}
@@ -161,10 +161,10 @@ func TestOpenPencilProvider(t *testing.T) {
 	if f.Get() != "" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != magpieID {
+	if f.Get() != pigeonID {
 		t.Fatalf("get after set: %q", f.Get())
 	}
 
@@ -174,7 +174,7 @@ func TestOpenPencilProvider(t *testing.T) {
 		t.Errorf("entry: %+v", e)
 	}
 	var want []string
-	for _, m := range magpieModels("openpencil") {
+	for _, m := range pigeonModels("openpencil") {
 		want = append(want, m.ID)
 	}
 	if len(want) < 2 || !slices.Equal(e.Models, want) {
@@ -203,7 +203,7 @@ func TestOpenPencilProvider(t *testing.T) {
 	if err := a.Sync(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	if b2, _ := os.ReadFile(path); !bytes.Equal(b, b2) {
@@ -218,7 +218,7 @@ func TestOpenPencilProvider(t *testing.T) {
 	var doc map[string]any
 	json.Unmarshal(b, &doc)
 	for _, x := range doc["builtin_agents"].([]any) {
-		if m := x.(map[string]any); m["id"] == magpieID {
+		if m := x.(map[string]any); m["id"] == pigeonID {
 			m["display_name"], m["enabled"] = "My magpie", false
 			m["models"] = slices.DeleteFunc(m["models"].([]any), func(v any) bool { return v == want[1] })
 		}
@@ -276,13 +276,13 @@ func TestOpenPencilMakesItsFile(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "solo", Name: "Solo", Chat: "https://api.example/v1", Key: "k", Models: []string{"one"}}); err != nil {
 		t.Fatal(err)
 	}
-	if n := len(magpieModels("openpencil")); n != 1 {
+	if n := len(pigeonModels("openpencil")); n != 1 {
 		t.Fatalf("fixture: %d models", n)
 	}
 	t.Cleanup(func() { openPencilRunning = func() bool { return false } })
 	openPencilRunning = func() bool { return false }
 	a := openPencil(home, filepath.Join(home, ".config"))
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	e, others := openPencilRead(t, a.Path)
@@ -322,7 +322,7 @@ func TestOpenPencilLeavesAlone(t *testing.T) {
 		`{"version": 1,`,
 	} {
 		os.WriteFile(a.Path, []byte(s), 0o600)
-		if err := a.Field("provider").Set(magpieID); err == nil {
+		if err := a.Field("provider").Set(pigeonID); err == nil {
 			t.Errorf("%s: set", s)
 		}
 		if b, _ := os.ReadFile(a.Path); string(b) != s {
@@ -332,21 +332,21 @@ func TestOpenPencilLeavesAlone(t *testing.T) {
 
 	os.WriteFile(a.Path, []byte(openPencilUser), 0o600)
 	running = true
-	if err := a.Field("provider").Set(magpieID); err != errOpenPencilRunning {
+	if err := a.Field("provider").Set(pigeonID); err != errOpenPencilRunning {
 		t.Errorf("set while it runs: %v", err)
 	}
 	if b, _ := os.ReadFile(a.Path); string(b) != openPencilUser {
 		t.Errorf("written while it runs: %s", b)
 	}
 	running = false
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	running = true
 	if err := a.Field("provider").Set(""); err != errOpenPencilRunning {
 		t.Errorf("off while it runs: %v", err)
 	}
-	if a.Field("provider").Get() != magpieID {
+	if a.Field("provider").Get() != pigeonID {
 		t.Error("taken out while it runs")
 	}
 }
@@ -383,7 +383,7 @@ func TestOpenPencilModelCap(t *testing.T) {
 	if err := provider.Save(provider.Provider{ID: "many", Name: "Many", Chat: "https://api.example/v1", Key: "k", Models: ms}); err != nil {
 		t.Fatal(err)
 	}
-	if n := len(magpieModels("openpencil")); n <= openPencilMaxModels {
+	if n := len(pigeonModels("openpencil")); n <= openPencilMaxModels {
 		t.Fatalf("fixture: %d models", n)
 	}
 	e := openPencilEntry(gateway.URL())

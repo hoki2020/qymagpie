@@ -9,9 +9,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // t3User is ~/.t3/userdata/settings.json as T3 Code writes it sparse: its
@@ -77,8 +77,8 @@ func t3Format(t *testing.T, raw []byte) t3Envelope {
 	if err := d.Decode(&e); err != nil {
 		t.Fatalf("not T3 Code's instance: %v\n%s", err, raw)
 	}
-	if !regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`).MatchString(magpieID) {
-		t.Errorf("instance id %q", magpieID)
+	if !regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`).MatchString(pigeonID) {
+		t.Errorf("instance id %q", pigeonID)
 	}
 	if e.Driver != "claudeAgent" || e.DisplayName == "" || e.Enabled == nil || !*e.Enabled {
 		t.Errorf("envelope: %s", raw)
@@ -151,10 +151,10 @@ func TestT3CodeInstance(t *testing.T) {
 	if f == nil || f.Get() != "" {
 		t.Fatalf("provider field: %+v", f)
 	}
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != magpieID {
+	if f.Get() != pigeonID {
 		t.Fatalf("get: %q", f.Get())
 	}
 
@@ -175,7 +175,7 @@ func TestT3CodeInstance(t *testing.T) {
 		t.Errorf("the user's instance changed: %s", insts["codex_work"])
 	}
 
-	e := t3Format(t, insts[magpieID])
+	e := t3Format(t, insts[pigeonID])
 	env := map[string]string{}
 	for _, v := range e.Environment {
 		env[v.Name] = v.Value
@@ -203,7 +203,7 @@ func TestT3CodeInstance(t *testing.T) {
 	json.Unmarshal([]byte(readFile(path)), &file)
 	insts = nil
 	json.Unmarshal(file["providerInstances"], &insts)
-	t3Format(t, insts[magpieID])
+	t3Format(t, insts[pigeonID])
 	if _, ok := insts["codex_work"]; !ok {
 		t.Fatal("the user's instance is gone after a sync")
 	}
@@ -217,7 +217,7 @@ func TestT3CodeInstance(t *testing.T) {
 	file, insts = nil, nil
 	json.Unmarshal([]byte(readFile(path)), &file)
 	json.Unmarshal(file["providerInstances"], &insts)
-	if _, ok := insts[magpieID]; ok || !sameJSON(string(insts["codex_work"]), userInsts["codex_work"]) ||
+	if _, ok := insts[pigeonID]; ok || !sameJSON(string(insts["codex_work"]), userInsts["codex_work"]) ||
 		!sameJSON(string(file["providers"]), user["providers"]) {
 		t.Errorf("after off: %s", readFile(path))
 	}
@@ -242,21 +242,21 @@ func TestT3CodeHomeAndInstance(t *testing.T) {
 		t.Fatalf("path %s, want %s", a.Path, path)
 	}
 	f := a.Field("provider")
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	var file map[string]map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(readFile(path)), &file); err != nil {
 		t.Fatalf("%v\n%s", err, readFile(path))
 	}
-	t3Format(t, file["providerInstances"][magpieID])
+	t3Format(t, file["providerInstances"][pigeonID])
 
 	os.WriteFile(path, []byte(`{"providerInstances":{"claudeAgent":{"driver":"claudeAgent","config":{"homePath":"~/.claude-t3"}}}}`), 0o600)
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	json.Unmarshal([]byte(readFile(path)), &file)
-	if e := t3Format(t, file["providerInstances"][magpieID]); e.Config.HomePath != "~/.claude-t3" || e.Config.BinaryPath != "" {
+	if e := t3Format(t, file["providerInstances"][pigeonID]); e.Config.HomePath != "~/.claude-t3" || e.Config.BinaryPath != "" {
 		t.Errorf("config: %+v", e.Config)
 	}
 	if _, ok := file["providerInstances"]["claudeAgent"]; !ok {
@@ -345,7 +345,7 @@ func TestT3CodeKeepsTheUsersSettings(t *testing.T) {
 	const claude = `{"driver":"claudeAgent","displayName":"Claude (sub)","enabled":true,"config":{"autoCompactWindow":"200000","launchArgs":"--chrome"}}`
 	os.WriteFile(path, []byte(`{"providerInstances":{"claudeAgent":`+claude+`}}`), 0o600)
 	f := a.Field("provider")
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	read := func() map[string]json.RawMessage {
@@ -358,8 +358,8 @@ func TestT3CodeKeepsTheUsersSettings(t *testing.T) {
 		return file.ProviderInstances
 	}
 	var mine map[string]any
-	json.Unmarshal(read()[magpieID], &mine)
-	if mine["displayName"] != "magpie" {
+	json.Unmarshal(read()[pigeonID], &mine)
+	if mine["displayName"] != "pigeon" {
 		t.Fatalf("first written as %v", mine["displayName"])
 	}
 	cfg := mine["config"].(map[string]any)
@@ -409,11 +409,11 @@ func TestT3CodeKeepsTheUsersSettings(t *testing.T) {
 			} `json:"customModels"`
 		} `json:"config"`
 	}
-	if err := json.Unmarshal(insts[magpieID], &got); err != nil {
+	if err := json.Unmarshal(insts[pigeonID], &got); err != nil {
 		t.Fatal(err)
 	}
 	if got.DisplayName != "Magpie GW" || got.Enabled == nil || *got.Enabled || got.AccentColor != "#ff8800" {
-		t.Errorf("the user's name, switch or colour not kept: %s", insts[magpieID])
+		t.Errorf("the user's name, switch or colour not kept: %s", insts[pigeonID])
 	}
 	if got.Config.AutoCompactWindow != "300000" || got.Config.LaunchArgs != "--verbose" {
 		t.Errorf("the user's config not kept: %+v", got.Config)

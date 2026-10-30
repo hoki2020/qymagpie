@@ -8,8 +8,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/netproxy"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Via is ctx for requests made on the provider's behalf: they go through

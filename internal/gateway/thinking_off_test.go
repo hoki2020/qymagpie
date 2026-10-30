@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // #1454: Claude Code's auto mode classifier, through magpie, asked

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A custom tool's call a translated vendor's model made (Codex's
@@ -183,7 +183,7 @@ func TestResponsesRelayCallIDs(t *testing.T) {
 					if string(sent["tools"]) != "[]" || !strings.Contains(last, "CONTEXT CHECKPOINT COMPACTION") {
 						t.Errorf("not a compaction request: %s", last)
 					}
-					if !strings.Contains(rec.Body.String(), `"type":"compaction"`) || !strings.Contains(rec.Body.String(), magpieCompaction) {
+					if !strings.Contains(rec.Body.String(), `"type":"compaction"`) || !strings.Contains(rec.Body.String(), pigeonCompaction) {
 						t.Errorf("not a compaction response: %s", rec.Body)
 					}
 				} else if !strings.Contains(rec.Body.String(), "on it") {

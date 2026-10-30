@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A gateway key held to some models (#882) sees only those in the model
@@ -109,7 +109,7 @@ func TestGatewayKeyModelsHoldAKey(t *testing.T) {
 	}
 	// magpie's own call for the key (a search, a picture described) goes on
 	r := httptest.NewRequest("POST", "/v1/chat/completions", strings.NewReader(`{"model":"spare/m2","messages":[{"role":"user","content":"hi"}]}`))
-	r = r.WithContext(magpieChose(r.Context()))
+	r = r.WithContext(pigeonChose(r.Context()))
 	r.Header.Set("Authorization", "Bearer "+secrets[0])
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, r)

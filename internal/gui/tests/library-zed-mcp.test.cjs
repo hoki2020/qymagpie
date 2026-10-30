@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // lc on Discord: Zed wasn't among the agents an MCP server could be given
-// to. magpie gives Zed servers in its settings.json (context_servers), so
+// to. pigeon gives Zed servers in its settings.json (context_servers), so
 // Zed's chip is on every server's row and in the editor, and a click gives
 // it the server. Zed speaks a command or streamable HTTP, not SSE, and
 // takes a header as written, not ${NAME}: its chip is greyed for those

@@ -6,12 +6,12 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // What a model makes, as the user says it (shen-joe, #1399): a provider set
-// up with a base URL tells magpie its image and video models by its own
+// up with a base URL tells pigeon its image and video models by its own
 // model list ("kind": "image" or "video") or, for images, by a model's name.
 // A relay whose list says neither — most don't — leaves a video model
 // making nothing, and an image model with an odd name drawing nothing. The
@@ -26,11 +26,11 @@ const (
 )
 
 // MarksKinds is whether p's models can be said to make images or videos: a
-// provider set up with a base URL, which magpie asks at the OpenAI-shaped
-// images and videos APIs under it. A subscription's account, another magpie
+// provider set up with a base URL, which pigeon asks at the OpenAI-shaped
+// images and videos APIs under it. A subscription's account, another pigeon
 // (whose own list says) and a decision API's can't.
 func (p Provider) MarksKinds() bool {
-	return p.Account == nil && !p.IsRemoteMagpie() && !p.DecideOnly() &&
+	return p.Account == nil && !p.IsRemotePigeon() && !p.DecideOnly() &&
 		(p.Base(Chat) != "" || p.Base(Responses) != "")
 }
 
@@ -104,7 +104,7 @@ func setModelKind(ref, kind string) (bool, error) {
 			return false, errors.New(p.ID + " makes images and videos only as its own API does: none of its models can be said to make them")
 		}
 		if !p.hasKindable(model) {
-			return false, fmt.Errorf("%s has no model %s (magpie provider %s lists them)", p.ID, model, p.ID)
+			return false, fmt.Errorf("%s has no model %s (pigeon provider %s lists them)", p.ID, model, p.ID)
 		}
 	}
 	s := settings.Load()

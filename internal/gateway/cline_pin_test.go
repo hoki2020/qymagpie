@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // ClinePass's DeepSeek models are served by DeepSeek's own API alone when

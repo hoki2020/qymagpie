@@ -6,7 +6,7 @@ package agent
 // browser on Linux) and attaches to the daemon running, else starts one.
 // The daemon asks Anthropic's Messages API at its environment's
 // ANTHROPIC_BASE_URL (ky() in its bundle: https, or http on a loopback
-// address) and has no setting for it, so magpie connects it by starting
+// address) and has no setting for it, so pigeon connects it by starting
 // the daemon itself with that variable set to the gateway — `stop`, then
 // `serve --detached --no-browser`, on the port it was on — and nothing
 // else: no variable set for the user, no file of its written. Disconnect
@@ -15,7 +15,7 @@ package agent
 // (see gateway/science.go); with none it asks nothing at all.
 //
 // The daemon lives till it is stopped or the computer restarts, so while
-// it is connected magpie starts it again when it isn't running
+// it is connected pigeon starts it again when it isn't running
 // (KeepClaudeScience), and says so when another one runs in its place —
 // the window, opened while none ran, starts its own without the variable
 // (Check).
@@ -34,9 +34,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 // ScienceID is the agent's id.
@@ -98,7 +98,7 @@ func findScience(home string) string {
 }
 
 // scienceRun runs the daemon's program bin with args, its environment env
-// (nil: magpie's own), and is what it printed. A var so tests never start
+// (nil: pigeon's own), and is what it printed. A var so tests never start
 // the real one. serve --detached returns once its daemon is up; the
 // daemon keeps none of the pipes, which go to no file at all.
 var scienceRun = func(env []string, bin string, args ...string) ([]byte, error) {
@@ -155,7 +155,7 @@ func scienceState(bin string) (scienceStatus, error) {
 	return st, nil
 }
 
-// scienceMark is magpie's note of the daemon it started on the gateway,
+// scienceMark is pigeon's note of the daemon it started on the gateway,
 // which the row reads as connected.
 type scienceMark struct {
 	URL  string `json:"url"`
@@ -171,14 +171,14 @@ func readScienceMark() (scienceMark, bool) {
 	if err != nil {
 		return m, false
 	}
-	// one that doesn't parse is still magpie's note that it is connected
+	// one that doesn't parse is still pigeon's note that it is connected
 	_ = json.Unmarshal(b, &m)
 	return m, true
 }
 
 func scienceWired() bool { _, ok := readScienceMark(); return ok }
 
-// scienceEnv is magpie's environment with the variable set to gw, or
+// scienceEnv is pigeon's environment with the variable set to gw, or
 // without it for "".
 func scienceEnv(gw string) []string {
 	env := make([]string, 0, len(os.Environ())+1)
@@ -268,7 +268,7 @@ func scienceOn(on bool) error {
 		return errors.New(scienceName + " isn't installed (no claude-science found)")
 	}
 	gw := gateway.URL()
-	// the daemon magpie started, on this gateway, is left running: Connect
+	// the daemon pigeon started, on this gateway, is left running: Connect
 	// sets the field it connected by again (Pick)
 	if m, wired := readScienceMark(); wired && m.URL == gw {
 		if st, err := scienceState(bin); err == nil && st.Running && st.PID == m.PID {
@@ -291,7 +291,7 @@ func writeScienceMark(m scienceMark) error {
 }
 
 // scienceCheck is what of the wiring is gone, by the daemon's lock file: a
-// daemon running that magpie
+// daemon running that pigeon
 // didn't start (the window, opened while none ran, starts its own), or one
 // started for the gateway's old address. One not running is no drift:
 // KeepClaudeScience starts it.
@@ -305,7 +305,7 @@ func scienceCheck() string {
 		return ""
 	}
 	if st.PID != m.PID {
-		return fmt.Sprintf("%s's daemon (pid %d) was started without magpie's gateway", scienceName, st.PID)
+		return fmt.Sprintf("%s's daemon (pid %d) was started without pigeon's gateway", scienceName, st.PID)
 	}
 	if m.URL != gateway.URL() {
 		return fmt.Sprintf("%s's daemon was started for the gateway at %s", scienceName, m.URL)
@@ -316,7 +316,7 @@ func scienceCheck() string {
 // KeepClaudeScience starts the daemon on the gateway, while Claude Science
 // is connected, whenever it isn't running: after a restart of the
 // computer, or after it was stopped. It never stops one running — one
-// magpie didn't start may be in the middle of a session — which Check
+// pigeon didn't start may be in the middle of a session — which Check
 // tells as drift instead.
 func KeepClaudeScience(ctx context.Context) {
 	keepScienceOnce()
@@ -349,7 +349,7 @@ func keepScienceOnce() {
 	m, _ := readScienceMark()
 	st, err := scienceServe(bin, gw, m.Port)
 	if err != nil {
-		log.Printf("%s: starting its daemon on magpie's gateway: %v", scienceName, err)
+		log.Printf("%s: starting its daemon on pigeon's gateway: %v", scienceName, err)
 		return
 	}
 	if err := writeScienceMark(scienceMark{URL: gw, PID: st.PID, Port: st.Port}); err != nil {
@@ -384,14 +384,14 @@ func claudeScience() *Agent {
 			Key: "provider", Label: "provider",
 			Get: func() string {
 				if scienceWired() {
-					return magpieID
+					return pigeonID
 				}
 				return ""
 			},
 			Set: func(v string) error { return scienceOn(v != "") },
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie",
-					Note: "magpie restarts its daemon with ANTHROPIC_BASE_URL set to the gateway; a session running in it is cut off"}}
+				return []Option{{Value: pigeonID, Label: "pigeon", Icon: "pigeon",
+					Note: "pigeon restarts its daemon with ANTHROPIC_BASE_URL set to the gateway; a session running in it is cut off"}}
 			},
 		}},
 		Check: scienceCheck,
@@ -405,4 +405,4 @@ func claudeScience() *Agent {
 }
 
 // what Claude Science says after a change (notice.go)
-var noticeScience = newNotice("{agent}'s daemon runs on magpie's gateway: open {agent} again (reload its window if it is open). It still needs you signed in with your Claude account, which magpie never sends on; pick a model of magpie's in its model menu.")
+var noticeScience = newNotice("{agent}'s daemon runs on pigeon's gateway: open {agent} again (reload its window if it is open). It still needs you signed in with your Claude account, which pigeon never sends on; pick a model of pigeon's in its model menu.")

@@ -9,8 +9,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A magpie added as a Remote magpie lists here what its user picked there,
@@ -84,7 +84,7 @@ func TestRemoteMagpieListsThePicks(t *testing.T) {
 		w.Write(body)
 	}))
 	t.Cleanup(remote.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "k", Chat: remote.URL})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "k", Chat: remote.URL})
 	if err != nil {
 		t.Fatal(err)
 	}

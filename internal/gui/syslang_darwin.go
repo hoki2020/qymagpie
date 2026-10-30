@@ -3,7 +3,7 @@ package gui
 import (
 	"os"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 // systemLang is the first of the Mac's preferred languages, the one the

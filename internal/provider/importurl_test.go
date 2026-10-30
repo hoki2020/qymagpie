@@ -193,7 +193,7 @@ func TestParseImportRejects(t *testing.T) {
 func TestParseImportVertex(t *testing.T) {
 	for _, link := range []string{"magpie://import?preset=google-vertex", "magpie://import?preset=Google-Vertex&key=AQ.abc&name=Vertex"} {
 		_, err := ParseImport(link)
-		if err == nil || !strings.Contains(err.Error(), "magpie provider add google-vertex project=") {
+		if err == nil || !strings.Contains(err.Error(), "pigeon provider add google-vertex project=") {
 			t.Errorf("%s: %v", link, err)
 		}
 	}

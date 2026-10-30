@@ -11,7 +11,7 @@ import (
 
 // dataFormat is a file of bytes sealed as a backup is, but not one: the
 // usage a computer shares through sync (#542). Open refuses it.
-const dataFormat = "magpie-data"
+const dataFormat = "pigeon-data"
 
 // keys are the keys derived this run, by passphrase and salt: a computer
 // seals every file it shares, and every backup, with one salt, and opens
@@ -74,14 +74,16 @@ func SealData(data []byte, pass string) ([]byte, error) {
 // OpenData opens what SealData sealed.
 func OpenData(sealed []byte, pass string) ([]byte, error) {
 	var e envelope
-	if json.Unmarshal(sealed, &e) != nil || e.Format != dataFormat {
-		return nil, errors.New("not a file magpie sealed")
+	// a file another computer sealed before the rename says magpie: it is
+	// pigeon's all the same
+	if json.Unmarshal(sealed, &e) != nil || (e.Format != dataFormat && e.Format != "magpie-data") {
+		return nil, errors.New("not a file pigeon sealed")
 	}
 	if e.Version != 1 || e.KDF != "pbkdf2-sha256" {
-		return nil, errors.New("sealed by a newer magpie")
+		return nil, errors.New("sealed by a newer pigeon")
 	}
 	if e.Iterations < 100_000 || e.Iterations > 10_000_000 || len(e.Nonce) != 12 || len(e.Salt) < 16 {
-		return nil, errors.New("not a file magpie sealed")
+		return nil, errors.New("not a file pigeon sealed")
 	}
 	key, err := derived(pass, e)
 	if err != nil {

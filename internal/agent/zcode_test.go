@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func TestZCode(t *testing.T) {
@@ -279,7 +279,7 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := zcode(home)
-	if err := a.Fields[0].Set(magpieID); err != nil {
+	if err := a.Fields[0].Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	path := filepath.Join(home, ".zcode", "v2", "config.json")
@@ -310,11 +310,11 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 		json.Unmarshal(b, &r)
 		var base, key string
 		for _, p := range r.Config.ProviderConfigRules.ProviderRules {
-			if p.ProviderID == magpieID {
+			if p.ProviderID == pigeonID {
 				base, key = p.Config.API["baseUrl"], p.Config.Access["apiKey"]
 			}
 		}
-		o := c.Provider[magpieID].Options
+		o := c.Provider[pigeonID].Options
 		return o["baseURL"], o["apiKey"], base, key
 	}
 
@@ -355,7 +355,7 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 	}
 
 	point("https://nas.example:8443", "nas-key")
-	if err := a.Fields[0].Set(magpieID); err != nil {
+	if err := a.Fields[0].Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	if b, k, rb, rk := addr(); b != gateway.URL() || k != gateway.Token || rb != b || rk != k {
@@ -374,7 +374,7 @@ func TestZCodeKeepsRemoteAddress(t *testing.T) {
 		os.WriteFile(file, []byte(strings.ReplaceAll(s, `"apiKey":"`+wasKey+`"`, `"apiKey":"`+key+`"`)), 0o644)
 	}
 	for _, file := range []string{rules, path} {
-		if err := a.Fields[0].Set(magpieID); err != nil {
+		if err := a.Fields[0].Set(pigeonID); err != nil {
 			t.Fatal(err)
 		}
 		only(file, "http://10.0.0.8:3425", "nas-key")
@@ -570,7 +570,7 @@ func TestZCodeKeepsTheUsersSettings(t *testing.T) {
 			t.Fatalf("%v\n%s", err, raw)
 		}
 		for _, r := range zcodeList(zcodeObj(zcodeObj(d, "config"), "providerConfigRules"), "providerRules") {
-			if m := r.(map[string]any); m["providerId"] == magpieID {
+			if m := r.(map[string]any); m["providerId"] == pigeonID {
 				return d, m
 			}
 		}

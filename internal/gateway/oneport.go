@@ -7,7 +7,7 @@ import (
 )
 
 // Front is what the gateway's own listener serves: Handler behind
-// lanGuard, built once. `magpie web`'s port hands the gateway's client
+// lanGuard, built once. `pigeon web`'s port hands the gateway's client
 // routes (ClientPath) to it too, so a request there is judged exactly as
 // one on the gateway's port: the allow list, a key from another machine
 // or through a proxy, a rebound page's Host, and corsGuard's Origin rules.
@@ -28,12 +28,12 @@ var clientPrefixes = []string{
 	"/muse-code/models", CodexPath, AlphaSearchPath, "/mcp",
 }
 
-// ClientPath: p is one of the gateway's client routes, which `magpie web`
+// ClientPath: p is one of the gateway's client routes, which `pigeon web`
 // answers on its own port too by handing it to the gateway, so one address
 // (one reverse-proxy location) serves the page and the agents (zgcwkj on
 // Discord). The page's own routes keep its key: /api/* is the page's, so
 // the Ollama and Claude Desktop routes there, and the Claude helper's
-// callbacks under /_magpie/, stay on the gateway's port alone. A path that
+// callbacks under /_pigeon/, stay on the gateway's port alone. A path that
 // isn't clean (a "..", a "//") is none, and stays behind the page's key.
 func ClientPath(p string) bool {
 	if p == "" || path.Clean(p) != strings.TrimSuffix(p, "/") && p != "/" {

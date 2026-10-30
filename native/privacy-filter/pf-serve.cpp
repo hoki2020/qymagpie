@@ -1,4 +1,4 @@
-// pf-serve runs OpenAI's Privacy Filter for magpie's masking (internal/pii):
+// pf-serve runs OpenAI's Privacy Filter for pigeon's masking (internal/pii):
 // a process of its own, so the model's 1.6 GB is let go by ending it and a
 // crash in a GPU driver ends no gateway.
 //

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/qoder"
+	"github.com/hoki2020/pigeon/internal/qoder"
 )
 
 // roundTrip moves id's saved accounts out as the plugin keeps them and back

@@ -40,15 +40,15 @@ const REPO = "yetone/magpie-releases";
 const TTL = 300; // seconds the newest release is remembered
 
 const SHORT = {
-  "mac-arm64": "magpie-darwin-arm64.dmg",
-  "mac-intel": "magpie-darwin-amd64.dmg",
-  "mac-amd64": "magpie-darwin-amd64.dmg",
+  "mac-arm64": "pigeon-darwin-arm64.dmg",
+  "mac-intel": "pigeon-darwin-amd64.dmg",
+  "mac-amd64": "pigeon-darwin-amd64.dmg",
   windows: "magpie-windows-amd64.exe",
   "windows-amd64": "magpie-windows-amd64.exe",
-  "windows-arm64": "magpie-windows-arm64.exe",
-  linux: "magpie-linux-amd64",
-  "linux-amd64": "magpie-linux-amd64",
-  "linux-arm64": "magpie-linux-arm64",
+  "windows-arm64": "pigeon-windows-arm64.exe",
+  linux: "pigeon-linux-amd64",
+  "linux-amd64": "pigeon-linux-amd64",
+  "linux-arm64": "pigeon-linux-arm64",
 };
 
 // The bare docs paths open the getting-started guide.
@@ -72,15 +72,15 @@ export default {
     if (url.pathname === "/api/partners") {
       const now = Date.now();
       if (PARTNERS.some((p) => live(p, now)) && Math.random() < 1 / FETCH_SAMPLE)
-        ctx.waitUntil(capture("magpie partners fetch", { weight: FETCH_SAMPLE, country: country(req) }));
+        ctx.waitUntil(capture("pigeon partners fetch", { weight: FETCH_SAMPLE, country: country(req) }));
       return json({ partners: served(PARTNERS, now) }, 200, { "Cache-Control": "public, max-age=600" });
     }
     if (url.pathname.startsWith("/go/")) {
       let id, what, region, to, counted;
       try {
         [, , id, what, region] = url.pathname.split("/").map(decodeURIComponent);
-        if ((to = goTarget(PARTNERS, id, what, region))) counted = ["magpie partner go", { id, what, region: region || "" }];
-        else if (region === undefined && (to = sponsorTarget(SPONSORS, id, what))) counted = ["magpie sponsor go", { id, where: what }];
+        if ((to = goTarget(PARTNERS, id, what, region))) counted = ["pigeon partner go", { id, what, region: region || "" }];
+        else if (region === undefined && (to = sponsorTarget(SPONSORS, id, what))) counted = ["pigeon sponsor go", { id, where: what }];
       } catch {}
       if (!to) return new Response("not found\n", { status: 404 });
       if (req.method === "GET") ctx.waitUntil(capture(counted[0], { ...counted[1], country: country(req) }));
@@ -151,15 +151,15 @@ export default {
 // own counts (provider.CountPartner) go only from users who let the stats
 // go, and these are what the server sees anyway. /api/partners hands out
 // each partner's website and key page as a /go link, which counts the
-// click (event "magpie partner go") and sends the browser on. Each app
+// click (event "pigeon partner go") and sends the browser on. Each app
 // fetches the list every six hours, so the fetches tell how many apps a
-// partner can be seen in: one in FETCH_SAMPLE is sent, as "magpie partners
+// partner can be seen in: one in FETCH_SAMPLE is sent, as "pigeon partners
 // fetch" with weight FETCH_SAMPLE (sum it), and only while someone is
 // listed. No id, address or account goes: a country, at most.
 const FETCH_SAMPLE = 10;
 const GO = "https://usemagpie.ai/go/";
 const POSTHOG = "https://us.i.posthog.com/i/v0/e/";
-// the Magpie project's PostHog key, as the app's (internal/stats): it can
+// the Pigeon project's PostHog key, as the app's (internal/stats): it can
 // send events and read nothing
 const POSTHOG_KEY = "phc_nyDyYyrUTRGvNq5U7FBesCyM2j4GdKeqGp8ko7DBerTC";
 
@@ -184,15 +184,15 @@ export function served(list, now) {
 
 // goTarget is where a /go link sends the browser: the partner's own key
 // page or website, the region's where it has one. Only partners.js's own
-// addresses, never one the link names. It says it came from magpie, as
-// ref=magpie, unless the address names a ref of its own (a referral code).
+// addresses, never one the link names. It says it came from pigeon, as
+// ref=pigeon, unless the address names a ref of its own (a referral code).
 export function goTarget(list, id, what, region) {
   const p = list.find((x) => x.id === id);
   const field = what === "keys" ? "keysUrl" : what === "site" ? "website" : "";
   if (!p || !field) return "";
-  if (!region) return fromMagpie(p[field] || "");
+  if (!region) return fromPigeon(p[field] || "");
   const r = (p.regions || []).find((x) => x.id === region);
-  return r ? fromMagpie(r[field] || p[field] || "") : "";
+  return r ? fromPigeon(r[field] || p[field] || "") : "";
 }
 
 // sponsorTarget is where a sponsor's /go link sends the browser: the link
@@ -204,11 +204,11 @@ export function sponsorTarget(list, id, where) {
   return s[where] || "";
 }
 
-function fromMagpie(to) {
+function fromPigeon(to) {
   if (!to) return "";
   try {
     const u = new URL(to);
-    if (!u.searchParams.has("ref")) u.searchParams.set("ref", "magpie");
+    if (!u.searchParams.has("ref")) u.searchParams.set("ref", "pigeon");
     return u.toString();
   } catch {
     return to;
@@ -625,7 +625,7 @@ export async function icon(raw) {
   let res;
   try {
     res = await fetch(u.toString(), {
-      headers: { Accept: "image/*", "User-Agent": "magpie-icon/1 (+https://usemagpie.ai)" },
+      headers: { Accept: "image/*", "User-Agent": "pigeon-icon/1 (+https://usemagpie.ai)" },
       redirect: "follow",
       signal: AbortSignal.timeout(10000),
       // a missing or failing picture is asked for again soon, not in a day

@@ -82,7 +82,7 @@ func TestCallbackGoesPastTheAgentsProxy(t *testing.T) {
 	p := "http://" + proxy.Addr().String()
 	cmd := exec.CommandContext(t.Context(), os.Args[0])
 	cmd.Env = append(os.Environ(), helperEnv+"=1",
-		"MAGPIE_MCP_CALLBACK="+cb.URL+"/_magpie/claude-mcp/tok", "MAGPIE_MCP_TOOLS="+tools,
+		"MAGPIE_MCP_CALLBACK="+cb.URL+"/_pigeon/claude-mcp/tok", "MAGPIE_MCP_TOOLS="+tools,
 		"HTTPS_PROXY="+p, "https_proxy="+p, "HTTP_PROXY="+p, "http_proxy="+p,
 		"ALL_PROXY="+p, "all_proxy="+p, "NO_PROXY=localhost,127.0.0.1,::1", "no_proxy=localhost,127.0.0.1,::1")
 	in, _ := cmd.StdinPipe()

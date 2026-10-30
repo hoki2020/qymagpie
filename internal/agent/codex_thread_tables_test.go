@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // codexThreads makes Codex's state database with a thread on each of the

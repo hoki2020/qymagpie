@@ -8,7 +8,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/hoki2020/pigeon/internal/agent"
 )
 
 // claudeOwnSignIn is Claude Code's .credentials.json after /mcp signed in

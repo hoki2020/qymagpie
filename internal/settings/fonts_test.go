@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/fonts"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/fonts"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 func TestFontChoicesPersistAndStayLocal(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Packing1 on Discord: dsh through magpie alone, every web search failed
@@ -51,7 +51,7 @@ func TestDshSearchThroughGateway(t *testing.T) {
 
 	// the gateway's address moved: the round that writes the route again
 	// writes the search's too, its model kept
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), "http://127.0.0.1:9"); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), "http://127.0.0.1:9"); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.Contains(s, `baseURL: "http://127.0.0.1:9/v1"`) || !strings.Contains(s, `model: "deepseek/flash"`) {
@@ -151,7 +151,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 
 	// cleared in Settings: the next round asks dsh's start again
 	name("")
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.Contains(s, `model: "deepseek/pro"`) || strings.Contains(s, `model: "oai/gpt-6-luna"`) {
@@ -159,7 +159,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	}
 	// named again, while dsh already runs through magpie
 	name("oai/gpt-6-luna")
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.Contains(s, `model: "oai/gpt-6-luna"`) {
@@ -167,7 +167,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	}
 	// provider search off: the start model, as before
 	name("off")
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.Contains(s, `model: "deepseek/pro"`) {
@@ -187,7 +187,7 @@ func TestDshSearchAsksNamedSearcher(t *testing.T) {
 	if err := f.Set("magpie/deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
 	}
 	if s = read(); !strings.HasPrefix(s, own) || strings.Count(s, dshSearchRow) != 1 || strings.Contains(s, `model: "oai/gpt-6-luna"`) {

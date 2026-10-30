@@ -6,34 +6,34 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
-// Which models each agent is shown, from the terminal: magpie visible.
+// Which models each agent is shown, from the terminal: pigeon visible.
 
 const visibleUsage = `usage:
-  magpie visible                          which models each agent is shown
-  magpie visible <agent> <name>[,<name>…] show the agent only these: families (a tag set with
-                                          magpie provider set <id> family=relay, or magpie group set),
+  pigeon visible                          which models each agent is shown
+  pigeon visible <agent> <name>[,<name>…] show the agent only these: families (a tag set with
+                                          pigeon provider set <id> family=relay, or pigeon group set),
                                           provider ids and group ids
-  magpie visible <agent> all              show the agent every model again
-  magpie visible <agent> --only-picked    show the agent only the models ticked for it now; a model
+  pigeon visible <agent> all              show the agent every model again
+  pigeon visible <agent> --only-picked    show the agent only the models ticked for it now; a model
                                           that comes later, of any provider, stays off until it is
                                           ticked in its list on the Agents page
-  magpie visible <agent> --show-new       show it the models that come later again (the default)
+  pigeon visible <agent> --show-new       show it the models that come later again (the default)
 
   An agent not narrowed is shown every model. The gateway's model list and the model lists
-  magpie writes into the agents' files are narrowed alike; a model kept from an agent still
-  answers when the agent asks for it by name. magpie models <agent> shows what it is shown,
+  pigeon writes into the agents' files are narrowed alike; a model kept from an agent still
+  answers when the agent asks for it by name. pigeon models <agent> shows what it is shown,
   and why the others aren't. --only-picked and --show-new keep the models shown as they are,
   and keep the providers, families and groups the agent is narrowed to.
 
-  e.g. magpie provider set opencode-go family=ocgo
-       magpie group set gpt-plus-auto family=relay
-       magpie visible zcode relay,ocgo`
+  e.g. pigeon provider set opencode-go family=ocgo
+       pigeon group set gpt-plus-auto family=relay
+       pigeon visible zcode relay,ocgo`
 
 // names is every name a visibility can hold: the families, and the
 // providers' and groups' ids.
@@ -56,7 +56,7 @@ func visibleCmd(args []string) error {
 	s := settings.Load()
 	if len(args) == 0 {
 		if len(s.Visible) == 0 && len(s.PickedModels) == 0 {
-			fmt.Println(muted.Render("  every agent is shown every model · magpie visible <agent> <family>,… narrows one"))
+			fmt.Println(muted.Render("  every agent is shown every model · pigeon visible <agent> <family>,… narrows one"))
 		}
 		ids := slices.Collect(maps.Keys(s.Visible))
 		for id := range s.PickedModels {
@@ -107,7 +107,7 @@ func visibleCmd(args []string) error {
 		for i, n := range list {
 			n = strings.TrimPrefix(provider.CanonicalRef(n), provider.GroupPrefix)
 			if !slices.ContainsFunc(known, func(k string) bool { return strings.EqualFold(k, n) }) {
-				return fmt.Errorf("%s is no family, provider or group (families: %s; magpie provider set <id> family=%s makes one)",
+				return fmt.Errorf("%s is no family, provider or group (families: %s; pigeon provider set <id> family=%s makes one)",
 					n, orNone(provider.Families()), n)
 			}
 			list[i] = n
@@ -142,17 +142,17 @@ func explainHidden(id string, hidden []provider.Entry) {
 	_, kept := provider.ListedFor(id)
 	if n := len(hidden) - len(kept); n > 0 {
 		if _, only := provider.PickedModels(id); only {
-			fmt.Println(faint.Render("  " + id + " is shown only the models picked for it: " + fmt.Sprint(n) + " not picked, and a new one stays off until it is ticked · magpie visible " + id + " --show-new shows new ones"))
+			fmt.Println(faint.Render("  " + id + " is shown only the models picked for it: " + fmt.Sprint(n) + " not picked, and a new one stays off until it is ticked · pigeon visible " + id + " --show-new shows new ones"))
 		} else {
 			fmt.Println(faint.Render("  " + fmt.Sprint(n) + " taken out of " + id + "'s list on the Agents page"))
 		}
 	} else if _, only := provider.PickedModels(id); only {
-		fmt.Println(faint.Render("  " + id + " is shown only the models picked for it; a new one stays off until it is ticked · magpie visible " + id + " --show-new shows new ones"))
+		fmt.Println(faint.Render("  " + id + " is shown only the models picked for it; a new one stays off until it is ticked · pigeon visible " + id + " --show-new shows new ones"))
 	}
 	hidden = kept
 	names, ok := provider.VisibleTo(id)
 	if !ok {
-		fmt.Println(faint.Render("  " + id + " is shown every provider's models · magpie visible " + id + " <family>,… narrows it"))
+		fmt.Println(faint.Render("  " + id + " is shown every provider's models · pigeon visible " + id + " <family>,… narrows it"))
 		return
 	}
 	fmt.Println(faint.Render("  " + id + " is shown " + strings.Join(names, ", ")))

@@ -5,7 +5,7 @@ package library
 // another node or none at all (loong on Discord: a server his agents in
 // WSL start fine was checked on Windows, where it "exited (1)"). So the
 // check starts a command where the agents given it start it: on this
-// machine for its own agents, and through wsl.exe (wslrun, as magpie runs
+// machine for its own agents, and through wsl.exe (wslrun, as pigeon runs
 // a distro's Claude Code) in each distro whose agents have it.
 
 import (
@@ -14,8 +14,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/wslrun"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/wslrun"
 )
 
 // wslCommand starts a check's command in t's distro; a var for tests.
@@ -26,7 +26,7 @@ var wslCommand = func(ctx context.Context, t wslrun.Tool, args ...string) *exec.
 // checkSides are where s's command is checked: "" for this machine, a
 // distro's name for its agents there, this machine first. Everything is
 // checked here for a server no agent has, with no WSL to start one in or
-// Settings' Detect agents in WSL off, and for a Windows program (magpie's
+// Settings' Detect agents in WSL off, and for a Windows program (pigeon's
 // own image server, the one an agent in WSL is given, which runs on
 // Windows whoever starts it). Nothing here asks WSL anything.
 func checkSides(s *Server) []string {

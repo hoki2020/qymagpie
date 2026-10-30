@@ -87,7 +87,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
             await page.goto("http://magpie.test/?view=gateway");
             await note.waitFor();
             assert.equal(await note.textContent(), w[c.note]);
-            if (c.noAnyKey) assert.equal(await page.locator("#connect code", { hasText: /^magpie$/ }).count(), 0, "a key-less magpie is offered");
+            if (c.noAnyKey) assert.equal(await page.locator("#connect code", { hasText: /^pigeon$/ }).count(), 0, "a key-less pigeon is offered");
             if (!c.picks) return;
             await page.locator("#connectAddress").click();
             await page.locator(".proto-menu .pm-item", { hasText: network }).click();

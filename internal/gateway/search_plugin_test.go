@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gwtool"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The tool point's web search with plugins/search on and off, for a user

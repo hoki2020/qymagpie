@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // zcodeAsking is jinyue806's reproduction of #2622 as they sent it to

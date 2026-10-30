@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // #2285: a Pi subagent's session file sits in a temp folder magpie never

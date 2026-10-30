@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The rewrites a Codex request goes through on its way (#1532, #2354):
@@ -142,11 +142,11 @@ var codexMarks = []func(it map[string]any){
 	func(it map[string]any) { it["type"] = "reasoning"; it["content"] = map[string]any{} },
 	func(it map[string]any) {
 		it["type"] = "compaction"
-		it["encrypted_content"] = magpieCompaction + base64.StdEncoding.EncodeToString([]byte("sum"))
+		it["encrypted_content"] = pigeonCompaction + base64.StdEncoding.EncodeToString([]byte("sum"))
 	},
 	func(it map[string]any) {
 		it["type"] = "compaction_summary"
-		it["encrypted_content"] = magpieCompaction + "!!"
+		it["encrypted_content"] = pigeonCompaction + "!!"
 	},
 	func(it map[string]any) { it["type"] = "compaction"; it["encrypted_content"] = "gAAAA" },
 	func(it map[string]any) { it["type"] = "compaction_trigger" },
@@ -275,7 +275,7 @@ func wasWithModel(body []byte, model string) []byte {
 	return b
 }
 
-func wasCodexInputAs(body []byte, magpieModel, native bool) (_ []byte, compact bool) {
+func wasCodexInputAs(body []byte, pigeonModel, native bool) (_ []byte, compact bool) {
 	var q map[string]json.RawMessage
 	if json.Unmarshal(body, &q) != nil {
 		return body, false
@@ -290,7 +290,7 @@ func wasCodexInputAs(body []byte, magpieModel, native bool) (_ []byte, compact b
 		switch it["type"] {
 		case "compaction", "compaction_summary":
 			enc, _ := it["encrypted_content"].(string)
-			sum, ok := strings.CutPrefix(enc, magpieCompaction)
+			sum, ok := strings.CutPrefix(enc, pigeonCompaction)
 			if !ok {
 				out = append(out, it) // OpenAI's own, for OpenAI
 				continue
@@ -300,7 +300,7 @@ func wasCodexInputAs(body []byte, magpieModel, native bool) (_ []byte, compact b
 				out = append(out, userMessage(codexSummaryPrefix+"\n"+string(b)))
 			}
 		case "compaction_trigger":
-			if !magpieModel || native {
+			if !pigeonModel || native {
 				out = append(out, it)
 				continue
 			}
@@ -309,7 +309,7 @@ func wasCodexInputAs(body []byte, magpieModel, native bool) (_ []byte, compact b
 		case "reasoning":
 			// OpenAI accepts no reasoning content parts in replayed input.
 			// Drop the item so its encrypted_content cannot fail there too.
-			if !magpieModel {
+			if !pigeonModel {
 				if content, present := it["content"]; present && content != nil {
 					parts, ok := content.([]any)
 					if !ok || len(parts) > 0 {

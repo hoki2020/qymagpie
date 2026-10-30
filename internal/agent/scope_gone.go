@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 	"gopkg.in/yaml.v3"
 )
 
@@ -13,15 +13,15 @@ import (
 // models as provider/model. An entry that names one outright, when no model
 // has that name, gets "No models match pattern" from Pi every time it starts
 // (model-resolver.js resolveModelScope); it never takes such an entry out.
-// magpie's catalog sync takes a model out of the provider block it writes
+// pigeon's catalog sync takes a model out of the provider block it writes
 // when it is deselected in a provider's editor, or its provider goes, and
 // then the list's entries on it named nothing (#2055, misaka9981).
 //
-// After the sync, an entry that names one of magpie's models outright (no
-// glob; a thinking level on its end is read off) whose model magpie no
+// After the sync, an entry that names one of pigeon's models outright (no
+// glob; a thinking level on its end is read off) whose model pigeon no
 // longer gives the agent leaves the list. It may be the user's own, so it is
-// remembered, and goes back on the list's end once magpie gives that model
-// again. Globs, entries on other providers and entries on a model magpie
+// remembered, and goes back on the list's end once pigeon gives that model
+// again. Globs, entries on other providers and entries on a model pigeon
 // still gives stay as they are, in their order. A list left with nothing is
 // removed, never written empty, and comes back with its entries. A list the
 // user removed themselves isn't made again.
@@ -60,12 +60,12 @@ func scopeGoneRename(key, from, to string) {
 	}
 }
 
-// scopeMagpieOne is the model an entry names outright on magpie, lowercased
+// scopePigeonOne is the model an entry names outright on pigeon, lowercased
 // and with its level off (bare cuts the level); "" for a glob or an entry on
 // another provider.
-func scopeMagpieOne(p string, bare func(string) string) string {
+func scopePigeonOne(p string, bare func(string) string) string {
 	p = strings.ToLower(bare(strings.TrimSpace(p)))
-	if strings.ContainsAny(p, "*?[") || !strings.HasPrefix(p, magpieID+"/") {
+	if strings.ContainsAny(p, "*?[") || !strings.HasPrefix(p, pigeonID+"/") {
 		return ""
 	}
 	return p
@@ -83,7 +83,7 @@ func piBare(p string) string {
 func ompBare(p string) string { m, _ := ompLevel(p); return m }
 
 // scopeSynced is an enabledModels list, has false when there is none, once
-// it has caught up with offered, the models magpie gives the agent as
+// it has caught up with offered, the models pigeon gives the agent as
 // magpie/<id> lowercased: what goes, what comes back, and what is
 // remembered after.
 func scopeSynced(cur []string, has bool, offered map[string]bool, mem scopeGone, bare func(string) string) (next []string, nextHas bool, out scopeGone, changed bool) {
@@ -93,7 +93,7 @@ func scopeSynced(cur []string, has bool, offered map[string]bool, mem scopeGone,
 	}
 	in := map[string]bool{}
 	for _, p := range cur {
-		one := scopeMagpieOne(p, bare)
+		one := scopePigeonOne(p, bare)
 		if one != "" && !offered[one] {
 			if !slices.Contains(out.Entries, p) {
 				out.Entries = append(out.Entries, p)
@@ -106,7 +106,7 @@ func scopeSynced(cur []string, has bool, offered map[string]bool, mem scopeGone,
 		}
 	}
 	for _, p := range mem.Entries {
-		one := scopeMagpieOne(p, bare)
+		one := scopePigeonOne(p, bare)
 		switch {
 		case one == "", in[one] && offered[one]:
 			// the list names it again already
@@ -123,11 +123,11 @@ func scopeSynced(cur []string, has bool, offered map[string]bool, mem scopeGone,
 	return next, nextHas, out, changed
 }
 
-// magpieOffered is the models of magpie's provider block in a Pi-style
+// pigeonOffered is the models of pigeon's provider block in a Pi-style
 // models.json, as magpie/<id> lowercased; nil when the block or its list
 // isn't there or can't be read, which says nothing about what is offered.
-func magpieOffered(modelsPath string) map[string]bool {
-	raw, ok := edit.GetJSON(modelsPath, "providers."+magpieID+".models")
+func pigeonOffered(modelsPath string) map[string]bool {
+	raw, ok := edit.GetJSON(modelsPath, "providers."+pigeonID+".models")
 	if !ok {
 		return nil
 	}
@@ -144,7 +144,7 @@ func offeredSet(n int, id func(int) string) map[string]bool {
 	out := map[string]bool{}
 	for i := range n {
 		if v := strings.TrimSpace(id(i)); v != "" {
-			out[strings.ToLower(magpieID+"/"+v)] = true
+			out[strings.ToLower(pigeonID+"/"+v)] = true
 		}
 	}
 	if len(out) == 0 {
@@ -154,10 +154,10 @@ func offeredSet(n int, id func(int) string) map[string]bool {
 }
 
 // piScopeSynced catches Pi's enabledModels (settings.json) up with the
-// models magpie's block in models.json gives it; mem is the stash key of
+// models pigeon's block in models.json gives it; mem is the stash key of
 // what was taken out.
 func piScopeSynced(settings, modelsPath, mem string) error {
-	offered := magpieOffered(modelsPath)
+	offered := pigeonOffered(modelsPath)
 	if offered == nil {
 		return nil
 	}
@@ -197,10 +197,10 @@ func piScopeSynced(settings, modelsPath, mem string) error {
 
 // stepcodeScopeSynced is piScopeSynced for StepCode's enabledModels
 // (config.toml). The wiring state's last list follows when the list was
-// still the one magpie last wrote, so a disconnect still knows it as
-// magpie's and puts back the user's own.
+// still the one pigeon last wrote, so a disconnect still knows it as
+// pigeon's and puts back the user's own.
 func stepcodeScopeSynced(at place, path, modelsPath, mem string) error {
-	offered := magpieOffered(modelsPath)
+	offered := pigeonOffered(modelsPath)
 	if offered == nil {
 		return nil
 	}
@@ -248,7 +248,7 @@ func stepcodeScopeSynced(at place, path, modelsPath, mem string) error {
 // ompScopeSynced is piScopeSynced for omp's enabledModels (config.yml),
 // whose plain entries alone it reads; an entry scoped to folders is the
 // user's list for those projects and stays as it is. offered is what
-// models.yml's magpie provider gives omp.
+// models.yml's pigeon provider gives omp.
 func ompScopeSynced(cfg, modelsYML, mem string) error {
 	var doc struct {
 		Providers map[string]struct {
@@ -261,7 +261,7 @@ func ompScopeSynced(cfg, modelsYML, mem string) error {
 	if err != nil || raw == nil || yaml.Unmarshal(raw, &doc) != nil {
 		return nil
 	}
-	ms := doc.Providers[magpieID].Models
+	ms := doc.Providers[pigeonID].Models
 	offered := offeredSet(len(ms), func(i int) string { return ms[i].ID })
 	if offered == nil {
 		return nil

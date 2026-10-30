@@ -32,7 +32,7 @@ const tools = [
   { name: "a_tool_with_a_very_long_name_that_has_no_spaces_in_it_at_all_anywhere" },
 ];
 const found = (fresh) => ({
-  // 4 tools, 3 of them listed: one more than magpie keeps
+  // 4 tools, 3 of them listed: one more than pigeon keeps
   filesystem: fresh ? { state: "ok", tools: 1, toolList: [{ name: "only_one", description: "The one left." }] } : { state: "ok", tools: 4, toolList: tools },
   bare: { state: "ok", tools: 0 },
   ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => ["more" + i, { state: "ok", tools: 0 }])),

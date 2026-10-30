@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func codexHome(t *testing.T, auth, config string) (home string, read func() string) {
@@ -176,7 +176,7 @@ func TestCodexSubagentModel(t *testing.T) {
 		t.Error("a magpie model was taken before Codex runs through magpie")
 	}
 	for _, o := range sub.Options(nil) {
-		if isMagpie(o.Value) {
+		if isPigeon(o.Value) {
 			t.Errorf("magpie model offered before Codex runs through magpie: %s", o.Value)
 		}
 	}

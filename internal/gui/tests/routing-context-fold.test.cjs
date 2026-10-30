@@ -3,7 +3,7 @@
 // tests the fold itself) is one line of a fixed height with a thin bar of
 // what fills the window, a part each, beside how full it is (PILIPALA on
 // X: on a wide window the card took the screen, and the requests and the
-// magpies flying were out of sight under it; Jeremy.Zhou on Discord: the
+// pigeons flying were out of sight under it; Jeremy.Zhou on Discord: the
 // page is too crowded). Folded, the stage and the request list are in view
 // without scrolling at 1440x900 and 1920x1080; at a narrow 440px the head
 // is all the card takes (the stage and the story stacked above it are what
@@ -134,7 +134,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
               bar: bar.width, barIn: bar.right <= head.right + 0.5, over: c.scrollWidth - c.clientWidth, wide: document.documentElement.scrollWidth <= innerWidth };
           });
           assert.equal(await scrollTop(page), 0);
-          assert(at.stage <= at.vh, `the magpies' stage is in view: ${JSON.stringify(at)}`);
+          assert(at.stage <= at.vh, `the pigeons' stage is in view: ${JSON.stringify(at)}`);
           if (width >= 1440) {
             assert(at.head <= at.vh, `the request list's heading is in view: ${JSON.stringify(at)}`);
             assert(at.row <= at.vh, `the first request is in view: ${JSON.stringify(at)}`);

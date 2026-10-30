@@ -5,16 +5,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Codex is told where to compact a long conversation (#876) both from the
 // gateway's /models (provider.CodexListed, which sets catalog.Model.Compact)
 // and from the list magpie writes for it on disk (magpie-models.json,
-// codex.go:593 -> codexcat.Catalog(magpieModels("codex"))).
+// codex.go:593 -> codexcat.Catalog(pigeonModels("codex"))).
 //
-// magpieModels left Compact unset, so codexcat fell back to the one for
+// pigeonModels left Compact unset, so codexcat fell back to the one for
 // every model: a threshold the user set on a model or on its provider
 // reached the gateway's list but not the one Codex reads from disk.
 //

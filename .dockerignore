@@ -4,6 +4,6 @@
 dist
 site
 build
-magpie.app
+pigeon.app
 /*.md
 .DS_Store

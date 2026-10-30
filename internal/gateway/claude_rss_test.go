@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 // giveRSS has every Claude Code run read as holding rss (over the budget

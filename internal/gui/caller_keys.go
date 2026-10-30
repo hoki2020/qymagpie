@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/budget"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // keyRow is a gateway key as the Gateway page lists it, with what it has
@@ -66,7 +66,7 @@ func callerKeyRoutes(mux *http.ServeMux) {
 		accounts := []keyModelJSON{}
 		for _, e := range provider.Catalog() {
 			if e.Group != "" {
-				// by the id magpie keeps it by, group/<id>, as a key held to it
+				// by the id pigeon keeps it by, group/<id>, as a key held to it
 				// before names it: a found group's auto/<model> passes for it
 				// (gateway's allows), and its name is what the picker shows
 				out = append(out, keyModelJSON{ID: provider.GroupPrefix + e.Group, Name: cmp.Or(e.Name, e.Group), Group: true})

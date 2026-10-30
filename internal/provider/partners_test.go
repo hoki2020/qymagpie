@@ -30,7 +30,7 @@ func fetchPartnersNow() {
 
 func partnerFeedServer(t *testing.T, body *atomic.Value) *httptest.Server {
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("User-Agent") != "magpie" {
+		if r.Header.Get("User-Agent") != "pigeon" {
 			t.Errorf("User-Agent %q", r.Header.Get("User-Agent"))
 		}
 		_, _ = rw.Write([]byte(body.Load().(string)))

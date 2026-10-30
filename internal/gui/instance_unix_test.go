@@ -12,7 +12,7 @@ import (
 // A second magpie on the same config finds the first one's lock held, a
 // copy elsewhere (magpie-dev) has its own, and a lock whose holder ended,
 // as when the Mac shuts down with magpie running, is free again (Crispin
-// on Discord: two magpies after each boot).
+// on Discord: two pigeons after each boot).
 func TestOneMagpieAtATime(t *testing.T) {
 	dir := t.TempDir()
 	if os.Getenv("MAGPIE_HOLD_LOCK") != "" {

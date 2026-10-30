@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 func aside(home string) *Agent { return asideIn(here(home)) }
@@ -55,11 +55,11 @@ func asideIn(at place) *Agent {
 				}
 				return opts
 			}
-			return append(asideOwnOptions(c.models, cur[key]), viaMagpie("aside", "magpie/")...)
+			return append(asideOwnOptions(c.models, cur[key]), viaPigeon("aside", "magpie/")...)
 		}
 		a.Fields = append(a.Fields, f)
 	}
-	// which of Aside's accounts magpie configures: empty follows the one
+	// which of Aside's accounts pigeon configures: empty follows the one
 	// Aside has active (#1499)
 	a.Fields = append(a.Fields, Field{Key: "account", Label: "account", Quiet: true,
 		Get: func() string {
@@ -78,7 +78,7 @@ var asideRoles = []string{"fast", "standard", "deep", "visual"}
 
 const asideImageKey = "imageGenerationModel"
 
-// asideDir is the folder of the Aside account magpie configures
+// asideDir is the folder of the Aside account pigeon configures
 // (asideChoice).
 func asideDir(at place) string { return asideAccountDir(at, asideChoice(at)) }
 

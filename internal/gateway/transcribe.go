@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // transcribe serves OpenAI's speech-to-text APIs (#2053):
@@ -37,7 +37,7 @@ func (s *Server) transcribe(path, operation string) http.HandlerFunc {
 			return
 		}
 		if a.model == "" {
-			writeError(w, provider.Chat, 400, "name the model: the form's \"model\" is a magpie model id, provider/model (openai/whisper-1, groq/whisper-large-v3)")
+			writeError(w, provider.Chat, 400, "name the model: the form's \"model\" is a pigeon model id, provider/model (openai/whisper-1, groq/whisper-large-v3)")
 			return
 		}
 		s.serveRetrieval(w, r, path, operation, start, a.model, a)
@@ -45,7 +45,7 @@ func (s *Server) transcribe(path, operation string) http.HandlerFunc {
 }
 
 // audioForm is a speech-to-text request: its multipart body as sent, and
-// the fields magpie reads or may rewrite.
+// the fields pigeon reads or may rewrite.
 type audioForm struct {
 	raw      []byte
 	ctype    string // as sent, its boundary in it

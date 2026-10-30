@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/testenv"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
 )
 
 // piAddedTool is Pi 1.2.0's own Chat request for the turn after an

@@ -3,7 +3,7 @@ package tui
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A local server's preset (Ollama, LM Studio, oMLX, MLX-Serve) is asked

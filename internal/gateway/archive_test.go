@@ -14,7 +14,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // memBucket is a bucket in memory, or one that refuses every write.

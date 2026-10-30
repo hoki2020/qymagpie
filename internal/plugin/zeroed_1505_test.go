@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/lastgood"
+	"github.com/hoki2020/pigeon/internal/lastgood"
 )
 
 // zeroedAuth is plugin-auth.json as #1505's Windows crash left it: its full

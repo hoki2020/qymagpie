@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 func TestMixedDecisionGateway(t *testing.T) {
@@ -349,7 +349,7 @@ func TestJevPicksTheIntent(t *testing.T) {
 	n := 0
 	for _, r := range usage.Load(time.Time{}) {
 		if r.Provider == "ts" {
-			if r.Kind != "routing" || !r.ByMagpie() {
+			if r.Kind != "routing" || !r.ByPigeon() {
 				t.Fatalf("Jev's record: %+v", r)
 			}
 			n++

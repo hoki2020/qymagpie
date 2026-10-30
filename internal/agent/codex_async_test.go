@@ -9,8 +9,8 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // setAsyncCompact sets Codex's background compaction as the Settings row
@@ -57,7 +57,7 @@ func asyncOf(t *testing.T, config string) (feature any, capability any) {
 	}
 	features, _ := doc["features"].(map[string]any)
 	providers, _ := doc["model_providers"].(map[string]any)
-	p, _ := providers[magpieID].(map[string]any)
+	p, _ := providers[pigeonID].(map[string]any)
 	caps, _ := p["capabilities"].(map[string]any)
 	return features["async_compaction"], caps["remote_compaction"]
 }

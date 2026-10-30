@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/probelog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A provider renamed is shown by the id it has now everywhere usage names

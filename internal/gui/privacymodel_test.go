@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/pii"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // The local masking model is on only once it is on disk: turned on where

@@ -1,7 +1,7 @@
-// Package mcpauth signs magpie in to a remote MCP server that asks for an
+// Package mcpauth signs pigeon in to a remote MCP server that asks for an
 // OAuth sign-in (Neon, Notion, Supabase…), once for every agent (#615).
 // Each agent would otherwise run the sign-in itself and keep its own token,
-// in its own place: magpie signs in, keeps the tokens in mcp-signins.json
+// in its own place: pigeon signs in, keeps the tokens in mcp-signins.json
 // beside its other sign-ins, renews them, and the gateway's /mcp/<name>
 // relays the agents' requests to the server with them (gateway/mcp.go).
 // The library then gives the agents that address in place of the server's.
@@ -35,15 +35,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/filelock"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/filelock"
+	"github.com/hoki2020/pigeon/internal/lastgood"
+	"github.com/hoki2020/pigeon/internal/netproxy"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/steady"
 )
 
-// Client makes the sign-in's requests, through the proxy magpie's others
+// Client makes the sign-in's requests, through the proxy pigeon's others
 // take; tests point it elsewhere.
 var Client = &http.Client{Timeout: 30 * time.Second, Transport: proxied()}
 
@@ -63,11 +63,11 @@ var renewLead = 2 * time.Minute
 // signInTimeout is how long a sign-in waits for the browser.
 var signInTimeout = 10 * time.Minute
 
-// ErrNotSignedIn is a server magpie holds no sign-in for.
-var ErrNotSignedIn = errors.New("magpie isn't signed in to this server")
+// ErrNotSignedIn is a server pigeon holds no sign-in for.
+var ErrNotSignedIn = errors.New("pigeon isn't signed in to this server")
 
 // ErrExpired is a sign-in the server no longer takes: it has to be done again.
-var ErrExpired = errors.New("magpie's sign-in to this server has run out: sign in again in the Library")
+var ErrExpired = errors.New("pigeon's sign-in to this server has run out: sign in again in the Library")
 
 // ErrNoSignIn is a server that answered an agent's first request without
 // asking for a sign-in: it works as it is. One that takes a key as a header
@@ -75,22 +75,22 @@ var ErrExpired = errors.New("magpie's sign-in to this server has run out: sign i
 // mcp.exa.ai/mcp?login) is signed in to there. The GUI has it in Chinese.
 var ErrNoSignIn = errors.New("this server already works without signing in, so there is nothing to sign in to: the agents given it can use it as it is. A key it takes goes in Headers; a server that signs in at another address (as Exa's ?login) needs that URL")
 
-// ErrClientRefused is a server whose authorization server turned magpie's
+// ErrClientRefused is a server whose authorization server turned pigeon's
 // registration away with 401 or 403: it admits only the clients it lists,
 // as Figma's (mcp.figma.com, a 403 "Forbidden" to any client_name it doesn't
-// list, #1619). magpie doesn't pass itself off as a listed client; a server
-// magpie isn't signed in to is given to the agents at its own address, so
+// list, #1619). pigeon doesn't pass itself off as a listed client; a server
+// pigeon isn't signed in to is given to the agents at its own address, so
 // each agent signs in there itself. The GUI has it in every language.
-var ErrClientRefused = errors.New("this server's sign-in admits only the apps it lists and turned magpie away, so magpie can't sign in for the agents. The agents given it still have the server's own address: sign in from each agent itself (in Claude Code, run /mcp and pick the server)")
+var ErrClientRefused = errors.New("this server's sign-in admits only the apps it lists and turned pigeon away, so pigeon can't sign in for the agents. The agents given it still have the server's own address: sign in from each agent itself (in Claude Code, run /mcp and pick the server)")
 
 // ErrNoRegistration is a server whose sign-in doesn't let an app register
-// itself (GitHub's, 新v学员 on Discord): magpie signs in to it only as an
+// itself (GitHub's, 新v学员 on Discord): pigeon signs in to it only as an
 // OAuth app of the user's own, made with the server's vendor, as Claude
 // Code does with --client-id. The page opens the server's fields for one
 // on it.
-var ErrNoRegistration = errors.New("the server's sign-in doesn't let an app register itself (no dynamic client registration), so magpie signs in to it only as an OAuth app of your own: make one with the server's vendor (GitHub's under Settings › Developer settings › OAuth Apps), with http://localhost/callback as its callback URL, then give its client ID and secret under \"OAuth app\" in the server's editor")
+var ErrNoRegistration = errors.New("the server's sign-in doesn't let an app register itself (no dynamic client registration), so pigeon signs in to it only as an OAuth app of your own: make one with the server's vendor (GitHub's under Settings › Developer settings › OAuth Apps), with http://localhost/callback as its callback URL, then give its client ID and secret under \"OAuth app\" in the server's editor")
 
-// Record is magpie's sign-in to one server.
+// Record is pigeon's sign-in to one server.
 type Record struct {
 	URL      string `json:"url"`                // the server's, as the library has it
 	Resource string `json:"resource,omitempty"` // what the tokens are for (RFC 8707)
@@ -112,7 +112,7 @@ type Record struct {
 }
 
 // fileMu is held for a change to mcp-signins.json read afresh under it,
-// across magpies too (#1674): the gateway renews a sign-in while a magpie
+// across pigeons too (#1674): the gateway renews a sign-in while a pigeon
 // run from a terminal checks or renames a server.
 var fileMu = filelock.Mutex{Path: func() string { return path() + ".lock" }}
 
@@ -194,9 +194,9 @@ func Get(name string) (Record, bool) {
 	return *r, true
 }
 
-// SignedIn says whether magpie holds a sign-in to the server by that name
-// at that URL: one to give the agents magpie's address for. One the server
-// refused to renew still is, so the agents get magpie's word to sign in
+// SignedIn says whether pigeon holds a sign-in to the server by that name
+// at that URL: one to give the agents pigeon's address for. One the server
+// refused to renew still is, so the agents get pigeon's word to sign in
 // again rather than a sign-in of their own.
 func SignedIn(name, serverURL string) bool {
 	r, ok := Get(name)
@@ -219,7 +219,7 @@ func StatusOf(name, serverURL string) Status {
 	return Status{SignedIn: true, Dead: r.Dead, At: r.At}
 }
 
-// SignOut forgets magpie's sign-in to the server.
+// SignOut forgets pigeon's sign-in to the server.
 func SignOut(name string) error {
 	had := false
 	err := update(func(m map[string]*Record) bool {
@@ -297,7 +297,7 @@ func renew(ctx context.Context, name string, still func(Record) bool) (string, e
 	mu := lockOf(name)
 	mu.Lock()
 	defer mu.Unlock()
-	// one renewal at a time across magpies as well: a server that rotates
+	// one renewal at a time across pigeons as well: a server that rotates
 	// its refresh tokens takes each once
 	unlock, _ := filelock.Lock(path()+".renew.lock", filelock.Wait)
 	defer unlock()
@@ -353,7 +353,7 @@ func dead(code string) bool {
 	return false
 }
 
-// Rejected says the server refused access, a token magpie had just
+// Rejected says the server refused access, a token pigeon had just
 // renewed: renewing it again won't help, so the sign-in has run out, and
 // the page says so instead of calling it signed in beside the server's
 // refusal (新v学员 on Discord). A sign-in renewed or redone meanwhile is
@@ -545,7 +545,7 @@ func discover(ctx context.Context, serverURL string) (meta, error) {
 		return meta{}, fmt.Errorf("%q isn't a URL", serverURL)
 	}
 	// ask it something, as an agent would: its 401 says where to sign in
-	body := `{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"` + protocolVersion + `","capabilities":{},"clientInfo":{"name":"magpie","version":"1"}}}`
+	body := `{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"` + protocolVersion + `","capabilities":{},"clientInfo":{"name":"pigeon","version":"1"}}}`
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, serverURL, strings.NewReader(body))
 	if err != nil {
 		return meta{}, err
@@ -625,7 +625,7 @@ func discover(ctx context.Context, serverURL string) (meta, error) {
 	switch {
 	case got:
 		if len(as.Challenges) > 0 && !contains(as.Challenges, "S256") {
-			return meta{}, errors.New("the server's sign-in doesn't offer PKCE (S256), which magpie needs")
+			return meta{}, errors.New("the server's sign-in doesn't offer PKCE (S256), which pigeon needs")
 		}
 		m.Issuer, m.AuthorizeURL, m.TokenURL, m.RegisterURL, m.AuthMethods = as.Issuer, as.Authorize, as.Token, as.Register, as.AuthMethods
 		m.Scope = withOffline(m.Scope, as.ScopesSupport)
@@ -665,7 +665,7 @@ func contains(l []string, s string) bool {
 	return false
 }
 
-// register makes magpie a client of the authorization server, sent back to
+// register makes pigeon a client of the authorization server, sent back to
 // redirect.
 func register(ctx context.Context, m meta, redirect string) (id, secret, method string, err error) {
 	if m.RegisterURL == "" {
@@ -674,18 +674,18 @@ func register(ctx context.Context, m meta, redirect string) (id, secret, method 
 	method = "none"
 	if len(m.AuthMethods) > 0 && !contains(m.AuthMethods, "none") {
 		// the metadata's order is no preference: one listing private_key_jwt
-		// first, which magpie can't do, may take a secret too
+		// first, which pigeon can't do, may take a secret too
 		switch {
 		case contains(m.AuthMethods, "client_secret_post"):
 			method = "client_secret_post"
 		case contains(m.AuthMethods, "client_secret_basic"):
 			method = "client_secret_basic"
 		default:
-			return "", "", "", fmt.Errorf("the server's token endpoint takes only %s, which magpie can't do", strings.Join(m.AuthMethods, ", "))
+			return "", "", "", fmt.Errorf("the server's token endpoint takes only %s, which pigeon can't do", strings.Join(m.AuthMethods, ", "))
 		}
 	}
 	reg := map[string]any{
-		"client_name":                "Magpie",
+		"client_name":                "Pigeon",
 		"client_uri":                 "https://usemagpie.ai",
 		"redirect_uris":              []string{redirect},
 		"grant_types":                []string{"authorization_code", "refresh_token"},
@@ -712,7 +712,7 @@ func register(ctx context.Context, m meta, redirect string) (id, secret, method 
 		return "", "", "", ErrClientRefused
 	}
 	if resp.StatusCode/100 != 2 {
-		return "", "", "", fmt.Errorf("registering magpie with the server's sign-in failed (%d): %s", resp.StatusCode, strings.TrimSpace(string(rb)))
+		return "", "", "", fmt.Errorf("registering pigeon with the server's sign-in failed (%d): %s", resp.StatusCode, strings.TrimSpace(string(rb)))
 	}
 	var out struct {
 		ID     string `json:"client_id"`
@@ -720,15 +720,15 @@ func register(ctx context.Context, m meta, redirect string) (id, secret, method 
 		Method string `json:"token_endpoint_auth_method"`
 	}
 	if err := json.Unmarshal(rb, &out); err != nil || out.ID == "" {
-		return "", "", "", errors.New("the server's sign-in registered magpie but gave it no client id")
+		return "", "", "", errors.New("the server's sign-in registered pigeon but gave it no client id")
 	}
 	if out.Method != "" {
-		// the server may register magpie for another of the methods it
+		// the server may register pigeon for another of the methods it
 		// supports than the one asked for (RFC 7591's registration
-		// response): one magpie can't send would fail the code exchange
+		// response): one pigeon can't send would fail the code exchange
 		// after the browser round trip, so it is said here instead
 		if !contains([]string{"none", "client_secret_post", "client_secret_basic"}, out.Method) {
-			return "", "", "", fmt.Errorf("the server's sign-in registered magpie for %s, which magpie can't do", out.Method)
+			return "", "", "", fmt.Errorf("the server's sign-in registered pigeon for %s, which pigeon can't do", out.Method)
 		}
 		method = out.Method
 	}
@@ -784,10 +784,10 @@ func randomToken(n int) string {
 }
 
 // App is an OAuth app of the user's own, for a server whose sign-in
-// doesn't let magpie register itself: Claude Code's --client-id,
+// doesn't let pigeon register itself: Claude Code's --client-id,
 // --client-secret and --callback-port. Its callback is Claude Code's,
 // http://localhost:<port>/callback, so an app made for Claude Code signs
-// magpie in as it is; the callback is still listened for on 127.0.0.1
+// pigeon in as it is; the callback is still listened for on 127.0.0.1
 // alone, as Claude Code does. Without a CallbackPort the port is any free
 // one, which a loopback callback URL registered without one takes
 // (GitHub's, RFC 8252).
@@ -797,14 +797,14 @@ type App struct {
 	CallbackPort int
 }
 
-// Start begins signing magpie in to the server called name at serverURL:
+// Start begins signing pigeon in to the server called name at serverURL:
 // open the State's URL in a browser and the rest happens on its own;
 // StatusOf follows it.
 func Start(ctx context.Context, name, serverURL string) (State, error) {
 	return StartWith(ctx, name, serverURL, nil)
 }
 
-// StartWith is Start as app when there is one, which magpie then doesn't
+// StartWith is Start as app when there is one, which pigeon then doesn't
 // register in its place.
 func StartWith(ctx context.Context, name, serverURL string, app *App) (State, error) {
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
@@ -824,7 +824,7 @@ func StartWith(ctx context.Context, name, serverURL string, app *App) (State, er
 		}
 		return State{}, err
 	}
-	// magpie's own registration names 127.0.0.1, as RFC 8252 asks; an
+	// pigeon's own registration names 127.0.0.1, as RFC 8252 asks; an
 	// app of the user's own is called back as Claude Code calls it back,
 	// at localhost (its v2.1.231 went back to localhost because servers
 	// that match the registered URL exactly refused 127.0.0.1).
@@ -871,13 +871,13 @@ func StartWith(ctx context.Context, name, serverURL string, app *App) (State, er
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		v := r.URL.Query()
 		if v.Get("state") != state {
-			page(w, http.StatusBadRequest, "This sign-in link is out of date. Start the sign-in again from Magpie.")
+			page(w, http.StatusBadRequest, "This sign-in link is out of date. Start the sign-in again from Pigeon.")
 			return
 		}
 		f.mu.Lock()
 		if f.claimed || f.finished {
 			f.mu.Unlock()
-			page(w, http.StatusOK, "Magpie has this sign-in already. You can close this tab.")
+			page(w, http.StatusOK, "Pigeon has this sign-in already. You can close this tab.")
 			return
 		}
 		f.claimed = true
@@ -900,7 +900,7 @@ func StartWith(ctx context.Context, name, serverURL string, app *App) (State, er
 		t, err := tokenRequest(cctx, rec, form)
 		if err != nil {
 			f.finish(State{State: "failed", Error: err.Error()})
-			page(w, http.StatusOK, "Magpie couldn't finish the sign-in: "+err.Error())
+			page(w, http.StatusOK, "Pigeon couldn't finish the sign-in: "+err.Error())
 			return
 		}
 		r2 := rec
@@ -909,10 +909,10 @@ func StartWith(ctx context.Context, name, serverURL string, app *App) (State, er
 			r2.Scope = t.Scope
 		}
 		if err := f.keep(name, r2); err != nil {
-			page(w, http.StatusOK, "Magpie couldn't keep the sign-in: "+err.Error())
+			page(w, http.StatusOK, "Pigeon couldn't keep the sign-in: "+err.Error())
 			return
 		}
-		page(w, http.StatusOK, "Magpie is signed in to "+name+". Every agent given it in the Library uses this sign-in. You can close this tab.")
+		page(w, http.StatusOK, "Pigeon is signed in to "+name+". Every agent given it in the Library uses this sign-in. You can close this tab.")
 	})
 	f.srv = &http.Server{Handler: mux, ReadHeaderTimeout: 10 * time.Second}
 	go f.srv.Serve(ln)
@@ -1014,5 +1014,5 @@ func Cancel(id string) {
 func page(w http.ResponseWriter, status int, msg string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-	fmt.Fprintf(w, `<!doctype html><meta charset="utf-8"><title>Magpie</title><body style="font:15px -apple-system,system-ui,sans-serif;max-width:32em;margin:4em auto;padding:0 1em;color:#222">%s</body>`, html.EscapeString(msg))
+	fmt.Fprintf(w, `<!doctype html><meta charset="utf-8"><title>Pigeon</title><body style="font:15px -apple-system,system-ui,sans-serif;max-width:32em;margin:4em auto;padding:0 1em;color:#222">%s</body>`, html.EscapeString(msg))
 }

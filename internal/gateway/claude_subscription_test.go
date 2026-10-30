@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 func TestClaudeSubscriptionPromptKeepsForeignHarnessOutOfSystem(t *testing.T) {
@@ -434,7 +434,7 @@ func TestSweepBridgeProjectsTakesOnlyTheBridgesFolders(t *testing.T) {
 		claudeProjectName(filepath.Join(link, "T", "magpie-claude-42")),
 	}
 	kept := []string{
-		claudeProjectName(filepath.Join(real, "magpie-claude-")),
+		claudeProjectName(filepath.Join(real, "pigeon-claude-")),
 		claudeProjectName(filepath.Join(real, "magpie-claude-12-x")),
 		claudeProjectName(filepath.Join(real, "other")),
 		claudeProjectName("/Users/me/code/magpie-claude-7"),
@@ -487,7 +487,7 @@ func TestBridgeTempsSwept(t *testing.T) {
 	kept := []string{
 		mk("magpie-claude-777", false), // a run still going
 		mk("magpie-claude-work-501", true),
-		mk("magpie-claude-", true),
+		mk("pigeon-claude-", true),
 		mk("magpie-claude-12-x", true),
 		mk("other-1", true),
 	}
@@ -625,7 +625,7 @@ done
 	}
 }
 
-// A run's Claude Code has the caller's tools only as mcp__magpie__<Name>:
+// A run's Claude Code has the caller's tools only as mcp__pigeon__<Name>:
 // its built-ins are off. A run started anew on a long conversation was told
 // every past call by its bare name ([tool call Bash …]), so the model
 // called Bash, Claude Code answered "Bash is disabled for this session, in

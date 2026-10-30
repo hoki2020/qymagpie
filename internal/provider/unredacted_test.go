@@ -22,7 +22,7 @@ func TestSkipsRedaction(t *testing.T) {
 		{"a public ip", Provider{Unredacted: true, Chat: "http://8.8.8.8/v1"}, false},
 		{"no address", Provider{Unredacted: true}, false},
 		{"an account", Provider{Unredacted: true, Chat: "http://localhost:1/v1", Account: &Account{Agent: "codex"}}, false},
-		{"another magpie", Provider{Unredacted: true, Preset: RemoteMagpiePreset, Anthropic: "http://192.168.1.5:3425"}, false},
+		{"another magpie", Provider{Unredacted: true, Preset: RemotePigeonPreset, Anthropic: "http://192.168.1.5:3425"}, false},
 	}
 	for _, tc := range cases {
 		if got := tc.p.SkipsRedaction(); got != tc.want {

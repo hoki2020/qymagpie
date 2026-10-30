@@ -18,7 +18,7 @@ func registerScheme() error {
 		return err
 	}
 	defer k.Close()
-	_ = k.SetStringValue("", "URL:magpie")
+	_ = k.SetStringValue("", "URL:pigeon")
 	_ = k.SetStringValue("URL Protocol", "")
 	icon, _, err := registry.CreateKey(k, `DefaultIcon`, registry.SET_VALUE)
 	if err == nil {

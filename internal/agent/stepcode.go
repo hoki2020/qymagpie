@@ -15,13 +15,13 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // StepCode keeps its configuration in ~/.stepcode/config.toml (or
 // the parent of an absolute STEP_CODING_AGENT_DIR) and its models in
 // models.json using Pi's provider format.
-// magpie manages defaultProvider and defaultModel in config.toml, and one
+// pigeon manages defaultProvider and defaultModel in config.toml, and one
 // providers.magpie entry in models.json.
 
 func stepcode(home string) *Agent { return stepcodeIn(here(home)) }
@@ -41,11 +41,11 @@ func stepcodeDir(at place) string {
 
 func stepcodeProvider(at place) any {
 	ms := make([]map[string]any, 0)
-	for _, m := range magpieModels("stepcode") {
+	for _, m := range pigeonModels("stepcode") {
 		ms = append(ms, piModelJSON(m, at.gw(), true))
 	}
 	return map[string]any{
-		"name":    "magpie",
+		"name":    "pigeon",
 		"baseUrl": at.v1(),
 		"api":     "openai-completions",
 		"apiKey":  agentKeyAt("stepcode", at.gw()),
@@ -126,9 +126,9 @@ func stepcodeValidateModels(path string) error {
 		if !prov.IsObject() {
 			return fmt.Errorf("%s: 'providers' must be a JSON object", path)
 		}
-		if mag := prov.Get(magpieID); mag.Exists() {
+		if mag := prov.Get(pigeonID); mag.Exists() {
 			if !mag.IsObject() {
-				return fmt.Errorf("%s: 'providers.%s' must be a JSON object", path, magpieID)
+				return fmt.Errorf("%s: 'providers.%s' must be a JSON object", path, pigeonID)
 			}
 		}
 	}
@@ -163,7 +163,7 @@ type stepcodeState struct {
 	LastHasScope        bool     `json:"last_has_scope"`
 	LastScope           []string `json:"last_scope,omitempty"`
 	AppendedScope       []string `json:"appended_scope,omitempty"`
-	OrigMagpieRaw       *string  `json:"orig_magpie_raw,omitempty"`
+	OrigPigeonRaw       *string  `json:"orig_magpie_raw,omitempty"`
 	ConfigFileExisted   bool     `json:"config_file_existed"`
 	ModelsFileExisted   bool     `json:"models_file_existed"`
 	ProvidersMapExisted bool     `json:"providers_map_existed"`
@@ -257,7 +257,7 @@ func stepcodeStartup(cfg stepcodeTOML) string {
 
 // stepcodeRenameRefs moves enabledModels off a renamed provider, in the
 // file and in the scope disconnect remembers, so a reset does not put the
-// old id back and still takes out only what magpie appended.
+// old id back and still takes out only what pigeon appended.
 func stepcodeRenameRefs(at place, path, from, to string) (bool, error) {
 	cur, err := readStepcodeTOML(path)
 	if err != nil {
@@ -312,7 +312,7 @@ func stepcodeIn(at place) *Agent {
 	modelsPath := filepath.Join(dir, "models.json")
 	authPath := filepath.Join(dir, "auth.json")
 
-	block := theirsKept(modelsPath, "providers."+magpieID, func() any { return stepcodeProvider(at) }, "models")
+	block := theirsKept(modelsPath, "providers."+pigeonID, func() any { return stepcodeProvider(at) }, "models")
 	// the entries of enabledModels a sync took out (scope_gone.go)
 	gone := at.key("stepcode.scope.gone")
 
@@ -340,7 +340,7 @@ func stepcodeIn(at place) *Agent {
 			return err
 		}
 
-		if stepcodeValue(curTOML.Provider) == magpieID {
+		if stepcodeValue(curTOML.Provider) == pigeonID {
 			if err := stepcodeSetString(path, "defaultProvider", state.OrigProvider); err != nil {
 				return err
 			}
@@ -388,12 +388,12 @@ func stepcodeIn(at place) *Agent {
 			}
 		}
 
-		if state.OrigMagpieRaw != nil {
-			if err := edit.SetJSON(modelsPath, edit.KV{Path: "providers." + magpieID, Value: json.RawMessage(*state.OrigMagpieRaw)}); err != nil {
+		if state.OrigPigeonRaw != nil {
+			if err := edit.SetJSON(modelsPath, edit.KV{Path: "providers." + pigeonID, Value: json.RawMessage(*state.OrigPigeonRaw)}); err != nil {
 				return err
 			}
 		} else {
-			if err := edit.DelJSON(modelsPath, "providers."+magpieID); err != nil {
+			if err := edit.DelJSON(modelsPath, "providers."+pigeonID); err != nil {
 				return err
 			}
 			if !state.ProvidersMapExisted {
@@ -454,11 +454,11 @@ func stepcodeIn(at place) *Agent {
 			if err := stepcodeValidateModels(modelsPath); err != nil {
 				return "StepCode's models.json is unreadable or malformed"
 			}
-			if stepcodeValue(cur.Provider) != magpieID {
+			if stepcodeValue(cur.Provider) != pigeonID {
 				return ""
 			}
 			return wiringOff("StepCode", modelsPath, func(k string) (string, bool) {
-				return edit.GetJSON(modelsPath, "providers."+magpieID+"."+k)
+				return edit.GetJSON(modelsPath, "providers."+pigeonID+"."+k)
 			}, "baseUrl", at.v1(), "apiKey", agentKeyAt("stepcode", at.gw()))
 		},
 		Sync: func() error {
@@ -472,10 +472,10 @@ func stepcodeIn(at place) *Agent {
 			if err := stepcodeValidateModels(modelsPath); err != nil {
 				return err
 			}
-			if err := syncJSON(modelsPath, "providers."+magpieID, block); err != nil {
+			if err := syncJSON(modelsPath, "providers."+pigeonID, block); err != nil {
 				return err
 			}
-			// an entry on a model magpie no longer gives StepCode names
+			// an entry on a model pigeon no longer gives StepCode names
 			// nothing (#2055, scope_gone.go)
 			return stepcodeScopeSynced(at, path, modelsPath, gone)
 		},
@@ -494,8 +494,8 @@ func stepcodeIn(at place) *Agent {
 					if v == "" {
 						return unwire()
 					}
-					ref, isMag := strings.CutPrefix(v, magpieID+"/")
-					if !isMag || !isMagpie(ref) {
+					ref, isMag := strings.CutPrefix(v, pigeonID+"/")
+					if !isMag || !isPigeon(ref) {
 						p, m, ok := strings.Cut(v, "/")
 						if !ok || p == "" || m == "" {
 							return fmt.Errorf("expected provider/model, got %q", v)
@@ -543,8 +543,8 @@ func stepcodeIn(at place) *Agent {
 						if rawP, ok := edit.GetJSON(modelsPath, "providers"); ok && rawP != "" {
 							state.ProvidersMapExisted = true
 						}
-						if rawMagpie, ok := edit.GetJSON(modelsPath, "providers."+magpieID); ok {
-							state.OrigMagpieRaw = &rawMagpie
+						if rawPigeon, ok := edit.GetJSON(modelsPath, "providers."+pigeonID); ok {
+							state.OrigPigeonRaw = &rawPigeon
 						}
 						state.OrigProvider = curTOML.Provider
 						state.OrigModel = curTOML.Model
@@ -553,7 +553,7 @@ func stepcodeIn(at place) *Agent {
 							state.OrigScope = slices.Clone(*curTOML.Scope)
 						}
 					} else {
-						if stepcodeValue(curTOML.Provider) != magpieID {
+						if stepcodeValue(curTOML.Provider) != pigeonID {
 							state.OrigProvider = curTOML.Provider
 							state.OrigModel = curTOML.Model
 						}
@@ -607,10 +607,10 @@ func stepcodeIn(at place) *Agent {
 						return err
 					}
 
-					if err := edit.SetJSON(modelsPath, edit.KV{Path: "providers." + magpieID, Value: block()}); err != nil {
+					if err := edit.SetJSON(modelsPath, edit.KV{Path: "providers." + pigeonID, Value: block()}); err != nil {
 						return err
 					}
-					if err := edit.SetTOMLTopPreserving(path, edit.KV{Path: "defaultProvider", Value: magpieID}, edit.KV{Path: "defaultModel", Value: ref}); err != nil {
+					if err := edit.SetTOMLTopPreserving(path, edit.KV{Path: "defaultProvider", Value: pigeonID}, edit.KV{Path: "defaultModel", Value: ref}); err != nil {
 						return err
 					}
 					if state.LastHasScope && (curTOML.Scope == nil || !slices.Equal(*curTOML.Scope, state.LastScope)) {
@@ -626,7 +626,7 @@ func stepcodeIn(at place) *Agent {
 					return nil
 				},
 				Options: func(cur map[string]string) []Option {
-					return append(ownOptions(authPath, cur["model"]), viaMagpie("stepcode", magpieID+"/")...)
+					return append(ownOptions(authPath, cur["model"]), viaPigeon("stepcode", pigeonID+"/")...)
 				},
 			},
 		},

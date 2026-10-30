@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // piDistroHome is a distro's / in a temp dir with a user whose ~/.pi holds
@@ -144,7 +144,7 @@ func TestWSLPiPick(t *testing.T) {
 			t.Fatalf("mirrored %v: %v", mirrored, got)
 		}
 		// the same block as native Pi's, the gateway's address aside
-		native, _ := json.Marshal(magpieProviderJSON("pi"))
+		native, _ := json.Marshal(pigeonProviderJSON("pi"))
 		want := strings.ReplaceAll(string(native), `"`+gateway.URL(), `"`+gw)
 		if b, _ := json.Marshal(got); string(b) != want {
 			t.Fatalf("mirrored %v:\n got %s\nwant %s", mirrored, b, want)

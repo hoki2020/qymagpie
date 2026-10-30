@@ -3,7 +3,7 @@ package gui
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // ylorn on Discord: with no cards in the menu bar the tooltip said only

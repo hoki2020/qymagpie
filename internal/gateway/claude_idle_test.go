@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 func idleTestBridge() *subscriptionBridge {

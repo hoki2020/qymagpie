@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // vertexNotAsked points Vertex AI, Google's token endpoint and IAM
@@ -48,7 +48,7 @@ func TestProviderAddVertexPairs(t *testing.T) {
 	for _, args := range [][]string{{"provider", "add", "google-vertex"}, {"provider", "add", "google-vertex", "location=us"}} {
 		err := providerCmd(args)
 		if err == nil || !strings.Contains(err.Error(), "needs the id of your Google Cloud project") ||
-			!strings.Contains(err.Error(), "magpie provider add google-vertex project=") {
+			!strings.Contains(err.Error(), "pigeon provider add google-vertex project=") {
 			t.Fatalf("%v: %v", args[2:], err)
 		}
 	}
@@ -169,7 +169,7 @@ func TestProvidersShowVertexCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if row := lineWith(out, "google-vertex"); !strings.Contains(row, "magpie provider add google-vertex project=") || strings.Contains(row, "<key>") {
+	if row := lineWith(out, "google-vertex"); !strings.Contains(row, "pigeon provider add google-vertex project=") || strings.Contains(row, "<key>") {
 		t.Fatalf("presets: %q", row)
 	}
 	key := filepath.Join(t.TempDir(), "vertex-sa.json")
@@ -261,7 +261,7 @@ func TestProvidersShowVertexWithoutProject(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if row := lineWith(out, "project "); !strings.Contains(row, want) || !strings.Contains(row, "magpie provider set "+id+" project=") {
+		if row := lineWith(out, "project "); !strings.Contains(row, want) || !strings.Contains(row, "pigeon provider set "+id+" project=") {
 			t.Errorf("show, %s: project %q in\n%s", id, row, out)
 		}
 		if strings.Contains(out, "provider key") || strings.Contains(out, "not set  magpie provider key") {

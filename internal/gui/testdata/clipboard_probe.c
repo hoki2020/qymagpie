@@ -1,9 +1,9 @@
 // clipboard_probe: a GTK 3 window that copies a text once it has the
 // focus, then reads the clipboard back through the compositor with
-// magpie_clipboard_read and prints what it read (TestClipboardReadBack).
-// "wails" copies as Wails v3 does (CLIPBOARD, then PRIMARY), "magpie" as
-// magpie does (magpie_clipboard_set). "again" copies and reads back as
-// magpie does, several times over while the window keeps the focus, and
+// pigeon_clipboard_read and prints what it read (TestClipboardReadBack).
+// "wails" copies as Wails v3 does (CLIPBOARD, then PRIMARY), "pigeon" as
+// pigeon does (pigeon_clipboard_set). "again" copies and reads back as
+// pigeon does, several times over while the window keeps the focus, and
 // prints "alive" if GTK's connection to the compositor is still up after
 // them (#2039).
 #include "clipboard_gtk3.h"
@@ -31,18 +31,18 @@ static int burst(void) {
 	struct wl_display *d = display;
 	struct wl_event_queue *q = wl_display_create_queue(d);
 	struct wl_display *w = wl_proxy_create_wrapper(d);
-	magpie_probe p[4];
+	pigeon_probe p[4];
 	struct wl_data_device *dev[4];
 	int got = 0;
 	memset(p, 0, sizeof p);
 	wl_proxy_set_queue((struct wl_proxy *)w, q);
 	struct wl_registry *reg = wl_display_get_registry(w);
-	wl_registry_add_listener(reg, &magpie_registry_listener, &p[0]);
+	wl_registry_add_listener(reg, &pigeon_registry_listener, &p[0]);
 	if (wl_display_roundtrip_queue(d, q) < 0 || !p[0].manager)
 		return -1;
 	for (int i = 0; i < 4; i++) {
 		dev[i] = wl_data_device_manager_get_data_device(p[0].manager, seat);
-		wl_data_device_add_listener(dev[i], &magpie_device_listener, &p[i]);
+		wl_data_device_add_listener(dev[i], &pigeon_device_listener, &p[i]);
 	}
 	if (wl_display_roundtrip_queue(d, q) < 0)
 		return -1;
@@ -61,7 +61,7 @@ static int burst(void) {
 }
 
 static gboolean copy_more(gpointer data) {
-	magpie_clipboard_set(data);
+	pigeon_clipboard_set(data);
 	g_free(data);
 	return G_SOURCE_REMOVE;
 }
@@ -69,7 +69,7 @@ static gboolean copy_more(gpointer data) {
 static gpointer reader(gpointer data) {
 	char *out = NULL;
 	size_t n = 0;
-	int r = magpie_clipboard_read(display, seat, 3000, &out, &n);
+	int r = pigeon_clipboard_read(display, seat, 3000, &out, &n);
 	printf("read=%d len=%zu text=%s\n", r, n, out ? out : "");
 	fflush(stdout);
 	free(out);
@@ -84,7 +84,7 @@ static gpointer reader(gpointer data) {
 		for (int k = 1; k <= 8; k++) {
 			g_idle_add(copy_more, g_strdup_printf("%s %d", text, k));
 			g_usleep(150 * 1000);
-			r = magpie_clipboard_read(display, seat, 3000, &out, &n);
+			r = pigeon_clipboard_read(display, seat, 3000, &out, &n);
 			printf("again=%d len=%zu\n", r, n);
 			fflush(stdout);
 			free(out);
@@ -106,9 +106,9 @@ static gboolean copy(gpointer data) {
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), text, -1);
 		gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY), text, -1);
 	} else {
-		magpie_clipboard_set(text);
+		pigeon_clipboard_set(text);
 	}
-	if (!magpie_clipboard_wayland(&display, &seat)) {
+	if (!pigeon_clipboard_wayland(&display, &seat)) {
 		printf("read=-1 len=0 text= (not wayland)\n");
 		gtk_main_quit();
 		return G_SOURCE_REMOVE;
@@ -147,8 +147,8 @@ static gboolean focused(GtkWidget *w, GdkEvent *e, gpointer data) {
 int main(int argc, char **argv) {
 	gtk_init(&argc, &argv);
 	printf("primary=%d\n", primary());
-	mode = argc > 1 ? argv[1] : "magpie";
-	text = argc > 2 ? argv[2] : "magpie probe text";
+	mode = argc > 1 ? argv[1] : "pigeon";
+	text = argc > 2 ? argv[2] : "pigeon probe text";
 	GtkWidget *w = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(w), 200, 100);
 	g_signal_connect(w, "focus-in-event", G_CALLBACK(focused), NULL);

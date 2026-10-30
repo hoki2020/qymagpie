@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // listTagHome is a ChatGPT account signed in to Codex beside 8 providers

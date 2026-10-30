@@ -1,8 +1,8 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// @jiahao_jayden on X: every skill's row had a chip for each agent magpie
+// @jiahao_jayden on X: every skill's row had a chip for each agent pigeon
 // knew of, WorkBuddy among them though it wasn't installed (一排有点密恐了).
 // The library lists an agent gone from this computer (gone: true) only
-// while it still has something magpie gave it, so that can be taken out:
+// while it still has something pigeon gave it, so that can be taken out:
 // its chip is on the rows of what it has, lit, and a click takes it away;
 // it is on no other row, All leaves it out, and By agent lists it as Not
 // installed with nothing to turn on. Chromium and WebKit, 1100px and

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/library"
+	"github.com/hoki2020/pigeon/internal/library"
 )
 
 // The library page keeps the row picked in view: its window is counted in

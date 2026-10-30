@@ -52,11 +52,11 @@ function server(lang, theme, reported, asked) {
 
 // the four cells, and the row's badge, as each language says them
 const L = {
-  en: { cells: ["all requests", "through magpie", "not through magpie", "reported by apps"], badge: "Reported", reqs: "requests" },
-  zh: { cells: ["全部请求", "经过 magpie", "不经过 magpie", "由应用上报"], badge: "上报" },
-  "zh-TW": { cells: ["全部請求", "經過 magpie", "不經過 magpie", "由應用程式回報"], badge: "回報" },
-  ja: { cells: ["すべてのリクエスト", "magpie 経由", "magpie を経由しない", "アプリからの報告"], badge: "報告" },
-  de: { cells: ["alle Anfragen", "über magpie", "nicht über magpie", "von Apps gemeldet"], badge: "Gemeldet" },
+  en: { cells: ["all requests", "through pigeon", "not through pigeon", "reported by apps"], badge: "Reported", reqs: "requests" },
+  zh: { cells: ["全部请求", "经过 pigeon", "不经过 pigeon", "由应用上报"], badge: "上报" },
+  "zh-TW": { cells: ["全部請求", "經過 pigeon", "不經過 pigeon", "由應用程式回報"], badge: "回報" },
+  ja: { cells: ["すべてのリクエスト", "pigeon 経由", "pigeon を経由しない", "アプリからの報告"], badge: "報告" },
+  de: { cells: ["alle Anfragen", "über pigeon", "nicht über pigeon", "von Apps gemeldet"], badge: "Gemeldet" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

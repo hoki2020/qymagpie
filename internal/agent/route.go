@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Every agent's model picker has two halves: the models the agent reaches
@@ -19,16 +19,18 @@ import (
 // A catalog model is spelled "provider/model"; an agent that sends that to
 // the gateway gets the vendor's reply in whichever API the agent speaks.
 
-// magpieID is the provider id agents know the gateway by.
-const magpieID = "magpie"
+// pigeonID is the provider id agents know the gateway by. It keeps the
+// name the agents' configs already hold, so a machine set up before the
+// rename finds its entry again rather than adding a second one.
+const pigeonID = "magpie"
 
 // RoutingGroups is the picker's group of routing groups.
 const RoutingGroups = "Routing groups"
 
-// viaMagpie lists the catalog as agent is shown it, for a picker: the
+// viaPigeon lists the catalog as agent is shown it, for a picker: the
 // routing groups first, in one group of their own, then one group per
 // provider.
-func viaMagpie(agent, prefix string) []Option {
+func viaPigeon(agent, prefix string) []Option {
 	var out, groups []Option
 	shown, _ := provider.CatalogFor(agent)
 	// own: whether a provider is the account the agent is signed in to,
@@ -56,7 +58,7 @@ func viaMagpie(agent, prefix string) []Option {
 	// requests go to the first in magpie's order: another one when that
 	// one is paused, or when the agent is kept signed in to an account
 	// that isn't first (#1957, parkavenue9639: every codex/gpt-* read
-	// "A · via magpie" while each went to B). Asked once a provider.
+	// "A · via pigeon" while each went to B). Asked once a provider.
 	firsts := map[string]string{}
 	firstUser := func(p provider.Provider) string {
 		a := p.Account
@@ -74,13 +76,13 @@ func viaMagpie(agent, prefix string) []Option {
 	var tiered map[string]bool // provider.UltraModels, read at the first fast model
 	for _, e := range shown {
 		if e.Group != "" {
-			groups = append(groups, Option{Value: prefix + e.ID, Label: e.Name, Note: "routing group · via magpie",
+			groups = append(groups, Option{Value: prefix + e.ID, Label: e.Name, Note: "routing group · via pigeon",
 				Icon: e.Provider.Icon, Icons: e.Icons, Group: RoutingGroups, Ref: e.ID})
 			continue
 		}
-		note := e.Provider.Name + " · via magpie"
+		note := e.Provider.Name + " · via pigeon"
 		if a := e.Provider.Account; a != nil {
-			note = firstUser(e.Provider) + " · via magpie"
+			note = firstUser(e.Provider) + " · via pigeon"
 		}
 		o := Option{Value: prefix + e.ID, Label: e.Name, Note: note,
 			Icon: e.Provider.Icon, Group: e.Provider.Name, Ref: e.ID, Free: e.Free, Rate: e.Rate, RateWas: e.RateWas, Context: e.Context, own: own[e.Provider.ID],
@@ -114,11 +116,11 @@ func listLabels(agent string) map[string]string {
 	return out
 }
 
-// viaMagpieFor is viaMagpie without the agent's own account: Codex CLI going
+// viaPigeonFor is viaPigeon without the agent's own account: Codex CLI going
 // through magpie to its own ChatGPT login would only add a hop.
-func viaMagpieFor(agentID, prefix string) []Option {
+func viaPigeonFor(agentID, prefix string) []Option {
 	var out []Option
-	for _, o := range viaMagpie(agentID, prefix) {
+	for _, o := range viaPigeon(agentID, prefix) {
 		if !strings.HasPrefix(o.Value, prefix+agentID+"/") {
 			out = append(out, o)
 		}
@@ -126,26 +128,26 @@ func viaMagpieFor(agentID, prefix string) []Option {
 	return out
 }
 
-// isMagpie reports whether a model value is a catalog reference.
-func isMagpie(v string) bool {
+// isPigeon reports whether a model value is a catalog reference.
+func isPigeon(v string) bool {
 	if pid, _, ok := strings.Cut(v, "/"); ok && dryProviders[pid] {
 		return true
 	}
 	if !strings.Contains(v, "/") {
 		return false
 	}
-	return magpieRefs.get(v, func() bool {
+	return pigeonRefs.get(v, func() bool {
 		_, _, ok := provider.Resolve(v)
 		return ok
 	})
 }
 
-// magpieRefs keeps isMagpie's answers while provider.StampNow stays the
+// pigeonRefs keeps isPigeon's answers while provider.StampNow stays the
 // same, for a minute at most. Outside a request that holds the catalog,
 // each Resolve built every provider's entries again: the window's drift
 // poll, every 15s, asked it for each agent's values, ~6 MB a poll (the
 // procmem heap profile: 235 MB of 1.37 GB in 10 minutes of GUI use).
-var magpieRefs stampedRefs
+var pigeonRefs stampedRefs
 
 // stampedRefs is a model value → answer, dropped when the stamp moves,
 // after a minute (what the stamp can't see: an account another program
@@ -193,9 +195,9 @@ func firstOf(xs []string) string {
 	return ""
 }
 
-// magpieModels is the catalog as agent is shown it, as catalog.Models, for
+// pigeonModels is the catalog as agent is shown it, as catalog.Models, for
 // agents that keep their own model files.
-func magpieModels(agent string) []catalog.Model {
+func pigeonModels(agent string) []catalog.Model {
 	// the providers built once for all the models' prices, not for each:
 	// dsh's round at every start built them for each of hundreds
 	defer provider.Hold()()

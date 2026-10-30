@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/yetone/magpie/internal/library"
+	"github.com/hoki2020/pigeon/internal/library"
 )
 
 // A market search one source of which didn't answer tells the page which

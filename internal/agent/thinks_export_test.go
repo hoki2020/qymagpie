@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #2380: Trae CN's kimi-k3-max thinks with no levels magpie knows, and

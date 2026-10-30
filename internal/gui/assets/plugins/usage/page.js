@@ -18,7 +18,7 @@ function headersPanel(label, first, headers) {
   return panel;
 }
 
-// The archived file, whole, however large: to the browser in magpie web,
+// The archived file, whole, however large: to the browser in pigeon web,
 // to Downloads in the app (#447).
 async function downloadArchive(name, b) {
   const [date, aid] = name.split("/");
@@ -107,10 +107,10 @@ function archivePanel(name, id, redraw) {
 
 const PERIODS = [["today", "Today"], ["7d", "7 days"], ["30d", "30 days"], ["all", "All"]];
 
-// The reader's time zone, which magpie reads the period's days, the chart's
-// hours and a picked day in: magpie web may be read from another zone than
+// The reader's time zone, which pigeon reads the period's days, the chart's
+// hours and a picked day in: pigeon web may be read from another zone than
 // the computer's, whose days put a call at 9:00 in UTC+8 under 1:00 (Outvi V
-// on Discord). None, and magpie reads its own.
+// on Discord). None, and pigeon reads its own.
 function usageZone() {
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; }
 }
@@ -337,8 +337,8 @@ function costHead(c, note, title) {
   cost.append(el("span", note ? "unpriced" : "", note || t("effective prices")));
   cost.title = title;
 }
-// a request magpie sent a provider by itself to test it (SourceProbe)
-const probeWhy = () => t("magpie sent this itself to test the provider (Test, Detect APIs or a model list), not for an agent. It is not counted in any total.");
+// a request pigeon sent a provider by itself to test it (SourceProbe)
+const probeWhy = () => t("pigeon sent this itself to test the provider (Test, Detect APIs or a model list), not for an agent. It is not counted in any total.");
 const unpricedCalls = (n) => t(n === 1 ? "{n} call unpriced" : "{n} calls unpriced", { n: ledNum(n) });
 const unpricedCallsWhy = (n) => n ? t(n === 1 ? "{n} call had no known price and is not counted" : "{n} calls had no known price and are not counted", { n }) : t("Estimated using effective model prices, including custom prices");
 // renderCosts redraws whatever on the Usage page shows a cost, once the
@@ -348,7 +348,7 @@ function renderCosts() {
   if (usage) renderUsage();
   if (ledger && usageTab === "requests") renderLedger();
   if (sessions) renderSessions();
-  document.dispatchEvent(new Event("magpie-costs-changed"));
+  document.dispatchEvent(new Event("pigeon-costs-changed"));
 }
 // quotaWho is how an account's card names it (#1515): by the name the user
 // gave it, the account beside it, else the account; and the key plan it
@@ -379,7 +379,7 @@ function quotaWho(q) {
 }
 
 function ownCalls(n) {
-  return t("{n} by magpie itself", { n: fmtN(n) });
+  return t("{n} by pigeon itself", { n: fmtN(n) });
 }
 // quotaReadings: a line's last eight readings, newest first, each what was
 // left and when it was read (#802), a line each, ↻ where the window
@@ -412,7 +412,7 @@ new ResizeObserver(fitChartLabels).observe($("#view-usage"));
 
 // The Overview's lists — Agents, Models, Accounts, Gateway keys — each fold
 // away under their heading (#2378: 日常看账号维度较多，都要拉到最底下), and
-// stay folded across a reload (magpie.usageFolded, the folded ones' names).
+// stay folded across a reload (pigeon.usageFolded, the folded ones' names).
 let usageFolded = new Set();
 try { usageFolded = new Set(JSON.parse(localStorage.getItem("magpie.usageFolded") || "[]")); } catch {}
 const USAGE_FOLDS = { agents: ["usageAgents", "usageAgentsHid"], models: ["usageModels"], accounts: ["usageAccounts"], keys: ["usageKeys"] };
@@ -457,7 +457,7 @@ function usageParts(texts) {
 // The Overview's token totals count what went in and out; the cache's
 // tokens, read and written, can be counted in them too (#2378), as the
 // Requests tab's total always has them. Kept as the reader left it
-// (magpie.usageWithCache).
+// (pigeon.usageWithCache).
 let usageWithCache = false;
 try { usageWithCache = localStorage.getItem("magpie.usageWithCache") === "1"; } catch {}
 const cacheOf = (x) => (x.cache_read || 0) + (x.cache_write || 0);
@@ -577,13 +577,13 @@ function renderUsage() {
       const sub = [];
       if (g.sub) sub.push(g.sub);
       sub.push(t(g.calls === 1 ? "{n} call" : "{n} calls", { n: g.calls }));
-      // magpie's own calls apart from the agents' (#1839): magpie's row
+      // pigeon's own calls apart from the agents' (#1839): pigeon's row
       // says it is, and a model's, a key's or an account's how many of
       // its calls were
       if (id === "usageAgents" && g.id === "magpie") who.firstChild.append(ownBadge());
       else if (g.own?.calls) sub.push(ownCalls(g.own.calls));
       if (g.errors) sub.push(t("{n} failed", { n: g.errors }));
-      // of those, the replies magpie ended stuck in a loop (#1858)
+      // of those, the replies pigeon ended stuck in a loop (#1858)
       if (g.loops) sub.push(t("{n} looped", { n: g.loops }));
       if (g.retried) sub.push(t("{n} answered on a retry", { n: g.retried }));
       // how long the streamed replies took to begin, and how fast they
@@ -628,7 +628,7 @@ function renderUsage() {
     b.setAttribute("aria-haspopup", "menu");
     b.setAttribute("aria-label", t("Actions for {name}", { name: g.name || g.id }));
     b.append(svg(DOTS, 14, 2.2));
-    // a client magpie doesn't know can be counted as one of the agents
+    // a client pigeon doesn't know can be counted as one of the agents
     // it does (#1958, NorethSea): a bridge that starts Codex under a name
     // of its own; the agent counting one has it put back on its own
     const counted = Object.entries(state.settings?.clientAgents || {}).filter(([, as]) => as === g.id).map(([c]) => c);
@@ -671,16 +671,16 @@ function renderUsage() {
   list("usageKeys", u.callerKeys || []);
   $("#usageNote").textContent = t("Counted from the providers' own usage reports on every call through the gateway · {path}", { path: u.path });
   // the account cards say how many of this period's requests were
-  // magpie's own (ownLine), which they could only once the summary came
+  // pigeon's own (ownLine), which they could only once the summary came
   if (quotas && (u.accounts?.some((g) => g.own?.calls) || $("#subscriptionUsage .quota-own"))) renderQuotas();
 }
 
 // countable is whether the Usage page's Agents list offers to count a
-// client as an agent: one magpie doesn't know, not magpie's own (#1839)
+// client as an agent: one pigeon doesn't know, not pigeon's own (#1839)
 // nor the calls that named no client.
 const COUNT_AS = "M3 3v3.5A3.5 3.5 0 0 0 6.5 10H13M10 7l3 3-3 3";
 function countable(id) {
-  return !!id && id !== "other" && !/^magpie/i.test(id) && !(state.clients || []).some((a) => a.id === id);
+  return !!id && id !== "other" && !/^pigeon/i.test(id) && !(state.clients || []).some((a) => a.id === id);
 }
 // pickCountAs opens the agents a client can be counted as, under its menu
 // button.
@@ -835,7 +835,7 @@ function ledParams(extra) {
 // asked again while it is read (the refresh button, the timer) waits for
 // that read, and another page or filter cancels it. Each pick and press
 // used to send one more, and a long history's reads, all still running,
-// took the browser's few connections to magpie, so the page never came.
+// took the browser's few connections to pigeon, so the page never came.
 // flight: { want, ctl, p }
 const ledFlights = { page: null, heat: null };
 function ledRead(kind, path, want) {
@@ -908,7 +908,7 @@ function ledTime(when) {
 }
 // the model the reply named: amber, as the Routing page's tag, when it is
 // another than the one sent; plain when it is that one under a dated name,
-// or the member a remote magpie's routing group sent it to, said in its title
+// or the member a remote pigeon's routing group sent it to, said in its title
 function ledServed(r) {
   if (!r.served) return el("span", "faint", "—");
   if (r.routed && !r.swapped) {
@@ -1017,14 +1017,14 @@ function ledDetail(r, cols) {
   if (r.kind) add("Called for", window.kindName ? window.kindName(r.kind) : r.kind);
   if (r.ttft_ms) add("First token", ledTook(r.ttft_ms));
   // of it, what came before the request went to the vendor, and the
-  // vendor's wait from then to its first token. Before it, magpie's own
+  // vendor's wait from then to its first token. Before it, pigeon's own
   // time is told apart from the tries that failed first, a wait for a
   // slot and connecting and sending the body (#1532: a vendor that held a
-  // try ~100 s before its 503 read as 104 s in magpie); a record from
+  // try ~100 s before its 503 read as 104 s in pigeon); a record from
   // before they were kept has only the whole
   if (r.ttft_ms && r.sent_ms) {
     const split = r.own_ms != null;
-    add("In magpie", ledTook(split ? r.own_ms : r.sent_ms));
+    add("In pigeon", ledTook(split ? r.own_ms : r.sent_ms));
     if (split) {
       if (r.retried_ms > 0) add("Tries that failed first", ledTook(r.retried_ms));
       if (r.queued_ms > 0) add("Waiting for a slot", ledTook(r.queued_ms));
@@ -1072,7 +1072,7 @@ function ledDetail(r, cols) {
 
 // What was said in a request — what its agent was given, and what came back —
 // is in the agent's own session file, and read from it when a row is opened
-// (the server finds the call by its session and time); magpie keeps no copy.
+// (the server finds the call by its session and time); pigeon keeps no copy.
 // What came is kept here while the list is looked at, so a row opened again, or
 // drawn again as the list is read anew, doesn't ask again.
 const ledContent = new Map();
@@ -1098,7 +1098,7 @@ function ledLoadContent(r) {
 }
 const LED_WHY = {
   session: "No session was named with this request, so its session file can't be found",
-  agent: "magpie reads the session files of Claude Code, Claude Desktop and Codex only",
+  agent: "pigeon reads the session files of Claude Code, Claude Desktop and Codex only",
   missing: "This request isn't in the agent's session files: they may be deleted, moved, or not written yet",
   read: "The session file couldn't be read",
 };
@@ -1116,7 +1116,7 @@ function ledContentBox(c) {
     box.append(sec);
   }
   if (c.cut) box.append(el("p", "cx-none", t("There was more than is shown here")));
-  box.append(el("p", "cx-src", t("Read from the agent's session file; magpie keeps no copy")));
+  box.append(el("p", "cx-src", t("Read from the agent's session file; pigeon keeps no copy")));
   return box;
 }
 
@@ -1666,7 +1666,7 @@ const ledRowSpeed = (r) => { const d = ledDecode(r); return d ? d.n / (d.w / 100
 // speed after the first token can't be under. Against Claude Code's own
 // stream it read 2–5% under for a reply of 1,400 tokens or more, 11–33% for
 // a shorter one or one asked with a tool's result, so only a reply of 1,000
-// or more is told. 0 when it tells none, and a call magpie timed tells its
+// or more is told. 0 when it tells none, and a call pigeon timed tells its
 // own (ledDecode). Only the row's: the period's speed counts timed calls
 // and session files' floors (usage.Row.Floor), not a gateway row's below.
 // Claude Code's, Claude Desktop's and Codex's files only (usage.FloorAgents):
@@ -1818,7 +1818,7 @@ function renderLedger() {
   }
   $("#ledSum").textContent = sum.join(" · ");
   // the two sources and their total, in the same block of cells as the totals
-  // above them: what magpie carried, what it only read about in the agents'
+  // above them: what pigeon carried, what it only read about in the agents'
   // own session files, and the two together. Each is a filter: picking one
   // lists only its requests, and the total is the way back. Its own numbers
   // are counted with the pick cleared (usage.RequestPage), so all three stay
@@ -1867,8 +1867,8 @@ function renderLedger() {
     }
     via.style.setProperty("--vias", String(n));
     tile(cells[0], "all requests", thru.calls + dir.calls + rep.calls, all, "");
-    tile(cells[1], "through magpie", thru.calls, thru, "through");
-    tile(cells[2], "not through magpie", dir.calls, dir, "direct");
+    tile(cells[1], "through pigeon", thru.calls, thru, "through");
+    tile(cells[2], "not through pigeon", dir.calls, dir, "direct");
     if (n === 4) tile(cells[3], "reported by apps", rep.calls, rep, "reported");
     via.hidden = false;
   } else {
@@ -1933,12 +1933,12 @@ function renderLedger() {
     }
     td(when, "when", new Date(r.t).toLocaleString(intlLang()));
     const who = el("span", "who");
-    // an agent on another computer, whose magpie passed the request on
+    // an agent on another computer, whose pigeon passed the request on
     const name = r.agentName || r.agent;
     // one made on another computer, whose usage sync brought (#542)
     const at = r.computerName ? t("{agent} · on {computer}", { agent: name, computer: r.computerName }) : name;
     who.append(icon(r.icon || "generic"), el("span", "", [r.via ? t("{agent} · via {host}", { agent: at, host: r.via }) : at, r.callerKeyLabel || r.callerKeyName].filter(Boolean).join(" · ")));
-    // a request magpie made by itself, apart from the agents' own (#1839);
+    // a request pigeon made by itself, apart from the agents' own (#1839);
     // one that tested the provider (the editor's Test, Detect APIs, a model
     // list) is counted nowhere, and says so (neiko on Discord)
     const probe = r.source === "probe";
@@ -1953,7 +1953,7 @@ function renderLedger() {
     // A session file names the provider it was set up to call, which is
     // where a call that went straight to a vendor went: nothing stood
     // between the agent and it. It is the file's own record and not a route
-    // magpie saw, so the id the file carries is shown as it is — never
+    // pigeon saw, so the id the file carries is shown as it is — never
     // resolved to a provider's name, which would promote an unknown request
     // to an official provider — and the row keeps saying it is a local
     // session. A row whose file names none says only that.
@@ -1980,14 +1980,14 @@ function renderLedger() {
     if (local && (r.session_account || r.session_provider)) {
       const k = el("span", "src local", t("Local session"));
       k.title = r.session_provider
-        ? t("Read from the agent's session file, which names the provider it was set up to call. The name shown is that record, not a route magpie saw.")
+        ? t("Read from the agent's session file, which names the provider it was set up to call. The name shown is that record, not a route pigeon saw.")
         : t("Read from the agent's session file. The account is shown only when local metadata identifies it; no service provider is inferred.");
       badges.append(k);
     }
     // a call an app reported itself (#1874): it went straight to its vendor
     if (r.source === "reported") {
       const k = el("span", "src reported", t("Reported"));
-      k.title = t("Reported by the app that made it, through POST /v1/magpie/usage/requests: the call went straight to its vendor, not through magpie.");
+      k.title = t("Reported by the app that made it, through POST /v1/magpie/usage/requests: the call went straight to its vendor, not through pigeon.");
       badges.append(k);
     }
     if (probe) {
@@ -2141,7 +2141,7 @@ function wslBadge(s) {
 }
 
 // sessModelsText: a session's models, the first two and how many more, and
-// where magpie's gateway sent its calls, the most first: a routing group's
+// where pigeon's gateway sent its calls, the most first: a routing group's
 // member and the reasoning it was asked for
 function sessModelsText(s) {
   const via = s.via?.length ? "→ " + [s.via[0].model, s.via[0].effort].filter(Boolean).join(" · ") + (s.via.length > 1 ? " +" + (s.via.length - 1) : "") : "";
@@ -2164,7 +2164,7 @@ function sessUsageDetail(d, s, line) {
   (s.via || []).forEach((v, i) => line(i ? "" : t("Routed"), viaText(v) + " · " + t("{n} tokens", { n: fmtN(v.tokens) }) + (v.credited ? " · " + ledCredits(v).textContent : "")));
 }
 
-// one place a session's calls went through magpie, in words
+// one place a session's calls went through pigeon, in words
 function viaText(v) {
   return `${v.provider}/${v.model}` + (v.effort ? " · " + v.effort : "") + " · " + t("{n} calls", { n: v.calls });
 }
@@ -3167,12 +3167,12 @@ function renderSessTop() {
     const r = el("div", "row sess sess-top");
     r.append(icon(icons.get(s.agent) || "generic"));
     const who = el("div", "who");
-    // a session magpie saw only through the gateway (#2285: a Pi
+    // a session pigeon saw only through the gateway (#2285: a Pi
     // subagent's, its file in a temp folder) has no folder and no prompt
     // unless gateway conversations are recorded: say so, not "(no prompt)"
     who.append(el("div", "name", s.title || t(s.gateway ? "(prompt not recorded)" : "(no prompt)")));
     const sub = el("div", "sub", [s.cwd ? baseName(s.cwd) : s.gateway ? t("Gateway session") : "", names[s.agent] || s.agent, s.models?.[0], ago(s.last)].filter(Boolean).join(" · "));
-    sub.title = s.cwd || (s.gateway ? t("Seen only through the gateway: the agent kept no session file magpie can read. Turn on Record gateway conversations in Sessions to keep its prompts.") : "");
+    sub.title = s.cwd || (s.gateway ? t("Seen only through the gateway: the agent kept no session file pigeon can read. Turn on Record gateway conversations in Sessions to keep its prompts.") : "");
     who.append(sub);
     r.append(who);
     const fc = fmtCost({ cost: s.cost, unpriced: !s.priced });
@@ -3514,7 +3514,7 @@ $("#sessQ").onkeydown = (e) => { if (e.key === "Escape" && e.target.value) { e.s
 //
 // Three choices (palette, language, what the tray icon opens) and the facts
 // people come looking for:
-// the version, where magpie keeps its files, the gateway's address.
+// the version, where pigeon keeps its files, the gateway's address.
 
 // The Usage page reads its numbers again while it is looked at, as often as
 // the reader says — off, or every 5 s to a minute (a request through the gateway

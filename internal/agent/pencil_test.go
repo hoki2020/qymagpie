@@ -10,8 +10,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // pencilUser is ~/.pencil/models.json as Pencil writes a custom provider
@@ -135,10 +135,10 @@ func TestPencilModels(t *testing.T) {
 	if f.Get() != "" {
 		t.Fatalf("get: %q", f.Get())
 	}
-	if err := f.Set(magpieID); err != nil {
+	if err := f.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
-	if f.Get() != magpieID {
+	if f.Get() != pigeonID {
 		t.Fatalf("get: %q", f.Get())
 	}
 
@@ -157,9 +157,9 @@ func TestPencilModels(t *testing.T) {
 		t.Errorf("Pencil's own key changed: %s", file["somethingOfPencils"])
 	}
 
-	p := pencilFormat(t, provs[magpieID])
+	p := pencilFormat(t, provs[pigeonID])
 	if p.API != "openai-completions" || p.BaseURL != gatewayV1() || p.APIKey != gateway.TokenFor("pencil") {
-		t.Errorf("provider: %s", provs[magpieID])
+		t.Errorf("provider: %s", provs[pigeonID])
 	}
 	ids := []string{}
 	for _, m := range p.Models {
@@ -177,7 +177,7 @@ func TestPencilModels(t *testing.T) {
 	}
 	json.Unmarshal([]byte(readFile(path)), &file)
 	json.Unmarshal(file["providers"], &provs)
-	pencilFormat(t, provs[magpieID])
+	pencilFormat(t, provs[pigeonID])
 	if _, ok := provs["XXXXX"]; !ok {
 		t.Fatal("the user's provider is gone after a sync")
 	}
@@ -191,7 +191,7 @@ func TestPencilModels(t *testing.T) {
 	file, provs = nil, nil
 	json.Unmarshal([]byte(readFile(path)), &file)
 	json.Unmarshal(file["providers"], &provs)
-	if _, ok := provs[magpieID]; ok || !sameJSON(string(provs["XXXXX"]), json.RawMessage(userProvs["XXXXX"])) {
+	if _, ok := provs[pigeonID]; ok || !sameJSON(string(provs["XXXXX"]), json.RawMessage(userProvs["XXXXX"])) {
 		t.Errorf("after off: %s", readFile(path))
 	}
 	// off, a sync leaves it off

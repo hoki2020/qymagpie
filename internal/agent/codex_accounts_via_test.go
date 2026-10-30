@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #1603 (SwimmingLiu): two Codex accounts on in magpie, Codex on CC
@@ -45,7 +45,7 @@ func TestCodexAccountsOfferedViaMagpie(t *testing.T) {
 			switch {
 			case o.Value == "gpt-5.5" && o.Direct != "":
 				direct = append(direct, o)
-			case strings.HasPrefix(o.Value, "codex/") && o.Direct == "" && strings.HasSuffix(o.Note, "via magpie"):
+			case strings.HasPrefix(o.Value, "codex/") && o.Direct == "" && strings.HasSuffix(o.Note, "via pigeon"):
 				magpie = append(magpie, o)
 			}
 		}

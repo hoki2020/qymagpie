@@ -90,7 +90,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         localStorage.setItem("magpie.sessRange", "all");
         // the Usage page's own 5 s refresh would rebuild the strip between a
         // measurement and the click it measures; one read is enough here
-        localStorage.setItem("magpie.usageEvery", "0");
+        localStorage.setItem("pigeon.usageEvery", "0");
       });
       await page.goto("http://magpie.test/?view=usage");
       await page.waitForFunction(() => document.querySelectorAll("#sessAgent .opt").length === 12);

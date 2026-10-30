@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/hoki2020/pigeon/internal/mcpauth"
+	"github.com/hoki2020/pigeon/internal/mcpauth/mcpauthtest"
 )
 
 // A server whose sign-in doesn't let magpie register itself (GitHub's, 新v学员

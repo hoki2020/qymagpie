@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func dshRouteHome(t *testing.T) (home, dir, web string) {
@@ -52,7 +52,7 @@ func TestDshCustomProvider(t *testing.T) {
 	if !strings.HasPrefix(s, "# Your patch layer for this dsh profile.\n- id: llm-deepseek\n  config:\n    apiKeyEnv: DEEPSEEK_API_KEY\n    thinking: enabled\n") || strings.Count(s, "llm-deepseek") != 1 {
 		t.Fatalf("dsh's own DeepSeek row was taken:\n%s", s)
 	}
-	for _, want := range []string{"      mine:\n", "baseURL: https://mine.example/v1", "      magpie:\n", "displayName: Magpie", "apiKeyEnv: " + dshKeyRef, "api: openai-completions", "baseURL: " + gatewayV1(), "- id: deepseek/pro", "provider: magpie", `model: "deepseek/pro"`} {
+	for _, want := range []string{"      mine:\n", "baseURL: https://mine.example/v1", "      magpie:\n", "displayName: Pigeon", "apiKeyEnv: " + dshKeyRef, "api: openai-completions", "baseURL: " + gatewayV1(), "- id: deepseek/pro", "provider: magpie", `model: "deepseek/pro"`} {
 		if !strings.Contains(s, want) {
 			t.Fatalf("missing %q in\n%s", want, s)
 		}
@@ -372,7 +372,7 @@ func TestDshRouteAgainLeavesTheRouteWithNoCatalog(t *testing.T) {
 	t.Setenv("DSH_HOME", "")
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
-	if n := len(magpieModels("dsh")); n != 0 {
+	if n := len(pigeonModels("dsh")); n != 0 {
 		t.Fatalf("a catalog to write from: %d models", n)
 	}
 	stale := "# Your patch layer for this dsh profile.\n" +
@@ -381,7 +381,7 @@ func TestDshRouteAgainLeavesTheRouteWithNoCatalog(t *testing.T) {
 	web := filepath.Join(home, ".dsh", "profiles", "web", "cordis.patch.yml")
 	os.MkdirAll(filepath.Dir(web), 0o755)
 	os.WriteFile(web, []byte(stale), 0o644)
-	if _, err := dshRouteAgain(web, magpieModels("dsh"), gateway.URL()); err != nil {
+	if _, err := dshRouteAgain(web, pigeonModels("dsh"), gateway.URL()); err != nil {
 		t.Fatal(err)
 	}
 	if b, _ := os.ReadFile(web); string(b) != stale {
@@ -436,7 +436,7 @@ func TestDshFillNewProfilesLeavesABareProfileWithNoCatalog(t *testing.T) {
 	t.Setenv("DSH_HOME", "")
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
-	if n := len(magpieModels("dsh")); n != 0 {
+	if n := len(pigeonModels("dsh")); n != 0 {
 		t.Fatalf("a catalog to write from: %d models", n)
 	}
 	dir := filepath.Join(home, ".dsh")
@@ -471,7 +471,7 @@ func TestDshFillNewProfilesFillsABareProfile(t *testing.T) {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(desktop)
-	for _, want := range []string{"id: llm-pi-ai", "displayName: Magpie", "      magpie:", "provider: magpie", "id: deepseek/pro"} {
+	for _, want := range []string{"id: llm-pi-ai", "displayName: Pigeon", "      magpie:", "provider: magpie", "id: deepseek/pro"} {
 		if !strings.Contains(string(b), want) {
 			t.Fatalf("a new profile not filled with %q:\n%s", want, b)
 		}
@@ -740,7 +740,7 @@ func TestDshCheckSaysWhenNoCatalogAndAProfileHasNoRoute(t *testing.T) {
 		"- id: agent-default-model\n  config:\n    provider: deepseek-official\n    model: deepseek-v4-flash\n"), 0o644)
 
 	d := dsh(home).Check()
-	if !strings.Contains(d, "cli profile") || !strings.Contains(d, "none of magpie's models") {
+	if !strings.Contains(d, "cli profile") || !strings.Contains(d, "none of pigeon's models") {
 		t.Fatalf("a profile without magpie's route and without magpie's start is not said: %q", d)
 	}
 }
@@ -774,7 +774,7 @@ func TestDshCheckSaysWhenNoCatalogAndAProfilesStartIsMagpies(t *testing.T) {
 		"- id: agent-default-model # magpie\n  config:\n    provider: magpie\n    model: deepseek/flash\n"), 0o644)
 
 	d := dsh(home).Check()
-	if !strings.Contains(d, "cli profile") || !strings.Contains(d, "none of magpie's models") {
+	if !strings.Contains(d, "cli profile") || !strings.Contains(d, "none of pigeon's models") {
 		t.Fatalf("with no catalog, a stripped profile of magpie's own start is not said: %q", d)
 	}
 }

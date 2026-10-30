@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/gwtool"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // fakePluginTools has the gateway's plugin tools be pts and record the

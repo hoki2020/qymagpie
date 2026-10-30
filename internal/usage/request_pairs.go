@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 // pairMemo is what pairRows found over one list of chunks, named by their

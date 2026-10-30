@@ -3,7 +3,7 @@ package usage
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // TestMain gives the package a home of its own (testenv): a test that

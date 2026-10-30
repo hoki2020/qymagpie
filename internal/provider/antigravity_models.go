@@ -3,7 +3,7 @@ package provider
 // Antigravity lists some models once for each thinking level it serves
 // them at ("gemini-3.7-flash-low", "-medium", "-high", named "Gemini 3.7
 // Flash (Low)" …), so a client that also picks an effort had two to pick.
-// magpie offers such a family as one model ("gemini-3.7-flash", "Gemini
+// pigeon offers such a family as one model ("gemini-3.7-flash", "Gemini
 // 3.7 Flash") with the levels there are, and the gateway asks for the id
 // the effort picks (AntigravityVariants).
 //
@@ -18,7 +18,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/catalog"
 )
 
 // antigravityEffortWords are the effort words of Antigravity's ids and the
@@ -225,7 +225,7 @@ func collapseAntigravityModels(raw []catalog.Model) []catalog.Model {
 	return out
 }
 
-// AntigravityVariants are Antigravity's ids a model magpie offers stands
+// AntigravityVariants are Antigravity's ids a model pigeon offers stands
 // for, by level, "" the default; ok is false for a model that stands for
 // none, which goes to Antigravity as it is.
 func AntigravityVariants(model string) (map[string]string, bool) {
@@ -245,9 +245,9 @@ func antigravityVariantsIn(raw []catalog.Model, model string) (map[string]string
 	return nil, false
 }
 
-// AntigravityBase is the model magpie offers for one of Antigravity's ids
+// AntigravityBase is the model pigeon offers for one of Antigravity's ids
 // at a level ("gemini-3.7-flash-low" is gemini-3.7-flash at low), and that
-// level; ok is false for an id that is itself a model magpie offers, or
+// level; ok is false for an id that is itself a model pigeon offers, or
 // that no family has. Picks and agents' models saved before the families
 // were one model still name these ids.
 func AntigravityBase(id string) (base, effort string, ok bool) {
@@ -273,7 +273,7 @@ func antigravityBaseIn(raw []catalog.Model, id string) (string, string, bool) {
 }
 
 // antigravityPicks are the user's picks of Antigravity's models with each
-// of its ids at a level the model magpie offers for it, in the order
+// of its ids at a level the model pigeon offers for it, in the order
 // picked, each once.
 func antigravityPicks(ids []string) []string {
 	raw, _, live := catalog.Live("antigravity")

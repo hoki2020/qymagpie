@@ -21,10 +21,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // The gateway makes videos: POST /v1/videos, GET /v1/videos/{id} and
@@ -39,9 +39,9 @@ import (
 // with its request_id. Volcengine Agent Plan uses Ark's asynchronous content
 // generation tasks under its /api/plan/v3 base.
 //
-// Another magpie's videos (a Remote magpie's, #545) are asked of it, at its
+// Another pigeon's videos (a Remote pigeon's, #545) are asked of it, at its
 // own videos API: its id for one goes, encoded, in the id given here, and
-// what it answers comes back with this magpie's id and name for the model.
+// what it answers comes back with this pigeon's id and name for the model.
 // A provider set up with a base URL whose own model list marks a model
 // "kind": "video" (#1446) is asked the same way, at the OpenAI-shaped
 // videos API under its base, on the key that started the video.
@@ -64,11 +64,11 @@ const maxVideoBytes = 512 << 20
 const videoTimeout = 5 * time.Minute
 
 // Videomakers are the models a provider can make videos with: a Grok
-// subscription's, another magpie's, a preset plan's models when magpie
+// subscription's, another pigeon's, a preset plan's models when pigeon
 // implements that vendor's video API, and those a provider's own model list
 // marks as video models (customVideomakers).
 func Videomakers(p provider.Provider) []catalog.Model {
-	if p.IsRemoteMagpie() {
+	if p.IsRemotePigeon() {
 		out := catalog.LiveVideomakers(p.ID)
 		for i := range out {
 			out[i].Provider = p.ID
@@ -89,15 +89,15 @@ func Videomakers(p provider.Provider) []catalog.Model {
 }
 
 // customVideomakers are the video models of a provider set up with a base
-// URL — not a subscription's account, not another magpie, not a preset plan
-// whose own video API magpie speaks — that its fetched model list marks
+// URL — not a subscription's account, not another pigeon, not a preset plan
+// whose own video API pigeon speaks — that its fetched model list marks
 // "kind": "video" (catalog.LiveVideomakers, #1446), or the user said make
 // videos (provider.SetModelKind, #1399). They are asked at the
-// OpenAI-shaped videos API under its base, as another magpie's are. A
+// OpenAI-shaped videos API under its base, as another pigeon's are. A
 // model's name alone makes none of them one: a list that doesn't say so,
 // and a user who doesn't, leave the provider making no videos.
 func customVideomakers(p provider.Provider) []catalog.Model {
-	if p.Account != nil || p.IsRemoteMagpie() || len(p.PlanVideos()) > 0 || videoBase(p) == "" {
+	if p.Account != nil || p.IsRemotePigeon() || len(p.PlanVideos()) > 0 || videoBase(p) == "" {
 		return nil
 	}
 	out := catalog.LiveVideomakers(p.ID)
@@ -114,7 +114,7 @@ func customVideomakers(p provider.Provider) []catalog.Model {
 	return slices.DeleteFunc(out, func(m catalog.Model) bool { return p.ModelKind(m.ID) == provider.KindImage })
 }
 
-// videoBase is the root of the OpenAI-shaped videos API of another magpie
+// videoBase is the root of the OpenAI-shaped videos API of another pigeon
 // or a provider set up with a base URL: its Chat base, or a Responses-only
 // relay's Responses base, under which it serves the images API too.
 func videoBase(p provider.Provider) string {
@@ -202,7 +202,7 @@ func bareVideomaker(name string) (provider.Provider, string, bool) {
 		}
 	}
 	// any grok-imagine-video*, as videosCreate takes with the provider
-	// named: the vendor's newer ones work before magpie lists them (#1857)
+	// named: the vendor's newer ones work before pigeon lists them (#1857)
 	for _, p := range provider.All() {
 		if p.On() && !p.DecideOnly() && drawsGrok(p) && strings.HasPrefix(name, grokVideoFamily) {
 			return p, name, true
@@ -219,13 +219,13 @@ type filming struct {
 	Model, Prompt, Seconds, Size string
 	Start                        *picture  // the first frame to animate
 	References                   []picture // images the video draws its subjects from
-	// the request's other fields, which magpie doesn't read: a provider's
+	// the request's other fields, which pigeon doesn't read: a provider's
 	// own videos API takes them as they came (Agnes's mode, aspect_ratio;
 	// #1399, shen-joe: "mode 不能为空")
 	Extra map[string]any
 }
 
-// filmingRead are the fields of a videos request magpie reads itself.
+// filmingRead are the fields of a videos request pigeon reads itself.
 var filmingRead = []string{"model", "prompt", "seconds", "size", "input_reference", "reference_images", "reference_images[]"}
 
 // readFilming reads a videos request: JSON, or the multipart form OpenAI's
@@ -545,10 +545,10 @@ func videoObject(id, model string, started time.Time, st videoState, f filming) 
 func videoMaker(id string) (p provider.Provider, vendorID string, started time.Time, err error) {
 	pid, vendorID, started, by, ok := parseVideoID(id)
 	if !ok {
-		return p, "", started, fmt.Errorf("%q isn't the id of a video magpie is making", id)
+		return p, "", started, fmt.Errorf("%q isn't the id of a video pigeon is making", id)
 	}
 	found, ferr := provider.Find(pid)
-	if ferr == nil && !drawsGrok(*found) && !found.IsRemoteMagpie() && len(found.PlanVideos()) == 0 && len(customVideomakers(*found)) > 0 {
+	if ferr == nil && !drawsGrok(*found) && !found.IsRemotePigeon() && len(found.PlanVideos()) == 0 && len(customVideomakers(*found)) > 0 {
 		// asked on the key that started it
 		q, ok := markedKey(*found, by)
 		if !ok {
@@ -556,7 +556,7 @@ func videoMaker(id string) (p provider.Provider, vendorID string, started time.T
 		}
 		return q, vendorID, started, nil
 	}
-	if ferr != nil || !drawsGrok(*found) && !found.IsRemoteMagpie() && len(found.PlanVideos()) == 0 {
+	if ferr != nil || !drawsGrok(*found) && !found.IsRemotePigeon() && len(found.PlanVideos()) == 0 {
 		return p, "", started, fmt.Errorf("no provider %q makes videos here", pid)
 	}
 	if signer(*found) != by {
@@ -565,19 +565,19 @@ func videoMaker(id string) (p provider.Provider, vendorID string, started time.T
 	return *found, vendorID, started, nil
 }
 
-// remoteVideoID is the id of a video another magpie (p) is making, by its
+// remoteVideoID is the id of a video another pigeon (p) is making, by its
 // id there: that has dots in it, so it goes in base64.
 func remoteVideoID(p provider.Provider, theirs string, t time.Time) string {
 	return videoID(p, base64.RawURLEncoding.EncodeToString([]byte(theirs)), t)
 }
 
-// theirVideoID is the other magpie's id of a video, from remoteVideoID's.
+// theirVideoID is the other pigeon's id of a video, from remoteVideoID's.
 func theirVideoID(vendorID string) string {
 	b, _ := base64.RawURLEncoding.DecodeString(vendorID)
 	return string(b)
 }
 
-// remoteVideoBody is f as another magpie's videos API takes it: OpenAI's,
+// remoteVideoBody is f as another pigeon's videos API takes it: OpenAI's,
 // the images as data URLs.
 func remoteVideoBody(model string, f filming) []byte {
 	req := map[string]any{}
@@ -605,7 +605,7 @@ func remoteVideoBody(model string, f filming) []byte {
 	return b
 }
 
-// asOurs is another magpie's video object with this magpie's id for it and
+// asOurs is another pigeon's video object with this pigeon's id for it and
 // name for its model.
 func asOurs(b []byte, p provider.Provider, id string) (map[string]any, error) {
 	var obj map[string]any
@@ -620,12 +620,12 @@ func asOurs(b []byte, p provider.Provider, id string) (map[string]any, error) {
 }
 
 // filmsOpenAI is whether p makes videos at an OpenAI-shaped videos API:
-// another magpie, or a provider whose model list marks video models.
+// another pigeon, or a provider whose model list marks video models.
 func filmsOpenAI(p provider.Provider) bool {
-	return p.IsRemoteMagpie() || len(customVideomakers(p)) > 0
+	return p.IsRemotePigeon() || len(customVideomakers(p)) > 0
 }
 
-// remoteVideoURL is where another magpie, or a provider's OpenAI-shaped
+// remoteVideoURL is where another pigeon, or a provider's OpenAI-shaped
 // videos API, answers for a video, with suffix ("" or "/content").
 func remoteVideoURL(p provider.Provider, vendorID, suffix string) string {
 	return videoBase(p) + "/videos/" + url.PathEscape(theirVideoID(vendorID)) + suffix
@@ -692,7 +692,7 @@ func (s *Server) videosCreate(w http.ResponseWriter, r *http.Request) {
 			fail(404, switchedOff(off, f.Model))
 			return
 		}
-		fail(404, fmt.Sprintf("magpie knows no model %q to make videos with", f.Model))
+		fail(404, fmt.Sprintf("pigeon knows no model %q to make videos with", f.Model))
 		return
 	}
 	g, ms, isGroup := drawingGroup(f.Model, p, model)
@@ -836,7 +836,7 @@ type videoStart struct {
 	unfit          bool // the model makes no videos: none was asked
 }
 
-// startVideo starts f's video on p's model: at another magpie's videos
+// startVideo starts f's video on p's model: at another pigeon's videos
 // API, a provider's OpenAI-shaped one, Volcengine's tasks or Grok's. A
 // failure before any vendor is asked (the model makes no videos, a key may
 // use none of the provider's keys) has asked unset.
@@ -844,7 +844,7 @@ func (s *Server) startVideo(ctx context.Context, r *http.Request, p provider.Pro
 	// the provider's other keys to start the video on, when the first
 	// says it doesn't serve the model
 	var keys []candidate
-	if !p.IsRemoteMagpie() && filmsCustom(p, model) {
+	if !p.IsRemotePigeon() && filmsCustom(p, model) {
 		// at a provider's own videos API: sent on the first key a chat
 		// for the model would go to (#1657), never one whose own list of
 		// models leaves it out, nor one the calling key may not use
@@ -863,22 +863,22 @@ func (s *Server) startVideo(ctx context.Context, r *http.Request, p provider.Pro
 			return videoStart{p: p}, 403, errors.New(keyAccountsError(keyWho, f.Model))
 		}
 	}
-	v := videoStart{p: p, remote: p.IsRemoteMagpie()}
+	v := videoStart{p: p, remote: p.IsRemotePigeon()}
 	v.custom = !v.remote && filmsCustom(p, model)
 	volcengine := p.Preset == "volcengine" && slices.ContainsFunc(p.PlanVideos(), func(m catalog.Model) bool { return m.ID == model })
-	// any grok-imagine-video*, not only those listed: the vendor's newer ones work before magpie names them
+	// any grok-imagine-video*, not only those listed: the vendor's newer ones work before pigeon names them
 	if !v.remote && !v.custom && !volcengine && (!drawsGrok(p) || !strings.HasPrefix(model, grokVideoFamily)) {
 		v.unfit = true
-		return v, 400, fmt.Errorf(`%s/%s can't make videos: magpie makes videos with a Grok subscription's grok-imagine-video, Volcengine Agent Plan's Seedance models, another magpie's, and a provider's models its own model list marks "kind": "video" or that you mark a Video model (right-click the model in the provider's editor: Makes…)`, p.ID, model)
+		return v, 400, fmt.Errorf(`%s/%s can't make videos: pigeon makes videos with a Grok subscription's grok-imagine-video, Volcengine Agent Plan's Seedance models, another pigeon's, and a provider's models its own model list marks "kind": "video" or that you mark a Video model (right-click the model in the provider's editor: Makes…)`, p.ID, model)
 	}
-	// another magpie is asked at its videos API, which says itself what
+	// another pigeon is asked at its videos API, which says itself what
 	// it can't make
 	at, field := strings.TrimRight(p.Base(provider.Responses), "/")+"/videos/generations", "request_id"
 	var body []byte
 	switch {
 	case v.remote, v.custom:
 		// a provider's OpenAI-shaped videos API is asked as another
-		// magpie's is: OpenAI's body, its answer its own
+		// pigeon's is: OpenAI's body, its answer its own
 		at, field, body = videoBase(p)+"/videos", "id", remoteVideoBody(model, f)
 	case volcengine:
 		at, field, body = strings.TrimRight(p.Base(provider.Responses), "/")+"/contents/generations/tasks", "id", volcengineVideoBody(model, f)
@@ -911,7 +911,7 @@ func videoAsker(r *http.Request, p provider.Provider) (provider.Provider, string
 	if !held {
 		return p, ""
 	}
-	if !p.IsRemoteMagpie() && filmsOpenAI(p) {
+	if !p.IsRemotePigeon() && filmsOpenAI(p) {
 		if p.Key == "" && p.Account == nil || accountAllowed(who, candidate{p: p}) {
 			return p, ""
 		}
@@ -939,7 +939,7 @@ func videoModelHeld(r *http.Request, p provider.Provider, model string) string {
 }
 
 // openAIVideo is how a video at an OpenAI-shaped videos API (another
-// magpie's, a provider's) is going, with this magpie's id for it, and the
+// pigeon's, a provider's) is going, with this pigeon's id for it, and the
 // model making it as that API names it.
 func (s *Server) openAIVideo(ctx context.Context, p provider.Provider, vendorID, id string) (map[string]any, string, int, error) {
 	b, code, err := s.sendAs(ctx, p, http.MethodGet, remoteVideoURL(p, vendorID, ""), "", nil, true)
@@ -1082,7 +1082,7 @@ func (s *Server) videosContent(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, io.LimitReader(res.Body, maxVideoBytes))
 }
 
-// remoteVideoContent passes on the bytes of a video another magpie, or a
+// remoteVideoContent passes on the bytes of a video another pigeon, or a
 // provider's OpenAI-shaped videos API, made, or what it says of one it
 // hasn't.
 func (s *Server) remoteVideoContent(ctx context.Context, w http.ResponseWriter, p provider.Provider, vendorID string) {
@@ -1092,9 +1092,9 @@ func (s *Server) remoteVideoContent(ctx context.Context, w http.ResponseWriter, 
 		writeError(w, provider.Chat, 502, err.Error())
 		return
 	}
-	// magpie's, or the agent's own where the provider passes it on (#1851)
+	// pigeon's, or the agent's own where the provider passes it on (#1851)
 	stampUA(ctx, p, req.Header)
-	if p.IsRemoteMagpie() {
+	if p.IsRemotePigeon() {
 		// vendors are told no caller
 		req.Header.Set("User-Agent", "magpie/"+Version)
 		passOnCaller(ctx, req)

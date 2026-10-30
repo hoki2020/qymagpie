@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // fakeWSLNet makes cidr the WSL network Windows has an address on.
@@ -43,7 +43,7 @@ func TestWSLAgentsGetTheWSLKey(t *testing.T) {
 	if !ourKey(k) || !gatewayKey(k) || !gatewayKey(agentKeyAt("qoder", nat)) || agentKeyAt("qoder", nat) != k+"-qoder" {
 		t.Errorf("WSL keys not known as magpie's: %q", agentKeyAt("qoder", nat))
 	}
-	if oc := magpieProviderJSONAt("opencode", "opencode", nat).(map[string]any)["options"].(map[string]any); oc["apiKey"] != k {
+	if oc := pigeonProviderJSONAt("opencode", "opencode", nat).(map[string]any)["options"].(map[string]any); oc["apiKey"] != k {
 		t.Errorf("OpenCode in WSL: %v", oc["apiKey"])
 	}
 

@@ -12,7 +12,7 @@ import (
 // Kiro's accounts on @magpie-community/opencode-kiro-auth:
 //   - kiro-cli's or the IDE's own sign-in goes as a marker ({source:
 //     "kiro"}): the plugin reads it where they keep it, as the built-in did;
-//   - an account magpie signed in (a home holding kiro-auth-token.json)
+//   - an account pigeon signed in (a home holding kiro-auth-token.json)
 //     goes whole, its tokens the plugin's to refresh from then on; the
 //     home stays, and moving back writes the plugin's tokens into it;
 //   - a key saved on the provider goes as an API key account, first (with
@@ -21,7 +21,7 @@ import (
 func init() {
 	movers["kiro"] = &mover{
 		pkg:    "@magpie-community/opencode-kiro-auth",
-		min:    "0.1.16", // a reply with no token counts says its cache is unknown (magpie_cache_unknown), not 0: Kiro caches but counts no tokens (zeewell on X); 0.1.15: an API key is used as kiro-cli uses it: GetProfile in us-east-1 then eu-central-1, and with no profile found the key goes on in us-east-1; its models are the control plane's ListAvailableModels and no profile is named in its calls (Hollowhere: Auto alone, every request "Kiro didn't take the API key: 400"); 0.1.14: each account is named by its email and the way it was signed in to, "email (Google)", "email (GitHub)", not "email (slot)" (plugins#309); 0.1.13: two sign-ins of one email through different login providers (Google, GitHub, Builder ID) stay two accounts (plugins#309); 0.1.12: a request for JSON output (output_config.format) answers in JSON, its schema in the system prompt as the built-in; 0.1.11: a thinking model offers xhigh as its own level (50k), so Claude Code's xhigh isn't routed as max (plugins#120); 0.1.10: the caller's prompt-cache marks reach Kiro as cachePoints (plugins#110)
+		min:    "0.1.16", // a reply with no token counts says its cache is unknown (pigeon_cache_unknown), not 0: Kiro caches but counts no tokens (zeewell on X); 0.1.15: an API key is used as kiro-cli uses it: GetProfile in us-east-1 then eu-central-1, and with no profile found the key goes on in us-east-1; its models are the control plane's ListAvailableModels and no profile is named in its calls (Hollowhere: Auto alone, every request "Kiro didn't take the API key: 400"); 0.1.14: each account is named by its email and the way it was signed in to, "email (Google)", "email (GitHub)", not "email (slot)" (plugins#309); 0.1.13: two sign-ins of one email through different login providers (Google, GitHub, Builder ID) stay two accounts (plugins#309); 0.1.12: a request for JSON output (output_config.format) answers in JSON, its schema in the system prompt as the built-in; 0.1.11: a thinking model offers xhigh as its own level (50k), so Claude Code's xhigh isn't routed as max (plugins#120); 0.1.10: the caller's prompt-cache marks reach Kiro as cachePoints (plugins#110)
 		agents: []string{"kiro"},
 		out: func() ([]Moving, error) {
 			var out []Moving
@@ -121,7 +121,7 @@ func init() {
 	}
 }
 
-// kiroOut is the account magpie signed in in home, as the plugin keeps one.
+// kiroOut is the account pigeon signed in in home, as the plugin keeps one.
 func kiroOut(home, user, plan string) (map[string]any, error) {
 	b, err := os.ReadFile(filepath.Join(home, kiroTokenFile))
 	if err != nil {

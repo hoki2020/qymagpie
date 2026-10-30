@@ -121,7 +121,7 @@ func TestImportOpenCodeAuth(t *testing.T) {
 	}
 	for _, ref := range []string{"anthropic", "github-copilot", "https://opencode.example.com"} {
 		it := items[ref]
-		if it.Skip != "it is a sign-in, not a key; add the subscription in magpie" || it.Provider.Key != "" || it.Provider.Chat != "" || it.Provider.Anthropic != "" {
+		if it.Skip != "it is a sign-in, not a key; add the subscription in pigeon" || it.Provider.Key != "" || it.Provider.Chat != "" || it.Provider.Anthropic != "" {
 			t.Fatalf("sign-in %s: %+v", ref, it)
 		}
 	}

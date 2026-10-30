@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func TestWorkBuddy(t *testing.T) {
@@ -143,7 +143,7 @@ func TestWorkBuddyKeepsRemoteAddress(t *testing.T) {
 	path := filepath.Join(home, ".workbuddy", "models.json")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	a := workbuddy(home)
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	read := func() []map[string]any {

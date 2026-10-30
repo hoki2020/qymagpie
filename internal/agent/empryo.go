@@ -8,9 +8,9 @@ package agent
 // The model sessions start on is defaultModel, "<provider id>/<model id>",
 // split at the first "/".
 //
-// magpie adds a provider of its own, id "magpie", at the gateway, and sets
+// pigeon adds a provider of its own, id "pigeon", at the gateway, and sets
 // defaultModel to magpie/<catalog id>; the defaultModel the user had is
-// stashed and put back when magpie steps out, and the "magpie" provider
+// stashed and put back when pigeon steps out, and the "pigeon" provider
 // goes again then. The user's providers and other keys are left as they
 // are. With no envVar Empryo only lists a provider whose baseURL answers
 // (2xx, 401 or 403), which the gateway's GET /v1 does.
@@ -22,7 +22,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 const (
@@ -42,30 +42,30 @@ func empryoAt(at place) *Agent {
 	dir := filepath.Join(at.home, ".empryo")
 	path := filepath.Join(dir, "config.json")
 	keyModel := "empryo:" + path + ":" + empryoModel
-	// keyNew marks a file magpie made, which goes again once magpie's
+	// keyNew marks a file pigeon made, which goes again once pigeon's
 	// provider and model are taken out of it and nothing is left
 	keyNew := "empryo:" + path + ":new"
 	model := func() string { v, _ := edit.GetJSON(path, empryoModel); return v }
-	// ours is magpie's provider entry, "" where there is none
+	// ours is pigeon's provider entry, "" where there is none
 	ours := func() string {
 		raw, err := edit.Read(path)
 		if err != nil {
 			return ""
 		}
 		for _, p := range gjson.GetBytes(raw, empryoProviders).Array() {
-			if p.Get("id").String() == magpieID {
+			if p.Get("id").String() == pigeonID {
 				return p.Raw
 			}
 		}
 		return ""
 	}
-	// on: magpie's — the model is one of magpie's provider
+	// on: pigeon's — the model is one of pigeon's provider
 	on := func() bool {
-		ref, ok := strings.CutPrefix(model(), magpieID+"/")
-		return ok && isMagpie(ref)
+		ref, ok := strings.CutPrefix(model(), pigeonID+"/")
+		return ok && isPigeon(ref)
 	}
 	// providers sets the providers array to the user's ones plus, with
-	// add, magpie's; with neither left the key goes
+	// add, pigeon's; with neither left the key goes
 	providers := func(add bool) error {
 		raw, err := edit.Read(path)
 		if err != nil && isFile(path) {
@@ -73,13 +73,13 @@ func empryoAt(at place) *Agent {
 		}
 		var list []json.RawMessage
 		for _, p := range gjson.GetBytes(raw, empryoProviders).Array() {
-			if p.Get("id").String() != magpieID {
+			if p.Get("id").String() != pigeonID {
 				list = append(list, json.RawMessage(p.Raw))
 			}
 		}
 		if add {
 			mine, _ := json.Marshal(map[string]any{
-				"id": magpieID, "name": "Magpie",
+				"id": pigeonID, "name": "Pigeon",
 				"baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models",
 			})
 			list = append(list, mine)
@@ -116,7 +116,7 @@ func empryoAt(at place) *Agent {
 			}
 			raw := ours()
 			if raw == "" {
-				return "Empryo's magpie provider (config.json) is gone, so it no longer reaches magpie"
+				return "Empryo's pigeon provider (config.json) is gone, so it no longer reaches pigeon"
 			}
 			return wiringOff("Empryo", path, func(k string) (string, bool) {
 				r := gjson.Get(raw, k)
@@ -127,8 +127,8 @@ func empryoAt(at place) *Agent {
 			Key: "model", Label: "model",
 			Get: model,
 			Set: func(v string) error {
-				if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
-					// what the user had, unless magpie stashed it already
+				if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok && isPigeon(ref) {
+					// what the user had, unless pigeon stashed it already
 					if !on() {
 						forget(keyModel, keyNew)
 						stash(map[string]string{keyModel: model()})
@@ -166,11 +166,11 @@ func empryoAt(at place) *Agent {
 			},
 			Options: func(cur map[string]string) []Option {
 				var own []Option
-				if c := cur["model"]; c != "" && !usesMagpie(c) {
+				if c := cur["model"]; c != "" && !usesPigeon(c) {
 					_, id, _ := strings.Cut(c, "/")
 					own = append(own, Option{Value: c, Icon: modelIcon("", id)})
 				}
-				return append(group("Empryo", own), viaMagpie("empryo", magpieID+"/")...)
+				return append(group("Empryo", own), viaPigeon("empryo", pigeonID+"/")...)
 			},
 		}},
 	}, path)

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/codexsummary"
+	"github.com/hoki2020/pigeon/internal/codexsummary"
 )
 
 // A rollout written portable (sessions.PortCodexRollouts) holds, in place
@@ -22,9 +22,9 @@ func TestPortedCompactionReadsTheSame(t *testing.T) {
 	}
 	before := body(map[string]any{"type": "compaction", "id": "cmp_magpie_1", "encrypted_content": enc})
 	after := body(msg)
-	for _, c := range []struct{ magpieModel, native bool }{{true, false}, {true, true}, {false, false}} {
-		a, _ := codexInputAs(before, c.magpieModel, c.native)
-		b, _ := codexInputAs(after, c.magpieModel, c.native)
+	for _, c := range []struct{ pigeonModel, native bool }{{true, false}, {true, true}, {false, false}} {
+		a, _ := codexInputAs(before, c.pigeonModel, c.native)
+		b, _ := codexInputAs(after, c.pigeonModel, c.native)
 		var x, y any
 		json.Unmarshal(a, &x)
 		json.Unmarshal(b, &y)

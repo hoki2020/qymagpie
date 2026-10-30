@@ -16,11 +16,11 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 func stepcodeWriteTestFile(t *testing.T, path, content string) {
@@ -1072,7 +1072,7 @@ enabledModels = ["anthropic/*", "custom/fast", "magpie/deepseek/flash", "magpie/
 	want := []string{"anthropic/*", "custom/fast", "magpie/ds/flash", "magpie/ds/*", "magpie/deepseekx/flash", "magpie/ds/pro"}
 	if !slices.Equal(*cfg.Scope, want) || strings.Contains(raw, "magpie/deepseek/") ||
 		!strings.Contains(raw, "# mine") || !strings.Contains(raw, `theme = "dark"`) ||
-		stepcodeValue(cfg.Provider) != magpieID || stepcodeValue(cfg.Model) != "ds/pro" {
+		stepcodeValue(cfg.Provider) != pigeonID || stepcodeValue(cfg.Model) != "ds/pro" {
 		t.Fatalf("renamed scope = %v\nprovider %q model %q\n%s", *cfg.Scope, stepcodeValue(cfg.Provider), stepcodeValue(cfg.Model), raw)
 	}
 

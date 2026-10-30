@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // #894: on Windows with Smart App Control on, the new unsigned exe was

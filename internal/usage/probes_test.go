@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/probelog"
+	"github.com/hoki2020/pigeon/internal/probelog"
 )
 
 // ledgerSpy is an Observer that only counts the rows Append hands it.
@@ -44,7 +44,7 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 		t.Fatalf("probe rows %+v", page.Rows)
 	}
 	test := probes[1] // newest first
-	if probes[0].Kind != probelog.KindList || test.Kind != probelog.KindTest || test.Agent != "magpie" || test.Provider != "relay" ||
+	if probes[0].Kind != probelog.KindList || test.Kind != probelog.KindTest || test.Agent != "pigeon" || test.Provider != "relay" ||
 		test.ProviderAccount != "me" || test.Model != "gpt-9" || test.Status != 401 || test.Endpoint != "/v1/chat/completions" {
 		t.Fatalf("probe rows %+v", probes)
 	}
@@ -56,7 +56,7 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 	}
 	for dim, shares := range page.By {
 		for _, s := range shares {
-			if s.ID == "relay" || s.ID == "magpie" || s.ID == "gpt-9" {
+			if s.ID == "relay" || s.ID == "pigeon" || s.ID == "gpt-9" {
 				t.Fatalf("%s counts a probe: %+v", dim, shares)
 			}
 		}
@@ -67,7 +67,7 @@ func TestProbeRowsListedNotCounted(t *testing.T) {
 	if rs := Load(time.Time{}); len(rs) != 1 {
 		t.Fatalf("Load %+v", rs)
 	}
-	if !LastSeen("magpie").IsZero() {
+	if !LastSeen("pigeon").IsZero() {
 		t.Fatal("a probe is a request from agent magpie")
 	}
 	n := 0

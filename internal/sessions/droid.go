@@ -11,7 +11,7 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/jsonc"
 
-	"github.com/yetone/magpie/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/appdir"
 )
 
 // Factory's Droid keeps a session under its sessions folder
@@ -287,7 +287,7 @@ var droidSlot = regexp.MustCompile(`(-\[[^\]]*\])?-\d+$`)
 
 // droidModelName is a session's model as it is priced: a custom one
 // ("custom:<id>") is the model its entry in droid's settings asks for —
-// magpie's own are "<provider>/<model>" — else its id without droid's
+// pigeon's own are "<provider>/<model>" — else its id without droid's
 // additions; Factory's own are as they are.
 func droidModelName(m string) string {
 	if m == "" {

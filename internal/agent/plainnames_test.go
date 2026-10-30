@@ -5,8 +5,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // The model lists magpie writes into agents' own files (OpenCode, Pi, …)
@@ -27,7 +27,7 @@ func TestPlainNamesReachAgents(t *testing.T) {
 	}
 	names := func() []string {
 		var out []string
-		for _, m := range magpieModels("opencode") {
+		for _, m := range pigeonModels("opencode") {
 			out = append(out, m.ID+"="+m.Name)
 		}
 		slices.Sort(out)

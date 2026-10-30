@@ -12,8 +12,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // WorkBuddy's calls, read from the same lines its session summary is
@@ -24,7 +24,7 @@ import (
 // As with dsh and ZCode, the Sessions page read these all along and the
 // usage ledger did not, so WorkBuddy's tokens never reached the Usage page.
 //
-// A call WorkBuddy made to magpie's own gateway is not read here: the
+// A call WorkBuddy made to pigeon's own gateway is not read here: the
 // gateway logs it itself, with the provider and account that really
 // answered, and this file has neither to pair it with (workbuddyGateway).
 
@@ -65,7 +65,7 @@ func buddyDir(agent string) string {
 	return WorkBuddyDir()
 }
 
-// wbGateway are the ids each agent's models.json names as magpie's gateway,
+// wbGateway are the ids each agent's models.json names as pigeon's gateway,
 // by the file's path, kept while it is as it was, as zcodeCallFiles keeps
 // its listing.
 var wbGateway struct {
@@ -78,18 +78,18 @@ type wbIDs struct {
 	ids   map[string]bool
 }
 
-// workbuddyGateway is whether a model id is one WorkBuddy asks magpie's
+// workbuddyGateway is whether a model id is one WorkBuddy asks pigeon's
 // gateway for. A routing group's id says so on its own: "group/<id>" is a
-// name only a magpie answers to (provider.GroupPrefix), so a call asked for
+// name only a pigeon answers to (provider.GroupPrefix), so a call asked for
 // under it went to a gateway whichever machine that was, and this file has
 // nothing to pair it with. The rest are read from models.json, whose entries
-// for magpie (internal/agent's workbuddy.go writes them: vendor "magpie",
+// for pigeon (internal/agent's workbuddy.go writes them: vendor "pigeon",
 // url this gateway's) are the ones WorkBuddy shows in its picker as
 // "custom-local:<id>". An entry the user put there for another vendor keeps
 // its own usage, so the vendor is read too and not only the prefix.
 //
 // models.json is the user's own configuration, not a record of the call: take
-// magpie's models out of it and the calls made while they were in stop being
+// pigeon's models out of it and the calls made while they were in stop being
 // read as the gateway's here, and are counted as the agent's own beside the
 // gateway's rows for the same calls. It is the one shape this cannot tell
 // from the file alone — WorkBuddy names no provider of its own, as dsh, ZCode
@@ -97,7 +97,7 @@ type wbIDs struct {
 func workbuddyGateway(id string) bool { return buddyGateway(WorkBuddyDir(), id) }
 
 // buddyGateway is workbuddyGateway for the models.json in dir: WorkBuddy's,
-// or CodeBuddy Code's, which names magpie's models the same way.
+// or CodeBuddy Code's, which names pigeon's models the same way.
 func buddyGateway(dir, id string) bool {
 	const local = "custom-local:"
 	if !strings.HasPrefix(id, local) {
@@ -114,7 +114,7 @@ type wbEntry struct {
 }
 
 // buddyGatewayIDs are the ids of the models the models.json in dir names
-// as magpie's, an empty set when it names none (or cannot be read).
+// as pigeon's, an empty set when it names none (or cannot be read).
 func buddyGatewayIDs(dir string) map[string]bool {
 	path := filepath.Join(dir, "models.json")
 	stamp := ocStamp(path)
@@ -207,7 +207,7 @@ func readWorkBuddyCalls(f file) (*callFile, bool) {
 // its tokens (input with the cache read and written taken out of it, as its
 // summary counts them) and the time it was written.
 func workbuddyCall(st *callFile, dir string, l wbLine, b []byte) (Call, bool) {
-	// a call made to magpie's gateway is the gateway's record to keep, not
+	// a call made to pigeon's gateway is the gateway's record to keep, not
 	// this one's: see workbuddyGateway
 	if buddyGateway(dir, l.ProviderData.RequestModel) {
 		return Call{}, false

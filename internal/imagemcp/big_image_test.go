@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // fourK is a real 3840x2160 PNG of about the size #1576's relay sent

@@ -1,7 +1,7 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #1449 (YangZhiqiang98): Library → Skills should find which skills have
 // updates and update them. The page now checks by itself when the server
-// says a check is due (none since magpie started, or not for 12 hours),
+// says a check is due (none since pigeon started, or not for 12 hours),
 // once, and says only what there is to update. A skill changed here since it
 // was fetched from GitHub carries "Changed here"; its row's Update asks in
 // the page before it replaces the change (Keep mine sends nothing, Update

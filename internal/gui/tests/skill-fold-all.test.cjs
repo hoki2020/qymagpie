@@ -88,7 +88,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const rows = () => page.locator("#view-library .lib-row.lib-skill").count();
         // how far anything on the page is scrolled down
         const scrolled = () => page.evaluate(() => Math.max(0, ...[document.scrollingElement, ...document.querySelectorAll("*")].map((e) => e?.scrollTop || 0)));
-        const kept = () => page.evaluate(() => JSON.parse(localStorage.getItem("magpie.libSkillFolds") || "{}"));
+        const kept = () => page.evaluate(() => JSON.parse(localStorage.getItem("pigeon.libSkillFolds") || "{}"));
 
         // three groups, open as few as these: the button offers to fold them
         assert.equal(await heads.count(), 3);

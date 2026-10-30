@@ -4,7 +4,7 @@ package provider
 // wallechfox/qoder-checkin claims them): Qoder and Qoder CN list an
 // account's campaigns on their openapi host, the day's credits among them
 // (actionType CLAIM_BENEFIT), and claim one with a POST. While the setting
-// is on, whichever magpie runs the gateway claims each claimable one for
+// is on, whichever pigeon runs the gateway claims each claimable one for
 // each account of @magpie-community/opencode-qoder-auth. Campaigns are
 // checked every 30 minutes and on a Beijing day change: their daily
 // rollover need not be midnight. The server decides which can be claimed.
@@ -30,8 +30,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // qoderCampaignURLs are the campaigns of each site, by the plugin's
@@ -190,7 +190,7 @@ func qoderCall(ctx context.Context, a qoderCheckinAcct, method, u string, dst an
 	}
 	defer res.Body.Close()
 	b, _ := io.ReadAll(io.LimitReader(res.Body, 1<<20))
-	if strings.EqualFold(res.Header.Get("X-Magpie-Sign-In"), "expired") || res.StatusCode == http.StatusUnauthorized || res.StatusCode == http.StatusForbidden {
+	if strings.EqualFold(res.Header.Get("X-Pigeon-Sign-In"), "expired") || res.StatusCode == http.StatusUnauthorized || res.StatusCode == http.StatusForbidden {
 		return errors.New("Qoder's sign-in has expired — sign in again")
 	}
 	if res.StatusCode == http.StatusNotFound && strings.Contains(string(b), "only chat completions") {

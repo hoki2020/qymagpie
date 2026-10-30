@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/hoki2020/pigeon/internal/pii"
+	"github.com/hoki2020/pigeon/internal/redact"
 )
 
 // The masking evaluation: made-up texts of the kinds agents send (prose,
@@ -270,7 +270,7 @@ func writeRecording(t *testing.T, rec map[string]recorded) {
 func askModel(t *testing.T, dir string) map[string]recorded {
 	t.Setenv("XDG_CACHE_HOME", dir)
 	if !pii.Installed() {
-		t.Fatalf("the model isn't in %s", filepath.Join(dir, "magpie", "privacy-filter"))
+		t.Fatalf("the model isn't in %s", filepath.Join(dir, "pigeon", "privacy-filter"))
 	}
 	defer pii.Stop()
 	rec := map[string]recorded{}

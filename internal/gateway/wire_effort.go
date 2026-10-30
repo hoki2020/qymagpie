@@ -3,7 +3,7 @@ package gateway
 import (
 	"context"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // thinkingBackOn is req with the thinking off it asked for taken back, for

@@ -144,16 +144,16 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const levels = await page.locator("#sessChart .sess-cal i").evaluateAll((es) => es.map((e) => e.className));
         assert(levels.includes("l0") && levels.includes("l4"), levels.join());
         await page.locator("#sessChart .segs .opt").nth(3).click();
-        assert.equal(await page.evaluate(() => localStorage.getItem("magpie.sessMetric")), "sessions");
+        assert.equal(await page.evaluate(() => localStorage.getItem("pigeon.sessMetric")), "sessions");
         const title = await page.locator("#sessChart .sess-cal i.l4").first().getAttribute("title");
         assert.match(title, lang === "en" ? /2 sessions/ : /2 个会话/);
         // messages and output tokens, the heatmap's other ways
         assert.deepEqual((await page.locator("#sessChart .segs .opt").allInnerTexts()).slice(0, 3), lang === "en" ? ["Tokens", "Output tokens", "Messages"] : ["Token", "输出 Token", "消息"]);
         await page.locator("#sessChart .segs .opt").nth(2).click();
-        assert.equal(await page.evaluate(() => localStorage.getItem("magpie.sessMetric")), "messages");
+        assert.equal(await page.evaluate(() => localStorage.getItem("pigeon.sessMetric")), "messages");
         assert.match(await page.locator("#sessChart .sess-cal i.l4").first().getAttribute("title"), lang === "en" ? /30 messages/ : /30 条消息/);
         await page.locator("#sessChart .segs .opt").nth(1).click();
-        assert.equal(await page.evaluate(() => localStorage.getItem("magpie.sessMetric")), "output");
+        assert.equal(await page.evaluate(() => localStorage.getItem("pigeon.sessMetric")), "output");
         await page.locator("#sessChart .segs .opt").nth(0).click();
       });
 
@@ -197,7 +197,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // an empty bin says 0 over a stub
         assert.equal(await shape.locator(".col .plot > b").last().innerText(), "0");
         assert.equal(await shape.locator(".plot > i").last().getAttribute("class"), "none");
-        assert.equal(await page.evaluate(() => localStorage.getItem("magpie.sessShape")), "minutes");
+        assert.equal(await page.evaluate(() => localStorage.getItem("pigeon.sessShape")), "minutes");
         assert.equal((await shape.boundingBox()).y, y);
         await shape.locator(".segs .opt").nth(0).click();
       });
@@ -252,7 +252,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await page.locator("#sessTop .sess-detail").count(), 0);
         await page.locator("#sessTop .segs .opt").nth(1).click();
         assert.equal(await page.locator("#sessTop .sess-top .name").first().innerText(), "Top session 2");
-        assert.equal(await page.evaluate(() => localStorage.getItem("magpie.sessTop")), "cost");
+        assert.equal(await page.evaluate(() => localStorage.getItem("pigeon.sessTop")), "cost");
         // a session only the gateway saw says so, not "(no prompt)" with no folder (#2285)
         const gw = page.locator("#sessTop .sess-top").last();
         assert.equal(await gw.locator(".name").innerText(), want[lang].gwName);

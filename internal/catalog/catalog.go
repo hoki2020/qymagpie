@@ -1,5 +1,5 @@
 // Package catalog knows which models exist. It reads the models.dev catalog
-// (from magpie's own cache or OpenCode's), Codex's model cache, and falls back
+// (from pigeon's own cache or OpenCode's), Codex's model cache, and falls back
 // to a small built-in list so the picker is never empty.
 package catalog
 
@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/filememo"
 )
 
 // Model is one entry the picker can offer.
@@ -38,7 +38,7 @@ type Model struct {
 	// APIs, when the vendor says, are the APIs the model is served on
 	// ("chat", "responses", "anthropic"); empty is not known.
 	APIs []string `json:",omitempty"`
-	// Endpoints, in magpie's own models for an agent, are the gateway
+	// Endpoints, in pigeon's own models for an agent, are the gateway
 	// paths a request for it is relayed on as it is
 	// (provider.NativeEndpoints, /v1/models' native_endpoints); none for a
 	// group or a model translated anyway.
@@ -71,8 +71,8 @@ type Model struct {
 	// provider.CompactFor): the window it is told when Context is longer.
 	// 0 is none set, for the one for every model (settings.Compact).
 	Compact int `json:",omitempty"`
-	// Plain, on a model of another magpie's list, is its name there alone
-	// (display_name), when Name is its label there, with that magpie's
+	// Plain, on a model of another pigeon's list, is its name there alone
+	// (display_name), when Name is its label there, with that pigeon's
 	// provider after it (magpie_label): the name Provider in model names
 	// Off has here (ARNO on Discord).
 	Plain string `json:",omitempty"`
@@ -81,7 +81,7 @@ type Model struct {
 	Fast bool `json:",omitempty"`
 	// Tiers, in one ChatGPT account's own model list, are the service
 	// tiers its plan offers on the model ("priority", "ultrafast"); in
-	// another magpie's, the tiers it offers its Codex on the model
+	// another pigeon's, the tiers it offers its Codex on the model
 	// (#1234); in a provider plugin's, the tiers it says its vendor serves
 	// the model at (#2514).
 	Tiers []string `json:",omitempty"`
@@ -103,11 +103,11 @@ type Model struct {
 	// a relay's flux): kept with the list for Settings → Images, never
 	// offered to agents as a model to talk to.
 	Draws bool `json:",omitempty"`
-	// Films is set on a model another magpie lists as one it makes videos
-	// with (a Remote magpie's Grok Imagine Video): kept with the list for
+	// Films is set on a model another pigeon lists as one it makes videos
+	// with (a Remote pigeon's Grok Imagine Video): kept with the list for
 	// its videos API, never offered as a model to talk to or draw with.
 	Films bool `json:",omitempty"`
-	// Decides marks a decision model another magpie explicitly lists,
+	// Decides marks a decision model another pigeon explicitly lists,
 	// including models whose ids don't name Jev.
 	Decides bool `json:",omitempty"`
 	// Free is set on a model a subscription serves at no cost to its
@@ -123,9 +123,9 @@ type Model struct {
 	// Reasoning is set on a model that thinks, whether or not it takes
 	// levels: mimo-v2.6-flash thinks with a switch alone (#402).
 	Reasoning bool `json:",omitempty"`
-	// WebSearch is how another magpie (a Remote magpie) searches the web
+	// WebSearch is how another pigeon (a Remote pigeon) searches the web
 	// for the model when a web search tool is offered: "native", its own
-	// provider by itself, or "magpie", with that magpie's searcher; "" it
+	// provider by itself, or "pigeon", with that pigeon's searcher; "" it
 	// doesn't, or didn't say. A plugin's model it says searches by itself
 	// (m.searches) is "native" too.
 	WebSearch string `json:",omitempty"`
@@ -170,7 +170,7 @@ type Tier struct {
 	CacheWrite1h float64 `json:"cache_write_1h,omitempty"`
 }
 
-// UnmarshalJSON reads a price as magpie writes it, and as models.dev does,
+// UnmarshalJSON reads a price as pigeon writes it, and as models.dev does,
 // whose tiers name their size as {"tier": {"type": "context", "size": N}}
 // and may leave a part out, which is then the base price's. A tier of
 // another type, or of no size, is left out.
@@ -379,7 +379,7 @@ func (p mdProvider) levels(m mdModel, providerID string) []string {
 	}
 	// the kin is kept by its id, date and levels, not as &x: a pointer to
 	// the loop's copy put every model of p on the heap, for every model
-	// asked (~6 GB in 48 minutes of a user's magpie, #1956)
+	// asked (~6 GB in 48 minutes of a user's pigeon, #1956)
 	var kinID, kinDate string
 	var kin []string
 	for id := range p.Models {
@@ -479,7 +479,7 @@ var (
 	syncCh = make(chan struct{}, 1)
 )
 
-// CachePath is where `magpie sync` stores the models.dev catalog.
+// CachePath is where `pigeon sync` stores the models.dev catalog.
 func CachePath() string { return filepath.Join(appdir.Cache(), "models.json") }
 
 func opencodeCache() string {
@@ -680,7 +680,7 @@ func syncLock(ctx context.Context, onlyIfMissing bool) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "magpie")
+	req.Header.Set("User-Agent", "pigeon")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -1635,7 +1635,7 @@ func parseCodex(b []byte) ([]Model, error) {
 	sort.SliceStable(cache.Models, func(i, j int) bool { return cache.Models[i].Priority < cache.Models[j].Priority })
 	var out []Model
 	for _, m := range cache.Models {
-		if m.Visibility == "hide" || MagpieAdded(cache.ETag, m.Slug, m.Description) {
+		if m.Visibility == "hide" || PigeonAdded(cache.ETag, m.Slug, m.Description) {
 			continue
 		}
 		// the window Codex holds a conversation to (272K on a ChatGPT
@@ -1656,15 +1656,16 @@ func parseCodex(b []byte) ([]Model, error) {
 	return out, nil
 }
 
-// MagpieAdded reports whether an entry of Codex's models_cache.json is one
-// of magpie's, not Codex's own: the list Codex keeps is the one it was last
-// handed, and handed through the gateway it has magpie's models in it too
-// ("group/semantic", "deepseek/deepseek-v4", "codex/gpt-5.5" — magpie's ids,
+// PigeonAdded reports whether an entry of Codex's models_cache.json is one
+// of pigeon's, not Codex's own: the list Codex keeps is the one it was last
+// handed, and handed through the gateway it has pigeon's models in it too
+// ("group/semantic", "deepseek/deepseek-v4", "codex/gpt-5.5" — pigeon's ids,
 // which Codex's slugs never look like). Read back as Codex's own, they were
 // listed under OpenAI, and kept there after Codex was routed elsewhere.
-func MagpieAdded(etag, slug, description string) bool {
-	return strings.HasSuffix(description, " via magpie") ||
-		strings.Contains(etag, "+magpie-") && strings.Contains(slug, "/")
+func PigeonAdded(etag, slug, description string) bool {
+	// a cache written before the rename says magpie: it is ours all the same
+	return strings.HasSuffix(description, " via pigeon") || strings.HasSuffix(description, " via magpie") ||
+		(strings.Contains(etag, "+pigeon-") || strings.Contains(etag, "+magpie-")) && strings.Contains(slug, "/")
 }
 
 // EffortRank orders the reasoning levels agents and vendors name, weakest

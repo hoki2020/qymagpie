@@ -29,7 +29,7 @@ func fake(t *testing.T) (*fakeSystem, string) {
 	}
 	register = func(exe string) { f.paths = append(f.paths, exe) }
 	registered = func() bool { return f.before }
-	return f, filepath.Join(dir, "magpie", StateName)
+	return f, filepath.Join(dir, "pigeon", StateName)
 }
 
 func exists(p string) bool { _, err := os.Stat(p); return err == nil }

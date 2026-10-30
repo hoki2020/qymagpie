@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // nativeSealedReply is a Responses stream whose output is one compaction item,
@@ -62,7 +62,7 @@ func TestNativeCompactionPassesTheTrigger(t *testing.T) {
 		`data: {"type":"response.output_item.done","output_index":0,"item":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"SUMMARY"}]}}`,
 		`data: {"type":"response.completed","response":{"id":"resp_s","status":"completed","output":[],"usage":{"input_tokens":1,"output_tokens":1,"total_tokens":2}}}`)
 	code, body := nativeAsk(t, "fake/m1", compactTurn)
-	if code != 200 || strings.Contains(string(f.got), "compaction_trigger") || !strings.Contains(body, magpieCompaction) {
+	if code != 200 || strings.Contains(string(f.got), "compaction_trigger") || !strings.Contains(body, pigeonCompaction) {
 		t.Fatalf("off: %d %s\nrelay got %s", code, body, f.got)
 	}
 
@@ -79,7 +79,7 @@ func TestNativeCompactionPassesTheTrigger(t *testing.T) {
 	if f.path != "/v1/responses" {
 		t.Errorf("asked at %s", f.path)
 	}
-	if !strings.Contains(body, `"encrypted_content":"gAAAAB-sealed-by-relay"`) || strings.Contains(body, magpieCompaction) {
+	if !strings.Contains(body, `"encrypted_content":"gAAAAB-sealed-by-relay"`) || strings.Contains(body, pigeonCompaction) {
 		t.Errorf("Codex got %s", body)
 	}
 
@@ -105,7 +105,7 @@ func TestNativeCompactionRefusalGoesBack(t *testing.T) {
 	chatgpt(t, func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(400) })
 	nativeOn(t, "fake")
 	code, body := nativeAsk(t, "fake/m1", compactTurn)
-	if code != 400 || !strings.Contains(body, "Invalid value: 'compaction_trigger'") || strings.Contains(body, magpieCompaction) {
+	if code != 400 || !strings.Contains(body, "Invalid value: 'compaction_trigger'") || strings.Contains(body, pigeonCompaction) {
 		t.Fatalf("%d %s", code, body)
 	}
 	if f.calls != 1 {
@@ -193,7 +193,7 @@ func TestNativeCompactionCopilot(t *testing.T) {
 	mu.Unlock()
 
 	code, body = nativeAsk(t, "copilot/claude-sonnet-4.5", compactTurn)
-	if code != 200 || !strings.Contains(body, magpieCompaction) {
+	if code != 200 || !strings.Contains(body, pigeonCompaction) {
 		t.Fatalf("claude: %d %s", code, body)
 	}
 	mu.Lock()
@@ -445,7 +445,7 @@ func TestCodexOwnModelCompactionHonoursTheToggle(t *testing.T) {
 	}
 
 	code, body := nativeAsk(t, "gpt-5.5", compactTurn)
-	if code != 200 || !strings.Contains(body, magpieCompaction) || strings.Contains(body, "gAAAAB-sealed-by-chatgpt") {
+	if code != 200 || !strings.Contains(body, pigeonCompaction) || strings.Contains(body, "gAAAAB-sealed-by-chatgpt") {
 		t.Fatalf("off: %d %s", code, body)
 	}
 	mu.Lock()
@@ -465,7 +465,7 @@ func TestCodexOwnModelCompactionHonoursTheToggle(t *testing.T) {
 
 	nativeOn(t, "codex")
 	code, body = nativeAsk(t, "gpt-5.5", compactTurn)
-	if code != 200 || !strings.Contains(body, `"encrypted_content":"gAAAAB-sealed-by-chatgpt"`) || strings.Contains(body, magpieCompaction) {
+	if code != 200 || !strings.Contains(body, `"encrypted_content":"gAAAAB-sealed-by-chatgpt"`) || strings.Contains(body, pigeonCompaction) {
 		t.Fatalf("on: %d %s", code, body)
 	}
 	mu.Lock()

@@ -1,6 +1,6 @@
 # Sync and backup
 
-`internal/backup` collects magpie's portable setup into a passphrase-sealed
+`internal/backup` collects pigeon's portable setup into a passphrase-sealed
 bundle. `internal/davsync` keeps that bundle in a WebDAV folder, an S3 bucket
 or a GitHub repository. It merges changes between computers; it does not
 clone a working tree or synchronize arbitrary files.
@@ -10,7 +10,7 @@ clone a working tree or synchronize arbitrary files.
 - [`Config`, `Configure`, `Status` and `syncOnce`](../../internal/davsync/davsync.go)
   keep the active server in `sync.json`, and the last local/remote hashes,
   versions, notices and undo file in `sync-state.json`. These files live beside
-  magpie's settings. Secrets are local, never in the status response.
+  pigeon's settings. Secrets are local, never in the status response.
 - The [`remote`](../../internal/davsync/dav.go) interface reads a version and
   conditionally replaces it. WebDAV and S3 use ETags; GitHub uses the file's
   blob SHA. [`github.go`](../../internal/davsync/github.go)
@@ -37,7 +37,7 @@ an Undo or a backup file brings settings in, and `hashes` blanks them, so
 changing one is no change to push. They are: the window's size and whether it
 was maximised, the fonts, the proxy, the gateway's port, sharing on the local
 network (`LAN`) and the addresses let in to it (`AllowIPs`), the private
-hosts magpie may download from (`FetchPrivate`), the Dock, gateway
+hosts pigeon may download from (`FetchPrivate`), the Dock, gateway
 mode, keeping awake, lightweight windows, WSL lookups, account discovery, when
 allowances are read, recording gateway conversations, the Mac terminal a
 session resumes in (`SessionTerminal`) and what the menu bar shows. Launch at
@@ -72,7 +72,7 @@ When a remote file is empty, damaged or another app's format, sync stops and
 describes it through `ServerFile`. Settings and the backend's `upload` command
 can replace it with this computer's setup, keeping the old file first.
 HTML and XML are not offered for replacement. GitHub diagnostics name the
-repository and `magpie github upload`, rather than WebDAV's recovery path.
+repository and `pigeon github upload`, rather than WebDAV's recovery path.
 
 A local file that is there but can't be read is unknown, never empty or the
 defaults. `backup.Collect` stops on an unreadable providers.json (with its groups
@@ -98,7 +98,7 @@ repository can keep the token. The branch is part of the sync state key.
   every sealed version to anyone to guess the passphrase against
   (`TestGitHubPublicRepositoryRefused`). In an empty repository, the first encrypted
   backup initializes its default branch through the Contents API. When that
-  API refuses it as too large, a short `README.md` in magpie's folder makes
+  API refuses it as too large, a short `README.md` in pigeon's folder makes
   the first commit and the backup follows as the second. A selected
   branch other than the default must already exist. The token needs repository
   Contents read and write.
@@ -131,11 +131,11 @@ repository can keep the token. The branch is part of the sync state key.
   the list at the head named and the new backup doesn't use, in the same
   commit, so going back to one file leaves no part behind. Backups up to
   16 MiB stay one file, as before.
-- A magpie from before parts opens the list as a backup with version 2
-  and no key derivation, and stops with "made by a newer magpie; update
-  magpie" — not `ErrCorrupt` or `ErrNotBackup`, so it neither rebuilds
+- A pigeon from before parts opens the list as a backup with version 2
+  and no key derivation, and stops with "made by a newer pigeon; update
+  pigeon" — not `ErrCorrupt` or `ErrNotBackup`, so it neither rebuilds
   over it nor offers to replace it. A backup in one file, from any
-  magpie, still reads.
+  pigeon, still reads.
 - Tokens are separate from the library's GitHub token, sent only to
   `https://api.github.com`, and must differ from the encryption passphrase.
   Repository history retains older encrypted versions.
@@ -184,8 +184,8 @@ update, and `TestGitHubEmptyRepositoryLargeBackup` a large first backup.
 a blob over 24 MiB, as four parts in one commit, reads it back byte for
 byte, then goes to two parts and back to one file with no part left.
 `TestGitHubOneFileBackupStillReads` reads a 30 MB backup in one file and
-replaces it with parts; `TestGitHubPartsOlderMagpie` checks the list stops
-an older magpie as a newer magpie's backup; `TestGitHubPartsDamaged`,
+replaces it with parts; `TestGitHubPartsOlderPigeon` checks the list stops
+an older pigeon as a newer pigeon's backup; `TestGitHubPartsDamaged`,
 `TestGitHubPartsBranchMovedMeanwhile` and
 `TestGitHubEmptyRepositoryPartsBackup` cover a bad list or part, a moved
 head (each blob sent once) and an empty repository;

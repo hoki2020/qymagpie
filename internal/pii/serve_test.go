@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/hoki2020/pigeon/internal/redact"
 )
 
 func person(s, e int) redact.Found { return redact.Found{Start: s, End: e, Label: "private_person"} }

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // A version downloaded and waiting for a restart gives way to a newer one

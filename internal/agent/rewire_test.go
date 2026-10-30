@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // setPort is Settings' gateway port set to p, as the Settings page saves it.
@@ -73,7 +73,7 @@ func TestPortMovesEveryAgent(t *testing.T) {
 		var key, want string
 		for _, g := range a.Fields {
 			for _, o := range g.Options(a.Values()) {
-				if want == "" && (o.Ref == "fake/m1" || o.Value == magpieID) {
+				if want == "" && (o.Ref == "fake/m1" || o.Value == pigeonID) {
 					key, want = g.Key, o.Value
 				}
 			}

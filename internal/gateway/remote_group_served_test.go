@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // A remote magpie asked for one of its routing groups answers with the
@@ -50,7 +50,7 @@ func TestRemoteMagpieGroupNotSwapped(t *testing.T) {
 	h := s.Handler()
 	remote := httptest.NewServer(h)
 	t.Cleanup(remote.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +116,7 @@ func TestRemoteMagpieGroupNotSwapped(t *testing.T) {
 // the ledger judges each row as it lists it.
 func TestRemoteMagpieGroupLedgerRow(t *testing.T) {
 	fresh(t)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Key: "k", Preset: provider.RemoteMagpiePreset, Chat: "http://192.0.2.1:3425/v1", Models: []string{"group/auto-deepseek-v4-1-flash"}}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Key: "k", Preset: provider.RemotePigeonPreset, Chat: "http://192.0.2.1:3425/v1", Models: []string{"group/auto-deepseek-v4-1-flash"}}); err != nil {
 		t.Fatal(err)
 	}
 	usage.Append(usage.Record{Time: time.Now(), Agent: "claude", Provider: "office", Model: "group/auto-deepseek-v4-1-flash",

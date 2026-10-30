@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
@@ -89,9 +89,9 @@ func TestDshRoutesAModelOnItsNativeAPI(t *testing.T) {
 		api, base, name string
 		models          []string
 	}{
-		"magpie":           {"openai-completions", gatewayV1(), "Magpie", []string{"deepseek/pro", "deepseek/flash"}},
-		"magpie-responses": {"openai-responses", gatewayV1(), "Magpie · Responses", []string{"resp/gpt-5.5"}},
-		"magpie-anthropic": {"anthropic-messages", gateway.URL(), "Magpie · Anthropic", []string{"anth/claude-sonnet-5"}},
+		"magpie":           {"openai-completions", gatewayV1(), "Pigeon", []string{"deepseek/pro", "deepseek/flash"}},
+		"magpie-responses": {"openai-responses", gatewayV1(), "Pigeon · Responses", []string{"resp/gpt-5.5"}},
+		"magpie-anthropic": {"anthropic-messages", gateway.URL(), "Pigeon · Anthropic", []string{"anth/claude-sonnet-5"}},
 	} {
 		r, ok := ps[key]
 		if !ok {

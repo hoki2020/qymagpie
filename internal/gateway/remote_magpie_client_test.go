@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A relay that admits only its official client must see the same client
@@ -57,7 +57,7 @@ func TestRemoteMagpieClientHeaders(t *testing.T) {
 			}
 			remote := httptest.NewServer(New().Handler())
 			t.Cleanup(remote.Close)
-			if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemoteMagpiePreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
+			if err := provider.Save(provider.Provider{ID: "office", Preset: provider.RemotePigeonPreset, Chat: remote.URL, Key: "remote-key"}); err != nil {
 				t.Fatal(err)
 			}
 			office, _ := provider.Find("office")

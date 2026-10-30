@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // remoteList is the list another magpie (v0.1 on main, its own Provider in
@@ -32,7 +32,7 @@ func TestRemoteMagpieSuffixOff(t *testing.T) {
 		io.WriteString(w, remoteList)
 	}))
 	t.Cleanup(remote.Close)
-	id, err := provider.Add(provider.Provider{ID: "remote-magpie", Name: "Remote magpie", Key: "magpie", Preset: provider.RemoteMagpiePreset, Chat: remote.URL})
+	id, err := provider.Add(provider.Provider{ID: "remote-magpie", Name: "Remote magpie", Key: "magpie", Preset: provider.RemotePigeonPreset, Chat: remote.URL})
 	if err != nil {
 		t.Fatal(err)
 	}

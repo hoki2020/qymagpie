@@ -2,15 +2,15 @@ package agent
 
 // Grok Build, xAI's grok CLI, keeps its settings in ~/.grok/config.toml (or
 // $GROK_HOME's): the model new sessions start with under [models] default,
-// and models of the user's own as [model."<id>"] tables. magpie adds one
+// and models of the user's own as [model."<id>"] tables. pigeon adds one
 // such table per catalog model, named "magpie/<provider>/<model>", pointing
-// at the gateway with magpie's own key — a model with no key of its own
+// at the gateway with pigeon's own key — a model with no key of its own
 // would be sent the user's xAI sign-in — so the catalog joins Grok's own
 // models in its /model picker.
 //
 // A signed-in Grok also takes remote "campaign" patches from xAI, applied
 // above config.toml, and a launch campaign sets models.default (September
-// 2026's grok-4.7-launch did): a default picked in magpie was ignored and
+// 2026's grok-4.7-launch did): a default picked in pigeon was ignored and
 // every new session started on the campaign's model. So a default picked
 // here turns campaigns off ([features] campaigns = false), and clearing it
 // gives them back.
@@ -23,21 +23,21 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // grokEfforts are the reasoning efforts Grok knows.
 var grokEfforts = []string{"none", "minimal", "low", "medium", "high", "xhigh", "max"}
 
-// grokModelTable is the header prefix of every table magpie writes.
-var grokModelTable = `model."` + magpieID + "/"
+// grokModelTable is the header prefix of every table pigeon writes.
+var grokModelTable = `model."` + pigeonID + "/"
 
-// grokModelTables are magpie's model tables, for a Grok that reaches the
+// grokModelTables are pigeon's model tables, for a Grok that reaches the
 // gateway's /v1 at v1.
 func grokModelTables(v1 string) []edit.Table {
 	var out []edit.Table
-	for _, m := range magpieModels("grok") {
+	for _, m := range pigeonModels("grok") {
 		kvs := []edit.KV{
 			{Path: "model", Value: m.ID},
 			{Path: "name", Value: m.Name},
@@ -57,7 +57,7 @@ func grokModelTables(v1 string) []edit.Table {
 		if len(efforts) > 0 {
 			kvs = append(kvs, edit.KV{Path: "reasoning_efforts", Value: edit.Raw("[" + strings.Join(efforts, ", ") + "]")})
 		}
-		out = append(out, edit.Table{Name: "model." + strconv.Quote(magpieID+"/"+m.ID), KVs: kvs})
+		out = append(out, edit.Table{Name: "model." + strconv.Quote(pigeonID+"/"+m.ID), KVs: kvs})
 	}
 	return out
 }
@@ -89,8 +89,8 @@ func grokIn(at place) *Agent {
 		}
 		return false, nil
 	}
-	writeMagpie := func() error { return edit.SetTOMLTables(path, []string{grokModelTable}, grokModelTables(at.v1())) }
-	dropMagpie := func() error { return edit.SetTOMLTables(path, []string{grokModelTable}, nil) }
+	writePigeon := func() error { return edit.SetTOMLTables(path, []string{grokModelTable}, grokModelTables(at.v1())) }
+	dropPigeon := func() error { return edit.SetTOMLTables(path, []string{grokModelTable}, nil) }
 	// the default model is the user's, not a campaign's
 	ownDefault := func(features map[string]string) error {
 		if features["campaigns"] == "false" {
@@ -98,13 +98,13 @@ func grokIn(at place) *Agent {
 		}
 		return edit.SetTOMLKey(path, "features", "campaigns", false)
 	}
-	// the efforts of a model through magpie, as its catalog entry has them
+	// the efforts of a model through pigeon, as its catalog entry has them
 	efforts := func(model string) []string {
-		ref, ok := strings.CutPrefix(model, magpieID+"/")
+		ref, ok := strings.CutPrefix(model, pigeonID+"/")
 		if !ok {
 			return nil
 		}
-		return catalog.Efforts(magpieModels("grok"), ref)
+		return catalog.Efforts(pigeonModels("grok"), ref)
 	}
 	return atomic(&Agent{
 		ID: "grok", Name: "Grok Build", Icon: "xai", Aliases: []string{"grok-build", "grok-cli"}, Spelled: prefixed,
@@ -128,7 +128,7 @@ func grokIn(at place) *Agent {
 					return err
 				}
 			}
-			return writeMagpie()
+			return writePigeon()
 		},
 		Notice: func() string {
 			if Running(`(^|/)grok( |$)`) {
@@ -141,7 +141,7 @@ func grokIn(at place) *Agent {
 			if err != nil {
 				return err.Error()
 			}
-			if !usesMagpie(v) {
+			if !usesPigeon(v) {
 				return ""
 			}
 			t, err := edit.GetTOMLTable(path, "model."+strconv.Quote(v))
@@ -149,7 +149,7 @@ func grokIn(at place) *Agent {
 				return err.Error()
 			}
 			if t == nil {
-				return "Grok Build's [model." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Grok Build's [model." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches pigeon"
 			}
 			return wiringOff("Grok Build", path, func(k string) (string, bool) { v, ok := t[k]; return v, ok },
 				"base_url", at.v1(), "api_key", at.gwKey())
@@ -174,13 +174,13 @@ func grokIn(at place) *Agent {
 						if err := edit.DelTOMLKey(path, "features", "campaigns"); err != nil {
 							return err
 						}
-						return dropMagpie()
+						return dropPigeon()
 					}
-					if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
-						if err := writeMagpie(); err != nil {
+					if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok && isPigeon(ref) {
+						if err := writePigeon(); err != nil {
 							return err
 						}
-					} else if err := dropMagpie(); err != nil {
+					} else if err := dropPigeon(); err != nil {
 						return err
 					}
 					if e != "" {
@@ -204,10 +204,10 @@ func grokIn(at place) *Agent {
 					return edit.SetTOMLKey(path, "models", "default", v)
 				},
 				Options: func(cur map[string]string) []Option {
-					// magpie's rows for the account Grok Build is signed in
+					// pigeon's rows for the account Grok Build is signed in
 					// to are its own models a second time: they fold into
 					// one row (Fate on Discord: grokbuild 在登录态下会加载重复的模型)
-					opts := viaMagpie("grok", magpieID+"/")
+					opts := viaPigeon("grok", pigeonID+"/")
 					for i := range opts {
 						opts[i].Same = opts[i].own
 					}
@@ -237,17 +237,17 @@ func grokIn(at place) *Agent {
 }
 
 // grokOwnOptions are the models Grok Build offers its signed-in account: as
-// it last listed them itself (models_cache.json in its home), and as magpie
+// it last listed them itself (models_cache.json in its home), and as pigeon
 // last listed them for a Grok subscription; then the models of the user's
 // own config.toml tables, and the current one. Grok asks for them itself,
 // on its sign-in or their own key, so each says so (Direct): a row not
-// connected listed nothing of Grok's own, only magpie's, unless a Grok
-// subscription was signed in in magpie (EZN7L2C3, #834).
+// connected listed nothing of Grok's own, only pigeon's, unless a Grok
+// subscription was signed in in pigeon (EZN7L2C3, #834).
 func grokOwnOptions(dir, path, cur string) []Option {
 	seen := map[string]bool{}
 	var out []Option
 	add := func(id, name, direct string) {
-		if id == "" || seen[id] || strings.HasPrefix(id, magpieID+"/") {
+		if id == "" || seen[id] || strings.HasPrefix(id, pigeonID+"/") {
 			return
 		}
 		seen[id] = true
@@ -287,7 +287,7 @@ func grokOwnOptions(dir, path, cur string) []Option {
 			add(id, kv["name"], direct)
 		}
 	}
-	if cur != "" && !seen[cur] && !strings.HasPrefix(cur, magpieID+"/") {
+	if cur != "" && !seen[cur] && !strings.HasPrefix(cur, pigeonID+"/") {
 		out = append([]Option{{Value: cur, Icon: modelIcon("", cur), Direct: "xAI"}}, out...)
 	}
 	return group("Grok Build", out)

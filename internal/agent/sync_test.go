@@ -9,13 +9,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/codexcat"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/testenv"
 	"gopkg.in/yaml.v3"
 )
 
@@ -86,7 +86,7 @@ func readFile(path string) string {
 // 128K one.
 func TestPiModelsCarryContextWindow(t *testing.T) {
 	syncHome(t)
-	b, _ := json.Marshal(magpieProviderJSON("pi"))
+	b, _ := json.Marshal(pigeonProviderJSON("pi"))
 	if !strings.Contains(string(b), `"id":"relay/glm-4.6"`) || !strings.Contains(string(b), `"contextWindow":204800`) {
 		t.Fatalf("%s", b)
 	}
@@ -98,14 +98,14 @@ func TestPiModelsCarryMaxTokens(t *testing.T) {
 	syncHome(t)
 	os.WriteFile(catalog.CachePath(), []byte(`{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM-4.6","limit":{"context":204800,"output":131072}}}}}`), 0o644)
 	catalog.Reset()
-	b, _ := json.Marshal(magpieProviderJSON("pi"))
+	b, _ := json.Marshal(pigeonProviderJSON("pi"))
 	if !strings.Contains(string(b), `"maxTokens":131072`) {
 		t.Fatalf("%s", b)
 	}
 
 	os.WriteFile(catalog.CachePath(), []byte(`{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM-4.6","limit":{"context":204800}}}}}`), 0o644)
 	catalog.Reset()
-	b, _ = json.Marshal(magpieProviderJSON("pi"))
+	b, _ = json.Marshal(pigeonProviderJSON("pi"))
 	if strings.Contains(string(b), "maxTokens") {
 		t.Fatalf("unknown output sent: %s", b)
 	}
@@ -119,7 +119,7 @@ func TestCrushModelsCarryMaxTokens(t *testing.T) {
 	syncHome(t)
 	os.WriteFile(catalog.CachePath(), []byte(`{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM-4.6","limit":{"context":204800,"output":131072}}}}}`), 0o644)
 	catalog.Reset()
-	b, _ := json.Marshal(magpieProviderJSON("crush"))
+	b, _ := json.Marshal(pigeonProviderJSON("crush"))
 	if !strings.Contains(string(b), `"id":"relay/glm-4.6"`) || !strings.Contains(string(b), `"context_window":204800`) ||
 		!strings.Contains(string(b), `"default_max_tokens":131072`) {
 		t.Fatalf("%s", b)
@@ -127,7 +127,7 @@ func TestCrushModelsCarryMaxTokens(t *testing.T) {
 
 	os.WriteFile(catalog.CachePath(), []byte(`{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM-4.6","limit":{"context":204800}}}}}`), 0o644)
 	catalog.Reset()
-	b, _ = json.Marshal(magpieProviderJSON("crush"))
+	b, _ = json.Marshal(pigeonProviderJSON("crush"))
 	if !strings.Contains(string(b), `"default_max_tokens":16384`) {
 		t.Fatalf("unknown output took Crush's default away: %s", b)
 	}
@@ -147,16 +147,16 @@ func TestMaxTokensWithinContextWindow(t *testing.T) {
 		t.Helper()
 		os.WriteFile(catalog.CachePath(), []byte(`{"zai":{"models":{"glm-4.6":{"id":"glm-4.6","name":"GLM-4.6","limit":{`+limit+`}}}}}`), 0o644)
 		catalog.Reset()
-		pi, _ := json.Marshal(magpieProviderJSON("pi"))
+		pi, _ := json.Marshal(pigeonProviderJSON("pi"))
 		cline, _ := json.Marshal(clineModels(""))
 		omp, _ := yaml.Marshal(ompProvider())
-		dshRoute, _ := yaml.Marshal(dshRouteConfig(magpieModels("dsh"), "", gateway.URL()))
+		dshRoute, _ := yaml.Marshal(dshRouteConfig(pigeonModels("dsh"), "", gateway.URL()))
 		droid, _ := json.Marshal(droidEntries())
 		qoder, _ := json.Marshal(qoderProvider("qoder", ""))
 		hanako, _ := json.Marshal(hanakoProvider())
-		opencode, _ := json.Marshal(magpieProviderJSON("opencode"))
+		opencode, _ := json.Marshal(pigeonProviderJSON("opencode"))
 		zc, _ := json.Marshal(zcodeProviderJSON(filepath.Join(home, "none.json"), true))
-		crush, _ := json.Marshal(magpieProviderJSON("crush"))
+		crush, _ := json.Marshal(pigeonProviderJSON("crush"))
 		atomcode := filepath.Join(t.TempDir(), "config.toml")
 		if err := edit.SetTOMLTables(atomcode, nil, atomcodeTables(atomcode)); err != nil {
 			t.Fatal(err)
@@ -305,7 +305,7 @@ func must(b []byte, err error) []byte {
 // magpie's is chosen but the provider is gone from the file.
 func TestOpenCodeModelsCarryContextAndSyncRestores(t *testing.T) {
 	home := syncHome(t)
-	b, _ := json.Marshal(magpieProviderJSON("opencode"))
+	b, _ := json.Marshal(pigeonProviderJSON("opencode"))
 	if !strings.Contains(string(b), `"relay/glm-4.6":{`) || !strings.Contains(string(b), `"limit":{"context":204800,"output":0}`) {
 		t.Fatalf("%s", b)
 	}
@@ -424,7 +424,7 @@ func TestMiMoCodeConfigAsTheAppFindsIt(t *testing.T) {
 	}
 }
 
-// magpieProviderJSONFor reads the catalog narrowed under the agent's own id,
+// pigeonProviderJSONFor reads the catalog narrowed under the agent's own id,
 // while the config shape stays OpenCode's: a visibility on mimocode narrows
 // its provider block and leaves OpenCode's alone.
 func TestMiMoCodeCatalogNarrowedSeparately(t *testing.T) {
@@ -433,8 +433,8 @@ func TestMiMoCodeCatalogNarrowedSeparately(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { settings.Save(settings.Settings{}) })
-	mimo := magpieProviderJSONFor("opencode", "mimocode").(map[string]any)["models"].(map[string]any)
-	oc := magpieProviderJSON("opencode").(map[string]any)["models"].(map[string]any)
+	mimo := pigeonProviderJSONFor("opencode", "mimocode").(map[string]any)["models"].(map[string]any)
+	oc := pigeonProviderJSON("opencode").(map[string]any)["models"].(map[string]any)
 	if len(mimo) != 1 || mimo["relay/glm-4.6"] == nil {
 		t.Fatalf("mimocode catalog: %v", mimo)
 	}

@@ -21,10 +21,10 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 type RequestPage struct {
@@ -37,9 +37,9 @@ type RequestPage struct {
 	// Through and Direct are the rows the gateway served and the rows read
 	// from the agents' own session files, which the gateway never saw. Sum
 	// is the two together; the page shows the three beside each other so a
-	// reader can tell what magpie carried from what it only read about.
+	// reader can tell what pigeon carried from what it only read about.
 	Through, Direct Totals
-	// Reported are the calls a client told magpie of (#1874), which went
+	// Reported are the calls a client told pigeon of (#1874), which went
 	// straight to their vendor: counted in Sum, apart from both of those.
 	Reported Totals
 	// Accounts are the subscription accounts that answered calls in the
@@ -561,7 +561,7 @@ type heatPage struct {
 // page's key changed for every ask, and the Requests tab's refresh worked
 // out a year of calls again each time: seconds of CPU over a long history
 // (#3493). A year's calendar is the same a few seconds on; a change to
-// what prices or names a call, or a call through magpie, is still shown at
+// what prices or names a call, or a call through pigeon, is still shown at
 // once.
 var heatFresh = 30 * time.Second
 
@@ -1202,7 +1202,7 @@ func visibleLocal(chunks []*rowChunk) map[rowRef]bool {
 // The agent isn't in it: a session's id names the one conversation, and a
 // client built on Codex (miyi-helper, say) is logged under its own name by
 // the gateway while its Codex session file names Codex, so its calls were
-// counted twice, once through magpie and once as not.
+// counted twice, once through pigeon and once as not.
 type matchKey struct {
 	session       string
 	tokens        [3]int64
@@ -1645,7 +1645,7 @@ func buildRequestBlocksIn(p Period, f Filter, offset, limit int, now time.Time, 
 			if keep {
 				out.Total += cell.n
 			}
-			// a call turned away, and a request magpie sent on its own
+			// a call turned away, and a request pigeon sent on its own
 			// (SourceProbe), are listed and counted in no total
 			if cell.bits&cellUncounted != 0 {
 				continue
@@ -1956,7 +1956,7 @@ func callerGroups[K comparable](groups map[K]*Group) []Group {
 
 // prefetchEach reads the session files a query has to parse a few at a
 // time, ahead of the loop that takes them in order. The first All after
-// magpie starts parses every one of them, and one by one that was a wait on
+// pigeon starts parses every one of them, and one by one that was a wait on
 // the disk for each: Requests stayed a skeleton for 40 s over 12k Codex
 // sessions. read(i) gives what a make from newMake made of source i; at
 // most a window of them waits to be taken, so the history is never all

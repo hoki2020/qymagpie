@@ -3,8 +3,8 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/update"
 	"os"
 	"path/filepath"
 	"runtime"

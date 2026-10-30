@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/redact"
+	"github.com/hoki2020/pigeon/internal/redact"
 )
 
 // waitFor waits for ok, up to 10s.

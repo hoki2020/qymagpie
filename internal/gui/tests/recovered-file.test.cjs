@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A file of magpie's own a crash left unreadable (#1505: logins.json and
+// A file of pigeon's own a crash left unreadable (#1505: logins.json and
 // plugin-auth.json at their full length, every byte zero) is read back from
 // its last good copy, and /api/state's recovered says so: the window tells
 // the user once which file, from when, that a later change may be missing

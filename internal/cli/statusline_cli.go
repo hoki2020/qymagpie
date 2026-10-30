@@ -1,6 +1,6 @@
 package cli
 
-// magpie statusline: one line for Claude Code's status line (#1997,
+// pigeon statusline: one line for Claude Code's status line (#1997,
 // kensenzhao). Claude Code runs the statusLine command on every message,
 // hands it the session's JSON on stdin and shows what it prints, however
 // Claude Code signs in to the gateway; the anthropic-ratelimit-* headers
@@ -20,20 +20,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
-const statuslineUsage = `usage: magpie statusline [<provider|account>…]
+const statuslineUsage = `usage: pigeon statusline [<provider|account>…]
   one line for Claude Code's status line: the model the session's latest turn went
-  to through magpie, then each subscription and plan magpie has, as last read: its
+  to through pigeon, then each subscription and plan pigeon has, as last read: its
   windows' use ("5h 62% 7d 41%"), * on the one that answered last. Accounts that
-  answered through magpie in the last 30 days are shown, all of them when none has;
+  answered through pigeon in the last 30 days are shown, all of them when none has;
   a provider or an account's email, login or name keeps only those.
   Claude Code runs it on every message with the session's JSON on stdin; put it in
-  ~/.claude/settings.json yourself (magpie doesn't write it, a status line such as
+  ~/.claude/settings.json yourself (pigeon doesn't write it, a status line such as
   claude-hud may hold it):
-    "statusLine": {"type": "command", "command": "magpie statusline"}
+    "statusLine": {"type": "command", "command": "pigeon statusline"}
   It asks the gateway on this computer (the port in Settings' Gateway address, or MAGPIE_ADDR), never
   a vendor, and prints nothing when the gateway isn't running.`
 
@@ -41,7 +41,7 @@ const statuslineUsage = `usage: magpie statusline [<provider|account>…]
 // only once the command ends.
 const statuslineWait = time.Second
 
-// statuslineCmd: magpie statusline [<provider|account>…]
+// statuslineCmd: pigeon statusline [<provider|account>…]
 func statuslineCmd(args []string) error {
 	fmt.Println(statusline(os.Stdin, args[1:], "http://"+settings.GatewayAddr(), time.Now()))
 	return nil
@@ -104,7 +104,7 @@ func getJSON(c *http.Client, u string, v any) bool {
 }
 
 // statuslineCards are the subscriptions and plans with windows to show:
-// those named, else those that answered through magpie lately, else all.
+// those named, else those that answered through pigeon lately, else all.
 func statuslineCards(qs []provider.Quota, only []string) []provider.Quota {
 	var withWindows, served []provider.Quota
 	for _, q := range qs {

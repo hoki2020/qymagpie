@@ -10,13 +10,13 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // A Remote magpie searches the web for the models it serves, and its list
-// says how (Player on Discord: Claude Code's WebSearch on remoteMagpie's
+// says how (Player on Discord: Claude Code's WebSearch on remotePigeon's
 // glm-5.3 went to this magpie's searcher, another model, and Settings'
 // Searcher didn't offer the remote's models). Claude Code's web search
 // goes on to it as it was offered; the models it searches natively for
@@ -75,7 +75,7 @@ func TestRemoteMagpieSearches(t *testing.T) {
 		h.ServeHTTP(w, r)
 	}))
 	t.Cleanup(remote.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,7 +91,7 @@ func TestRemoteMagpieSearches(t *testing.T) {
 	for _, m := range live {
 		how[m.ID] = m.WebSearch
 	}
-	if how["zhipu/glm-5.3"] != searchNative || how["plain/m1"] != searchMagpie {
+	if how["zhipu/glm-5.3"] != searchNative || how["plain/m1"] != searchPigeon {
 		t.Fatalf("the remote's list says it searches %v", how)
 	}
 

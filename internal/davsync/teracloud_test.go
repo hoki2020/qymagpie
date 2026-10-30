@@ -15,8 +15,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/backup"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/backup"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // apacheDAV answers as InfiniCLOUD's (TeraCloud's) WebDAV plausibly does

@@ -18,7 +18,7 @@ import (
 // matches it. Matched as known, it goes as the same placeholder again.
 //
 // What is known is what values holds (in memory only, bounded by
-// maxValues): the values of the placeholders made since magpie started,
+// maxValues): the values of the placeholders made since pigeon started,
 // for every request alike, since a placeholder is the same for the same
 // value whichever conversation it is in.
 
@@ -223,7 +223,7 @@ func standsAlone(kind, s string, a, b int) bool {
 //
 // What is remembered is a hash of the text and of what o covers, and the
 // places of the known values in it; nothing of a value. A text no longer
-// remembered (sentEntries, or magpie started again) is masked with what is
+// remembered (sentEntries, or pigeon started again) is masked with what is
 // known then.
 const sentEntries = 1 << 16
 

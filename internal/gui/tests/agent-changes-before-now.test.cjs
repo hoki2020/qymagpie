@@ -1,10 +1,10 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Zhenzhen (Pi on DeepSeek, omarchy): a connected agent's row says
 // "Changed ~/.pi/agent/settings.json · models.json", and its diff showed
-// every line magpie added red, "−" and struck through, with Pi's own
+// every line pigeon added red, "−" and struck through, with Pi's own
 // `"providers": {}` tagged "value before connecting" — the direction
-// disconnecting goes, so it read as magpie deleting Pi's settings. Under
-// "Changed" the diff reads before → now: what magpie put in is green "+",
+// disconnecting goes, so it read as pigeon deleting Pi's settings. Under
+// "Changed" the diff reads before → now: what pigeon put in is green "+",
 // a value it replaced is "−" old then "+" new, nothing struck through. The
 // way back (− taken out, ↺ put back) stays in Disconnect and restore's
 // dialog. The lines are diffLines' own output for Pi's two files; no
@@ -23,7 +23,7 @@ const changes = [
     lines: [
       { op: "~", text: '  "theme": "dark"', was: '  "theme": "dark",' },
       { op: "-", text: '  "defaultModel": "deepseek/deepseek-v4-pro",' },
-      { op: "-", text: '  "defaultProvider": "magpie",' },
+      { op: "-", text: '  "defaultProvider": "pigeon",' },
       { op: "-", text: '  "defaultThinkingLevel": "high"' },
     ],
   },
@@ -31,19 +31,19 @@ const changes = [
     path: "~/.pi/agent/models.json",
     lines: [
       { op: "~", text: '  "providers": {}', was: '  "providers": {' },
-      { op: "-", text: '    "magpie": {' },
+      { op: "-", text: '    "pigeon": {' },
       { op: "-", text: '      "baseUrl": "http://127.0.0.1:3425/v1",' },
       { op: "-", text: '      "api": "openai-completions",' },
     ],
   },
-  { path: "~/.pi/agent/magpie.json", removed: true },
+  { path: "~/.pi/agent/pigeon.json", removed: true },
 ];
 
 function serve(lang) {
   const state = {
     agents: [{
       id: "pi", name: "Pi", icon: "generic", wired: true, path: "~/.pi/agent/settings.json",
-      fields: [{ key: "model", label: "model", value: "magpie/deepseek/deepseek-v4-pro", options: [{ value: "magpie/deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro", ref: "deepseek/deepseek-v4-pro" }] }],
+      fields: [{ key: "model", label: "model", value: "pigeon/deepseek/deepseek-v4-pro", options: [{ value: "pigeon/deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro", ref: "deepseek/deepseek-v4-pro" }] }],
     }],
     profiles: [], settings: { lang, theme: "light" },
   };
@@ -112,18 +112,18 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         const signs = (f) => f.lines.map((l) => l.op + " " + l.text.trim());
         assert.deepEqual(signs(files[0]), [
           '− "theme": "dark"', '+ "theme": "dark",',
-          '+ "defaultModel": "deepseek/deepseek-v4-pro",', '+ "defaultProvider": "magpie",', '+ "defaultThinkingLevel": "high"',
+          '+ "defaultModel": "deepseek/deepseek-v4-pro",', '+ "defaultProvider": "pigeon",', '+ "defaultThinkingLevel": "high"',
         ], `${where}: settings.json reads before → now`);
         assert.deepEqual(signs(files[1]), [
-          '− "providers": {}', '+ "providers": {', '+ "magpie": {',
+          '− "providers": {}', '+ "providers": {', '+ "pigeon": {',
           '+ "baseUrl": "http://127.0.0.1:3425/v1",', '+ "api": "openai-completions",',
-        ], `${where}: models.json's magpie block is put in, Pi's empty providers replaced`);
+        ], `${where}: models.json's pigeon block is put in, Pi's empty providers replaced`);
         for (const f of files.slice(0, 2)) for (const l of f.lines) {
           assert.equal(l.struck, false, `${where}: nothing is struck through: ${l.text}`);
           assert.deepEqual(l.tags, [], `${where}: no line is tagged as the way back: ${l.text}`);
           assert.equal(l.color, l.op === "+" ? green : red, `${where}: + is green, − is red: ${l.text}`);
         }
-        assert.deepEqual(files[2].tags, [created], `${where}: a file magpie made is Created, not Deleted`);
+        assert.deepEqual(files[2].tags, [created], `${where}: a file pigeon made is Created, not Deleted`);
         assert.ok(!files.some((f) => f.lines.some((l) => l.op === "↺")), `${where}: no ↺ under Changed`);
 
         // Disconnect and restore's dialog keeps the way back
@@ -134,7 +134,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.deepEqual(back[0].lines.map((l) => l.op), ["↺", "−", "−", "−"], `${where}: the dialog shows what disconnecting does`);
         assert.ok(back[0].lines.slice(1).every((l) => l.struck), `${where}: the lines disconnecting takes out are struck`);
         if (before) assert.deepEqual(back[1].lines[0].tags, [before], `${where}: the value put back is tagged`);
-        assert.deepEqual(back[2].tags, [deleted], `${where}: disconnecting deletes the file magpie made`);
+        assert.deepEqual(back[2].tags, [deleted], `${where}: disconnecting deletes the file pigeon made`);
         assert.deepEqual(errors, [], `${where}: no runtime or console errors`);
         await context.close();
       }

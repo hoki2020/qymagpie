@@ -7,16 +7,16 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/gwbudget"
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/gwtool"
-	"github.com/yetone/magpie/internal/masking"
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/routes"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/budget"
+	"github.com/hoki2020/pigeon/internal/gwbudget"
+	"github.com/hoki2020/pigeon/internal/gwmw"
+	"github.com/hoki2020/pigeon/internal/gwtool"
+	"github.com/hoki2020/pigeon/internal/masking"
+	"github.com/hoki2020/pigeon/internal/middleware"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/routes"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // standInsEnv names the folder of a test binary's stand-in CLIs, for a

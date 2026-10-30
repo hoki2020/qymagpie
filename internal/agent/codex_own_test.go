@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Codex's own models follow the ones ticked on its ChatGPT subscription.
@@ -42,7 +42,7 @@ func TestCodexOwnModelsFollowPicks(t *testing.T) {
 	if got := own(); len(got) != 2 || got[0] != "gpt-a" || got[1] != "gpt-c" {
 		t.Fatalf("ticked a and c: %v", got)
 	}
-	for _, o := range viaMagpie("codex", "") {
+	for _, o := range viaPigeon("codex", "") {
 		if o.Ref == "" || o.Ref != o.Value {
 			t.Fatalf("magpie option without its catalog ref: %+v", o)
 		}

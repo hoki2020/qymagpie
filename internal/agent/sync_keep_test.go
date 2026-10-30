@@ -17,7 +17,7 @@ func providerAt(t *testing.T, path, top string) map[string]any {
 	if err := json.Unmarshal([]byte(readFile(path)), &f); err != nil || json.Unmarshal(f[top], &ps) != nil {
 		t.Fatalf("%s: %v\n%s", path, err, readFile(path))
 	}
-	return ps[magpieID]
+	return ps[pigeonID]
 }
 
 // #1103: pi-cache-optimizer's /cache-optimizer fix adds

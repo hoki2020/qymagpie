@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // A custom provider's Gemini API (#1346, NagaseMinato), behind a relay's

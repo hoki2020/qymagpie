@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/yetone/magpie/internal/ghtoken"
+	"github.com/hoki2020/pigeon/internal/ghtoken"
 )
 
 // ---- asking GitHub's API with the user's token ----------------------------

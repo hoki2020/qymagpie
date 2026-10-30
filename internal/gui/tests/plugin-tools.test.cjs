@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Plugins that give tools on the Plugins page: the row lists each tool by
-// the name magpie's plugin tools MCP server gives it, its description on
+// the name pigeon's plugin tools MCP server gives it, its description on
 // hover, and a button that copies the server's address. A plugin of tools
 // alone wears no Provider chip and isn't said to sign in to nothing; one
 // that signs in too keeps its line; one switched off lists none. Every

@@ -55,10 +55,10 @@ function server(lang, list, counted) {
 }
 
 const L = {
-  en: { head: ["Partners", "magpie's sponsors"], subs: "Subscriptions", rows: ["Acme AI", "Taken"], note: "Fast relay" },
-  zh: { head: ["合作伙伴", "赞助 magpie 的服务"], subs: "订阅", rows: ["Acme AI", "China Only", "Taken"], note: "快速中转" },
-  ja: { head: ["パートナー", "magpie のスポンサー"], subs: null, rows: ["Acme AI", "Taken"], note: "高速な中継" },
-  de: { head: ["Partner", "Sponsoren von magpie"], subs: null, rows: ["Acme AI", "Taken"], note: "Fast relay" },
+  en: { head: ["Partners", "pigeon's sponsors"], subs: "Subscriptions", rows: ["Acme AI", "Taken"], note: "Fast relay" },
+  zh: { head: ["合作伙伴", "赞助 pigeon 的服务"], subs: "订阅", rows: ["Acme AI", "China Only", "Taken"], note: "快速中转" },
+  ja: { head: ["パートナー", "pigeon のスポンサー"], subs: null, rows: ["Acme AI", "Taken"], note: "高速な中継" },
+  de: { head: ["Partner", "Sponsoren von pigeon"], subs: null, rows: ["Acme AI", "Taken"], note: "Fast relay" },
 };
 
 async function openSheet(page) {

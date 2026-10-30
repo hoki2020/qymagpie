@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // Prime Agent (#1528) is an agent of its own, wired as Pi is but in
@@ -69,7 +69,7 @@ func TestPrimeAgent(t *testing.T) {
 	}
 	// Pi's block, but for the key: the fields Prime Agent's models.json
 	// takes, of the types it takes (pa-core models/custom.rs)
-	want := magpieProviderJSON("pi").(map[string]any)
+	want := pigeonProviderJSON("pi").(map[string]any)
 	want["apiKey"] = gateway.TokenFor("prime-agent")
 	wb, _ := json.Marshal(want)
 	if b, _ := json.Marshal(got); string(b) != string(wb) {

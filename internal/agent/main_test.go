@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/netproxy"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // TestMain gives the package a home of its own (testenv). A home an agent is
@@ -72,6 +72,6 @@ func TestMain(m *testing.M) {
 	// nor an address of the agent's own asked whether magpie answers
 	// there (a reverse proxy, #1985): known, and not magpie, as for a
 	// relay; the proxy-kept tests answer it
-	magpieAt = func(string) (bool, bool) { return false, true }
+	pigeonAt = func(string) (bool, bool) { return false, true }
 	os.Exit(testenv.Run(m))
 }

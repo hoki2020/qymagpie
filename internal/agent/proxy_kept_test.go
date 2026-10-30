@@ -11,33 +11,33 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // corpProxy is a company's reverse proxy in front of the gateway, with a
 // path of its own before magpie's (#1985).
-const corpProxy = "https://ai.corp.example/magpie"
+const corpProxy = "https://ai.corp.example/pigeon"
 
 // localProxy is the reporter's: a company-mandated compliance proxy on this
 // machine, its route before magpie's paths.
 const localProxy = "http://127.0.0.1:8788/claude-code-anthropic/cc-7f3a9e"
 
-// fakeMagpieAt answers magpieAt from answers (a base missing is no magpie),
+// fakeMagpieAt answers pigeonAt from answers (a base missing is no magpie),
 // as the probe would have, and says which bases were asked.
 func fakeMagpieAt(t *testing.T, answers map[string]bool) func() []string {
 	t.Helper()
 	var mu sync.Mutex
 	var asked []string
-	was := magpieAt
-	magpieAt = func(base string) (bool, bool) {
+	was := pigeonAt
+	pigeonAt = func(base string) (bool, bool) {
 		mu.Lock()
 		defer mu.Unlock()
 		asked = append(asked, base)
 		return answers[base], true
 	}
-	t.Cleanup(func() { magpieAt = was })
+	t.Cleanup(func() { pigeonAt = was })
 	return func() []string { mu.Lock(); defer mu.Unlock(); return append([]string(nil), asked...) }
 }
 
@@ -80,7 +80,7 @@ func reverseProxyIsStillMagpie(t *testing.T, proxy string) {
 		var key, want string
 		for _, g := range a.Fields {
 			for _, o := range g.Options(a.Values()) {
-				if want == "" && (o.Ref == "fake/m1" || o.Value == magpieID) {
+				if want == "" && (o.Ref == "fake/m1" || o.Value == pigeonID) {
 					key, want = g.Key, o.Value
 				}
 			}
@@ -181,23 +181,23 @@ func TestReverseProxyTriedFirst(t *testing.T) {
 	if err := cl.Apply("model", "deepseek/pro"); err != nil {
 		t.Fatal(err)
 	}
-	was, wasAt, age := magpieProbe, magpieAt, reachAge
+	was, wasAt, age := pigeonProbe, pigeonAt, reachAge
 	release := make(chan struct{})
 	var mu sync.Mutex
 	var tried []string
-	magpieProbe = func(base string) bool {
+	pigeonProbe = func(base string) bool {
 		<-release
 		mu.Lock()
 		tried = append(tried, base)
 		mu.Unlock()
 		return false
 	}
-	magpieAt = func(base string) (bool, bool) {
-		return probed("magpie "+base, func() bool { return magpieProbe(base) })
+	pigeonAt = func(base string) (bool, bool) {
+		return probed("pigeon "+base, func() bool { return pigeonProbe(base) })
 	}
 	reachAge = time.Hour
 	reachForget()
-	t.Cleanup(func() { magpieProbe, magpieAt, reachAge = was, wasAt, age; reachForget() })
+	t.Cleanup(func() { pigeonProbe, pigeonAt, reachAge = was, wasAt, age; reachForget() })
 
 	edit.SetJSON(path, edit.KV{Path: "env.ANTHROPIC_BASE_URL", Value: corpProxy + "/"})
 	if d := cl.Drift(); d != nil {
@@ -228,7 +228,7 @@ func TestMagpieProbe(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case strings.HasPrefix(r.URL.Path, "/magpie/"):
-			r.URL.Path = strings.TrimPrefix(r.URL.Path, "/magpie")
+			r.URL.Path = strings.TrimPrefix(r.URL.Path, "/pigeon")
 			gw.ServeHTTP(w, r)
 		case r.URL.Path == "/broken/":
 			w.WriteHeader(502)
@@ -246,7 +246,7 @@ func TestMagpieProbe(t *testing.T) {
 		srv.URL + "/broken":  false,
 		"http://127.0.0.1:1": false,
 	} {
-		if got := realMagpieProbe(base); got != want {
+		if got := realPigeonProbe(base); got != want {
 			t.Errorf("%s: %v, want %v", base, got, want)
 		}
 	}
@@ -328,7 +328,7 @@ func TestCodexSignedInBehindReverseProxy(t *testing.T) {
 	if err := cx.Apply("model", "fake/m1"); err != nil {
 		t.Fatal(err)
 	}
-	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p == magpieID {
+	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p == pigeonID {
 		t.Fatal("signed in, yet magpie is Codex's provider")
 	}
 	b, _ := os.ReadFile(cx.Path)

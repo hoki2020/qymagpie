@@ -42,7 +42,7 @@ function page() {
   const script = [
     `
 let view = "providers", editing = null, adding = false;
-const magpie = { page: (v) => (v === "gateway" ? { loads: "providers" } : undefined) };
+const pigeon = { page: (v) => (v === "gateway" ? { loads: "providers" } : undefined) };
 `,
     pageLine[0],
     `

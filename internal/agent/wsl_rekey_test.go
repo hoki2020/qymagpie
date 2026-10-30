@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // Codex in a WSL distro under NAT connected while the gateway wasn't shared
@@ -36,7 +36,7 @@ func TestRekeyGivesWSLAgentTheSharingKey(t *testing.T) {
 	cfg := filepath.Join(home, ".codex", "config.toml")
 	token := func() string {
 		t.Helper()
-		tb, err := edit.GetTOMLTable(cfg, "model_providers."+magpieID)
+		tb, err := edit.GetTOMLTable(cfg, "model_providers."+pigeonID)
 		if err != nil {
 			t.Fatal(err)
 		}

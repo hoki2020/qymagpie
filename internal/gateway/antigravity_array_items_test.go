@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // arrayItemsAsk is plugins#375's minimal reproduction, as gcq909893267

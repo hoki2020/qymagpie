@@ -4,8 +4,8 @@ package agent
 // ~/.qoder by default. A provider of one's own is an entry of "providers",
 // its models picked as "<provider>/<model>":
 //
-//	{"providers":{"magpie":{"displayName":"magpie","protocol":"openai",
-//	   "baseUrl":"http://127.0.0.1:3425/v1","apiKey":"magpie","model":…,
+//	{"providers":{"pigeon":{"displayName":"pigeon","protocol":"openai",
+//	   "baseUrl":"http://127.0.0.1:3425/v1","apiKey":"pigeon","model":…,
 //	   "models":[{"model":…,"displayName":…,"contextWindow":…,"maxOutputTokens":…,
 //	     "capabilities":{"tools":true,"vision":…,"thinking":{"modes":["enabled"],
 //	       "supportsEffort":true,"supportedEffortLevels":[…]}}}]}},
@@ -15,7 +15,7 @@ package agent
 // Each model's effort is its own, in model.preferences (1.1.6x); the one in
 // model.reasoningEffort is asked for only by a model with none there, and
 // Qoder moves it into the preferences of the model it starts on, and drops
-// it, so it counts once. magpie sets the model's preference, and keeps
+// it, so it counts once. pigeon sets the model's preference, and keeps
 // reasoningEffort for the Qoders before preferences.
 //
 // An openai provider is asked at baseUrl + /chat/completions, with
@@ -34,8 +34,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 func qoder(home string) *Agent {
@@ -75,8 +75,8 @@ func qoderAt(at place, b qoderBuild) *Agent {
 	}
 	path := filepath.Join(dir, "settings.json")
 	key := b.id + ":" + path + ":"
-	slot := "providers." + magpieID
-	// magpie's provider, with what the user set on it in Qoder kept
+	slot := "providers." + pigeonID
+	// pigeon's provider, with what the user set on it in Qoder kept
 	qoderProvider := func(agent, model string) any {
 		return qoderKept(path, slot, qoderProviderAt(agent, model, at.v1()))
 	}
@@ -113,8 +113,8 @@ func qoderAt(at place, b qoderBuild) *Agent {
 		}
 		return edit.SetJSON(path, kvs...)
 	}
-	onMagpie := func() bool {
-		_, ok := cutMagpie(get("model.name"))
+	onPigeon := func() bool {
+		_, ok := cutPigeon(get("model.name"))
 		return ok && qoderKeyed(get(slot+".apiKey"), b.id)
 	}
 	return &Agent{
@@ -125,7 +125,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 		// alone, with no CLI installed (#1495): neither is a sign of the
 		// CLI. Its command, or a settings.json with any other key, is.
 		// The Qoder app (Qoder-win-x64-user.exe, Qoder.app, not the IDE)
-		// runs the CLI as its agent with the same folder, so magpie's
+		// runs the CLI as its agent with the same folder, so pigeon's
 		// provider reaches it too; its settings.json can hold only
 		// enabledPlugins (its bundled qoder-context plugin), and its status
 		// file says it is there (#2138).
@@ -133,7 +133,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 		pathOwn:   func() bool { return !qoderPluginOnly(path) },
 		sign:      func() bool { return qoderApp(dir) },
 		Sync: func() error {
-			ref, ok := cutMagpie(get("model.name"))
+			ref, ok := cutPigeon(get("model.name"))
 			if !ok {
 				return nil
 			}
@@ -146,7 +146,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 			return ""
 		},
 		Check: func() string {
-			if !onMagpie() {
+			if !onPigeon() {
 				return ""
 			}
 			return wiringOff(b.name, path, func(k string) (string, bool) { return edit.GetJSON(path, slot+"."+k) },
@@ -156,8 +156,8 @@ func qoderAt(at place, b qoderBuild) *Agent {
 			Key: "model", Label: "model",
 			Get: func() string { return get("model.name") },
 			Set: func(v string) error {
-				if ref, ok := cutMagpie(v); ok {
-					if !onMagpie() {
+				if ref, ok := cutPigeon(v); ok {
+					if !onPigeon() {
 						stash(map[string]string{key + "model": get("model.name")})
 					}
 					// the effort in use goes with it to a model with none of
@@ -173,9 +173,9 @@ func qoderAt(at place, b qoderBuild) *Agent {
 					}
 					return setEffort(v, was)
 				}
-				// out of magpie: its provider goes, and the model the user
+				// out of pigeon: its provider goes, and the model the user
 				// had comes back when none is asked for
-				if onMagpie() || qoderKeyed(get(slot+".apiKey"), b.id) {
+				if onPigeon() || qoderKeyed(get(slot+".apiKey"), b.id) {
 					if err := edit.DelJSON(path, slot); err != nil {
 						return err
 					}
@@ -189,7 +189,7 @@ func qoderAt(at place, b qoderBuild) *Agent {
 				return edit.SetJSON(path, edit.KV{Path: "model.name", Value: v})
 			},
 			Options: func(cur map[string]string) []Option {
-				return append(ownOptions("", cur["model"]), viaMagpie(b.id, magpieID+"/")...)
+				return append(ownOptions("", cur["model"]), viaPigeon(b.id, pigeonID+"/")...)
 			},
 		}, {
 			// the effort of the model in use, in its model.preferences
@@ -270,13 +270,13 @@ func qoderPreferences(prefs, model, effort string) (out map[string]any, drop boo
 	return out, len(out) == 0
 }
 
-// qoderKept is want, magpie's provider in Qoder's settings.json at path,
+// qoderKept is want, pigeon's provider in Qoder's settings.json at path,
 // with what the user set on the one at slot kept: Qoder (1.1.70) reads a
 // provider's routing (the model for compact, summary, subagent …), its
 // firstPayloadTimeoutMs and streamIdleTimeoutMs, type, authType and
-// anthropic block, none of which magpie writes, and a sync wrote them away
+// anthropic block, none of which pigeon writes, and a sync wrote them away
 // on every start, as T3 Code's did (#2030). A name the user gave it is
-// theirs too. Its address, key, model and model list are magpie's.
+// theirs too. Its address, key, model and model list are pigeon's.
 func qoderKept(path, slot string, want map[string]any) any {
 	if name, ok := edit.GetJSON(path, slot+".displayName"); ok && strings.TrimSpace(name) != "" {
 		want["displayName"] = name
@@ -287,7 +287,7 @@ func qoderKept(path, slot string, want map[string]any) any {
 // qoderLevels are the efforts Qoder can ask for.
 var qoderLevels = []string{"low", "medium", "high", "xhigh", "max"}
 
-// qoderProvider is magpie's entry in Qoder's providers, every magpie model
+// qoderProvider is pigeon's entry in Qoder's providers, every pigeon model
 // in it, model the one it starts on.
 func qoderProvider(agent, model string) map[string]any {
 	return qoderProviderAt(agent, model, gatewayV1())
@@ -297,7 +297,7 @@ func qoderProvider(agent, model string) map[string]any {
 // at v1.
 func qoderProviderAt(agent, model, v1 string) map[string]any {
 	var ms []map[string]any
-	for _, m := range magpieModels(agent) {
+	for _, m := range pigeonModels(agent) {
 		caps := map[string]any{"tools": true, "vision": m.Images}
 		var levels []string
 		for _, e := range m.Efforts {
@@ -318,11 +318,11 @@ func qoderProviderAt(agent, model, v1 string) map[string]any {
 		}
 		ms = append(ms, e)
 	}
-	return map[string]any{"displayName": "magpie", "protocol": "openai", "baseUrl": v1,
+	return map[string]any{"displayName": "pigeon", "protocol": "openai", "baseUrl": v1,
 		"apiKey": agentKeyAt(agent, v1), "model": model, "models": ms}
 }
 
-// qoderKeyed: key is one magpie gives Qoder's provider — its own,
+// qoderKeyed: key is one pigeon gives Qoder's provider — its own,
 // gateway.TokenFor, since Qoder's requests carry Bun's User-Agent and
 // nothing of Qoder's, gateway.Token, which it was given before, or the LAN
 // sharing key one in a WSL distro is given (agentKeyAt); a sync gives it

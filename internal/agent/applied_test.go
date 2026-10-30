@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // sameGroup compares two values of a field, one of them read back from the
@@ -183,7 +183,7 @@ func TestDriftUnwiredEveryAgent(t *testing.T) {
 			// or the one that puts it on magpie as a whole (Claude Desktop)
 			for _, g := range a.Fields {
 				for _, o := range g.Options(a.Values()) {
-					if o.Value == magpieID && want == "" {
+					if o.Value == pigeonID && want == "" {
 						f, want = g, o.Value
 					}
 				}

@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // A partner pays to be listed, so how often it is seen and picked is
@@ -18,7 +18,7 @@ import (
 // showed it, its row was opened, its key page was opened, and a provider
 // was added from it. Nothing else is kept, and the counts go with the
 // day's stats event (internal/stats), only for days that have ended, under
-// the same switches: off with the stats, or with what magpie is used with.
+// the same switches: off with the stats, or with what pigeon is used with.
 
 // What is counted for a partner.
 const (
@@ -53,7 +53,7 @@ var partnerCountMu sync.Mutex
 func partnerCountFile() string { return filepath.Join(appdir.Cache(), "partner-counts.json") }
 
 // partnerCounting reports whether the user lets it be counted: the stats
-// on, and what magpie is used with sent with them. internal/stats reads
+// on, and what pigeon is used with sent with them. internal/stats reads
 // the same switches.
 func partnerCounting() bool {
 	for _, k := range []string{"DO_NOT_TRACK", "MAGPIE_NO_STATS"} {

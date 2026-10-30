@@ -1,5 +1,5 @@
 # pf-serve: privacy-filter.cpp (PF_SRC, patched by build.sh) and the
-# process magpie talks to.
+# process pigeon talks to.
 cmake_minimum_required(VERSION 3.21)
 project(pf-serve C CXX)
 

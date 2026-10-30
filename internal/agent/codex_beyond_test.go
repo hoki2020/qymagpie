@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A Codex signed in to ChatGPT that reaches the gateway from another
@@ -37,10 +37,10 @@ func TestCodexBeyondLoopbackNotJoined(t *testing.T) {
 		t.Fatalf("joined beside the ChatGPT sign-in from beyond loopback: %+v\n%s", c, read())
 	}
 	cfg := read()
-	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p != magpieID {
+	if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p != pigeonID {
 		t.Fatalf("model_provider %q, want magpie\n%s", p, cfg)
 	}
-	if k, _ := edit.GetTOMLTable(cx.Path, "model_providers."+magpieID); k["experimental_bearer_token"] != lan {
+	if k, _ := edit.GetTOMLTable(cx.Path, "model_providers."+pigeonID); k["experimental_bearer_token"] != lan {
 		t.Fatalf("provider key %q, want the LAN sharing key\n%s", k["experimental_bearer_token"], cfg)
 	}
 	if !strings.Contains(cfg, "172.23.80.1:3425/v1") {

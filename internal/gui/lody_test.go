@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
+	"github.com/hoki2020/pigeon/internal/agent"
 )
 
 type importWindows struct {

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // movedCards are the names and icons the built-ins' usage cards have,

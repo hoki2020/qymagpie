@@ -81,13 +81,13 @@ func TestIsMagpie(t *testing.T) {
 		"/home/u/.local/bin/dial":         true,
 		"/opt/magpie-dev":                 true,
 		"/usr/bin/python3":                false,
-		"/usr/bin/magpies":                false,
+		"/usr/bin/pigeons":                false,
 		"/tmp/other-server":               false,
 		`C:\Windows\System32\svchost.exe`: false,
 		"":                                false,
 	} {
-		if IsMagpie(path) != want {
-			t.Errorf("IsMagpie(%q) = %v", path, !want)
+		if IsPigeon(path) != want {
+			t.Errorf("IsPigeon(%q) = %v", path, !want)
 		}
 	}
 }

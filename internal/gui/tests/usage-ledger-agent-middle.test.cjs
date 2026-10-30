@@ -18,8 +18,8 @@ const ROW = { t: new Date(now).toISOString(), agent: "codex", agentName: "Codex"
 const ROWS = [
   { ...ROW, route_id: "r-1" },
   { ...ROW, t: new Date(now - 60000).toISOString(), agent: "claude", agentName: "Claude Code", icon: "claudecode-color", req: "claude-sonnet-5" },
-  // magpie's own request carries a badge after the name (#1839)
-  { ...ROW, t: new Date(now - 120000).toISOString(), agent: "magpie", agentName: "magpie", icon: "", req: "" },
+  // pigeon's own request carries a badge after the name (#1839)
+  { ...ROW, t: new Date(now - 120000).toISOString(), agent: "pigeon", agentName: "pigeon", icon: "", req: "" },
 ];
 
 function server(lang, theme) {

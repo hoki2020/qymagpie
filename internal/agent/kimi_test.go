@@ -8,8 +8,8 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func TestKimi(t *testing.T) {
@@ -234,7 +234,7 @@ func TestKimiKeepsTheUsersSettings(t *testing.T) {
 		if err := toml.Unmarshal([]byte(raw), &c); err != nil {
 			t.Fatalf("%v\n%s", err, raw)
 		}
-		p := c.Providers[magpieID]
+		p := c.Providers[pigeonID]
 		if p.Default != "relay/glm-4.6" || p.Headers["X-Mine"] != "1" || p.Env["HTTPS_PROXY"] != "http://proxy:8080" {
 			t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 		}

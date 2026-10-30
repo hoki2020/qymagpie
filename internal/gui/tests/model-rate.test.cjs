@@ -30,11 +30,11 @@ const qoder = {
   key: { set: true, masked: "sk-…one" }, keyList: [], balanceToken: { takes: false, set: false }, proxy: "",
 };
 const options = [
-  { value: "magpie/qoder/qmodel_38max", ref: "qoder/qmodel_38max", label: "Qwen3.8-Max", note: "Qoder · via magpie", group: "Qoder", rate: 0.5 },
-  { value: "magpie/qoder/qfmodel", ref: "qoder/qfmodel", label: "Qwen3.8-Flash", note: "Qoder · via magpie", group: "Qoder", free: true, rateWas: 0.1 },
-  { value: "magpie/qoder/plain", ref: "qoder/plain", label: "Plain", note: "Qoder · via magpie", group: "Qoder" },
+  { value: "pigeon/qoder/qmodel_38max", ref: "qoder/qmodel_38max", label: "Qwen3.8-Max", note: "Qoder · via pigeon", group: "Qoder", rate: 0.5 },
+  { value: "pigeon/qoder/qfmodel", ref: "qoder/qfmodel", label: "Qwen3.8-Flash", note: "Qoder · via pigeon", group: "Qoder", free: true, rateWas: 0.1 },
+  { value: "pigeon/qoder/plain", ref: "qoder/plain", label: "Plain", note: "Qoder · via pigeon", group: "Qoder" },
 ];
-const agents = [{ id: "claude", name: "Claude Code", path: "/test/claude", wired: true, fields: [{ key: "model", label: "model", value: "magpie/qoder/plain", options }] }];
+const agents = [{ id: "claude", name: "Claude Code", path: "/test/claude", wired: true, fields: [{ key: "model", label: "model", value: "pigeon/qoder/plain", options }] }];
 
 function serve(lang) {
   const providers = { providers: [qoder], presets: [], excluded: [], gateway: { running: true, window: true } };

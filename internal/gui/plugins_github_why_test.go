@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/ghtoken"
-	"github.com/yetone/magpie/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/ghtoken"
+	"github.com/hoki2020/pigeon/internal/plugin"
 )
 
 // The Plugins page says why GitHub's list isn't whole in the reader's

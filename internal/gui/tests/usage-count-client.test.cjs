@@ -1,13 +1,13 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// A client magpie doesn't know is counted as one of the agents it does,
+// A client pigeon doesn't know is counted as one of the agents it does,
 // from the Usage page's Agents list (#1958, NorethSea): a bridge that
 // starts Codex's app-server under a name of its own
 // (hermes-codex-thread-bridge) was a row apart from Codex. Its row's "…"
-// offers "Count as an agent…", which lists the agents magpie knows; Codex
+// offers "Count as an agent…", which lists the agents pigeon knows; Codex
 // picked, it is saved (POST /api/usage/arrange, count) and the page is
 // drawn again from the ledger, the bridge's calls in Codex's row, which
 // says it has them. Codex's own "…" counts it on its own again. An agent
-// magpie knows (curl) isn't offered to be counted as another. Every
+// pigeon knows (curl) isn't offered to be counted as another. Every
 // language, a wide window and a narrow one, Chromium and WebKit; no
 // backend, the API is faked.
 const assert = require("node:assert/strict");
@@ -21,7 +21,7 @@ const assets = path.resolve(__dirname, "../assets");
 const BRIDGE = "hermes-codex-thread-bridge";
 
 const G = (id, name, calls, tokens, icon) => ({ id, name, icon: icon || "generic", calls, input: tokens - 100, output: 100, cache_read: 0, cache_write: 0, cost: 0 });
-const CLIENTS = [{ id: "codex", name: "Codex", icon: "codex" }, { id: "claude-code", name: "Claude Code", icon: "claude" }, { id: "curl", name: "curl", icon: "curl" }, { id: "magpie", name: "magpie", icon: "magpie" }];
+const CLIENTS = [{ id: "codex", name: "Codex", icon: "codex" }, { id: "claude-code", name: "Claude Code", icon: "claude" }, { id: "curl", name: "curl", icon: "curl" }, { id: "pigeon", name: "pigeon", icon: "pigeon" }];
 
 // the summary as the backend counts it: the bridge apart, or in Codex's row
 function usageOf(counted) {
@@ -106,7 +106,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           };
           assert.deepEqual(await ids(), ["codex", BRIDGE, "curl"]);
 
-          // an agent magpie knows isn't offered to be counted as another
+          // an agent pigeon knows isn't offered to be counted as another
           await openMenu("curl");
           assert.deepEqual(await items(), [w.hide]);
           await p.keyboard.press("Escape");
@@ -119,7 +119,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           await pick.waitFor();
           assert.equal((await pick.locator(".pm-head").textContent()).trim(), w.head);
           const names = await pick.locator(".pm-item .pm-name").allTextContents();
-          assert(names.includes("Codex") && !names.includes("magpie"), "the agents offered: " + names);
+          assert(names.includes("Codex") && !names.includes("pigeon"), "the agents offered: " + names);
           await pick.locator(".pm-item", { hasText: "Codex" }).click();
           await p.waitForFunction((b) => !document.querySelector(`#usageAgents .row.stat[data-id="${b}"]`), BRIDGE);
           assert.deepEqual(posts.at(-1), { count: { client: BRIDGE, as: "codex" } });

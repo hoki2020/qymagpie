@@ -141,9 +141,9 @@ func writeKimiWire(t *testing.T, home, session, agent string, lines ...string) {
 // model: no successful call through magpie was in the files shared.
 func TestKimiCodeSkipsCallsThroughMagpie(t *testing.T) {
 	home := kimiHome(t)
-	viaMagpie := strings.Replace(kimiRecordLine, `"kimi-code/k3"`, `"magpie/mistral/zai-glm-5-3"`, 1)
-	viaMagpie = strings.Replace(viaMagpie, `1791696952640`, `1791696960000`, 1)
-	writeKimiWire(t, home, "session_through-magpie", "main", kimiRecordLine, viaMagpie, "")
+	viaPigeon := strings.Replace(kimiRecordLine, `"kimi-code/k3"`, `"magpie/mistral/zai-glm-5-3"`, 1)
+	viaPigeon = strings.Replace(viaPigeon, `1791696952640`, `1791696960000`, 1)
+	writeKimiWire(t, home, "session_through-magpie", "main", kimiRecordLine, viaPigeon, "")
 	var got []Call
 	for _, c := range kimiCalls() {
 		if c.Session == "session_through-magpie" {

@@ -3,9 +3,9 @@ package library
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/mcpauth"
-	"github.com/yetone/magpie/internal/mcpauth/mcpauthtest"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/mcpauth"
+	"github.com/hoki2020/pigeon/internal/mcpauth/mcpauthtest"
 )
 
 // A remote server magpie signed in to (#615) is given to the agents at the

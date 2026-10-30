@@ -13,10 +13,10 @@ import (
 // The Sessions page has read these files all along — dsh.go parses the same
 // event for its summary — but the usage ledger never asked for them, so dsh's
 // tokens reached the Sessions page and nothing else: the Usage page showed
-// only what the gateway itself served, which is nothing before magpie was
+// only what the gateway itself served, which is nothing before pigeon was
 // installed and nothing at all for a dsh pointed straight at a vendor.
 //
-// A call through magpie's gateway is logged by the gateway as well, and dsh
+// A call through pigeon's gateway is logged by the gateway as well, and dsh
 // sends it no session header, so the two records cannot be paired up
 // afterwards: it is left out here as OpenCode's and ZCode's are
 // (dshGatewayProvider), or it would be counted twice — once by the gateway
@@ -131,7 +131,7 @@ func dshCall(st *callFile, e dshEvent) (Call, bool) {
 		return Call{}, false
 	}
 	src := e.Data.Message.Source
-	// a call dsh sent through magpie's own gateway is the gateway's record
+	// a call dsh sent through pigeon's own gateway is the gateway's record
 	// to keep, not this one's: see dshGatewayProvider
 	if dshGatewayProvider(src) {
 		return Call{}, false
@@ -190,9 +190,9 @@ func dshUpstream(src dshSource) string {
 	return src.ReplayState.Response.Provider
 }
 
-// dshGatewayProvider is whether a dsh provider is magpie's own gateway, by the
-// names magpie writes it under ("magpie", "magpie-responses" and
-// "magpie-anthropic", one route per protocol — agent.dshKinds — and "dial"
+// dshGatewayProvider is whether a dsh provider is pigeon's own gateway, by the
+// names pigeon writes it under ("pigeon", "pigeon-responses" and
+// "pigeon-anthropic", one route per protocol — agent.dshKinds — and "dial"
 // from before). A call
 // through it is logged by the gateway itself, and dsh sends the gateway no
 // session header (unlike Codex and OpenCode), so the two records cannot be

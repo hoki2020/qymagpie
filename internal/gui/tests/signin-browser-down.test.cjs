@@ -56,11 +56,11 @@ function server(lang, st) {
 }
 
 const W = {
-  en: { anyway: "Sign in anyway", again: "Open again", signIn: "Sign in", down: "magpie couldn't open your browser: " + DOWN + ". Open the sign-in link below in a browser yourself." },
-  zh: { anyway: "仍然登录", again: "重新打开", signIn: "登录", down: "magpie 没能打开浏览器：" + DOWN + "。请自己在浏览器中打开下面的登录链接。" },
-  "zh-TW": { anyway: "仍然登入", again: "重新開啟", signIn: "登入", down: "magpie 無法開啟瀏覽器：" + DOWN + "。請自行在瀏覽器中開啟下方的登入連結。" },
-  ja: { anyway: "それでもサインイン", again: "もう一度開く", signIn: "サインイン", down: "magpie はブラウザを開けませんでした：" + DOWN + "。下のサインインリンクをご自身でブラウザで開いてください。" },
-  de: { anyway: "Trotzdem anmelden", again: "Erneut öffnen", signIn: "Anmelden", down: "magpie konnte den Browser nicht öffnen: " + DOWN + ". Öffne den Anmeldelink unten selbst in einem Browser." },
+  en: { anyway: "Sign in anyway", again: "Open again", signIn: "Sign in", down: "pigeon couldn't open your browser: " + DOWN + ". Open the sign-in link below in a browser yourself." },
+  zh: { anyway: "仍然登录", again: "重新打开", signIn: "登录", down: "pigeon 没能打开浏览器：" + DOWN + "。请自己在浏览器中打开下面的登录链接。" },
+  "zh-TW": { anyway: "仍然登入", again: "重新開啟", signIn: "登入", down: "pigeon 無法開啟瀏覽器：" + DOWN + "。請自行在瀏覽器中開啟下方的登入連結。" },
+  ja: { anyway: "それでもサインイン", again: "もう一度開く", signIn: "サインイン", down: "pigeon はブラウザを開けませんでした：" + DOWN + "。下のサインインリンクをご自身でブラウザで開いてください。" },
+  de: { anyway: "Trotzdem anmelden", again: "Erneut öffnen", signIn: "Anmelden", down: "pigeon konnte den Browser nicht öffnen: " + DOWN + ". Öffne den Anmeldelink unten selbst in einem Browser." },
 };
 
 // nothing reaches past the window's right edge

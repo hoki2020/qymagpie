@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/tune"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/tune"
 )
 
 type tuneAdvice struct {
@@ -124,15 +124,15 @@ func tuneOf(cs []sessions.Call, days int, home string) tuneState {
 }
 
 // codexWindow is the window Codex runs the calls' models to, and where
-// magpie has it compact them when its config.toml says nothing (told; 0
-// when that isn't known for every model). A model of magpie's catalog
+// pigeon has it compact them when its config.toml says nothing (told; 0
+// when that isn't known for every model). A model of pigeon's catalog
 // has the window it is listed with, one the user typed or the vendor's,
 // and is told the threshold the user set on it, else Settings › Long
 // conversations (provider.CompactFor, as codexcat writes it). One whose
-// window magpie doesn't know caps nothing (window 0): the largest prompt
+// window pigeon doesn't know caps nothing (window 0): the largest prompt
 // it had been sent was taken for its window, and a 1M model set to
 // compact at 750K was offered no more than 412K (zhemu on Discord).
-// Codex's own models, outside magpie's catalog, run to 272K or the
+// Codex's own models, outside pigeon's catalog, run to 272K or the
 // largest prompt seen, as before.
 func codexWindow(calls []tune.Call, st settings.Settings, entries []provider.Entry, find func(string) (provider.Group, []provider.Member, bool)) (window, told int) {
 	byID := make(map[string]provider.Entry, len(entries))

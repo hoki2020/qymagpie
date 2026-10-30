@@ -4,10 +4,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/filememo"
 )
 
-// AccountDiscoveryOff is whether magpie leaves agents' sign-ins unread
+// AccountDiscoveryOff is whether pigeon leaves agents' sign-ins unread
 // (#1535): NoAccountDiscovery saved, or MAGPIE_NO_ACCOUNTS set to anything
 // but "", "0" or "false" for this process alone. The variable only ever
 // turns discovery off; it never turns on what the user saved off.

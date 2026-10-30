@@ -97,7 +97,7 @@ func TestBunCommandsOneAtATime(t *testing.T) {
 	if err := os.MkdirAll(Dir(), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(Dir(), "package.json"), []byte(`{"name":"magpie-plugins","private":true}`), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(Dir(), "package.json"), []byte(`{"name":"pigeon-plugins","private":true}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	orig := bunCommand

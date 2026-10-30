@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // nutstoreDAV answers as #1259's error says 坚果云 (Nutstore) does: a HEAD

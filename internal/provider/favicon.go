@@ -220,9 +220,9 @@ func letterIcon(name string) (string, error) {
 	return StoreIcon([]byte(svg))
 }
 
-// iconUA names magpie to the sites icons are fetched from: some (deepseek.com)
+// iconUA names pigeon to the sites icons are fetched from: some (deepseek.com)
 // turn Go's own User-Agent away with a 429.
-const iconUA = "magpie"
+const iconUA = "pigeon"
 
 var (
 	linkTag  = regexp.MustCompile(`(?is)<link\b[^>]*>`)

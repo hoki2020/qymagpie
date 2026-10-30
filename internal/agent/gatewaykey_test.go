@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // An agent in a WSL distro under NAT reaches the gateway at Windows'
@@ -29,9 +29,9 @@ func TestGatewayKeyBeyondLoopback(t *testing.T) {
 	local := "http://127.0.0.1:3425"
 
 	keys := func(gw string) map[string]string {
-		oc := magpieProviderJSONAt("opencode", "opencode", gw).(map[string]any)["options"].(map[string]any)
-		cr := magpieProviderJSONAt("crush", "crush", gw).(map[string]any)
-		pi := magpieProviderJSONAt("pi", "pi", gw).(map[string]any)
+		oc := pigeonProviderJSONAt("opencode", "opencode", gw).(map[string]any)["options"].(map[string]any)
+		cr := pigeonProviderJSONAt("crush", "crush", gw).(map[string]any)
+		pi := pigeonProviderJSONAt("pi", "pi", gw).(map[string]any)
 		out := map[string]string{
 			"opencode": oc["apiKey"].(string),
 			"crush":    cr["api_key"].(string),

@@ -9,8 +9,8 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // keptEffortHome is a sandbox HOME with a provider of thinking models: deep
@@ -63,7 +63,7 @@ func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 	path := filepath.Join(home, ".workbuddy", "models.json")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	a := workbuddy(home)
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	read := func() map[string]map[string]any {
@@ -118,7 +118,7 @@ func TestWorkBuddyKeepsTheUsersDefaultEffort(t *testing.T) {
 		t.Fatal(err)
 	}
 	ms = read()
-	if len(ms) != 2 || effort(ms["think/deep"]) != "low" || effort(ms["think/wide"]) != "high" || ms["think/wide"]["vendor"] != magpieID {
+	if len(ms) != 2 || effort(ms["think/deep"]) != "low" || effort(ms["think/wide"]) != "high" || ms["think/wide"]["vendor"] != pigeonID {
 		t.Fatalf("after sync: %v", ms)
 	}
 
@@ -202,13 +202,13 @@ func TestZCodeKeepsTheUsersDefaultVariant(t *testing.T) {
 	path := filepath.Join(home, ".zcode", "v2", "config.json")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	a := zcode(home)
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	var doc map[string]any
 	b, _ := os.ReadFile(path)
 	json.Unmarshal(b, &doc)
-	r := doc["provider"].(map[string]any)[magpieID].(map[string]any)["models"].(map[string]any)["think/wide"].(map[string]any)["reasoning"].(map[string]any)
+	r := doc["provider"].(map[string]any)[pigeonID].(map[string]any)["models"].(map[string]any)["think/wide"].(map[string]any)["reasoning"].(map[string]any)
 	if r["defaultVariant"] != "medium" {
 		t.Fatalf("magpie's default: %s", b)
 	}
@@ -227,7 +227,7 @@ func TestZCodeKeepsTheUsersDefaultVariant(t *testing.T) {
 	}
 	b, _ = os.ReadFile(path)
 	json.Unmarshal(b, &c)
-	ms := c.Provider[magpieID].Models
+	ms := c.Provider[pigeonID].Models
 	if ms["think/deep"].Reasoning.DefaultVariant != "high" || ms["think/wide"].Reasoning.DefaultVariant != "high" {
 		t.Fatalf("after sync: %s", b)
 	}
@@ -276,7 +276,7 @@ func TestMiniMaxKeepsTheUsersDefaultEffort(t *testing.T) {
 		t.Fatal(err)
 	}
 	c, raw := readMiniMax(t, path)
-	if c.CustomProvider[magpieID].Models["think~wide"].Thinking.DefaultEffort != "high" {
+	if c.CustomProvider[pigeonID].Models["think~wide"].Thinking.DefaultEffort != "high" {
 		t.Fatalf("magpie's default:\n%s", raw)
 	}
 	at := strings.Index(raw, "think~wide:")
@@ -286,7 +286,7 @@ func TestMiniMaxKeepsTheUsersDefaultEffort(t *testing.T) {
 		t.Fatal(err)
 	}
 	c, raw = readMiniMax(t, path)
-	ms := c.CustomProvider[magpieID].Models
+	ms := c.CustomProvider[pigeonID].Models
 	if ms["think~wide"].Thinking.DefaultEffort != "low" || ms["think~deep"].Thinking.DefaultEffort != "high" {
 		t.Fatalf("after sync:\n%s", raw)
 	}

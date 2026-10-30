@@ -1,4 +1,4 @@
-// Package cli is magpie's command line: every command, and the app, tray
+// Package cli is pigeon's command line: every command, and the app, tray
 // and TUI it opens (the root's main.go only calls Main).
 package cli
 
@@ -13,134 +13,134 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/claudebridge"
-	"github.com/yetone/magpie/internal/davsync"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/imagemcp"
-	"github.com/yetone/magpie/internal/netproxy"
-	"github.com/yetone/magpie/internal/pluginrt"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/profile"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/tui"
-	"github.com/yetone/magpie/internal/update"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/claudebridge"
+	"github.com/hoki2020/pigeon/internal/davsync"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/imagemcp"
+	"github.com/hoki2020/pigeon/internal/netproxy"
+	"github.com/hoki2020/pigeon/internal/pluginrt"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/profile"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/tui"
+	"github.com/hoki2020/pigeon/internal/update"
 )
 
 // version is the root main package's, set at build time
 // (-ldflags "-X main.version=…") and handed over by Main.
 var version = "dev"
 
-const usage = `magpie — one place to pick every agent's model
+const usage = `pigeon — one place to pick every agent's model
 
-  magpie                          open the app: a window plus a menu bar icon
-  magpie tray                     start in the menu bar only
-  magpie panel                    open the menu bar icon's quick panel, or close it
-  magpie autostart [on|off]       open magpie (in the menu bar) when you log in, or say whether it does
-  magpie tui                      the same thing, in the terminal (serves the gateway while open when no magpie does)
-  magpie web [--addr host:port] [--lan] [--no-open] [--gateway] [--tls-cert <file> --tls-key <file>]
+  pigeon                          open the app: a window plus a menu bar icon
+  pigeon tray                     start in the menu bar only
+  pigeon panel                    open the menu bar icon's quick panel, or close it
+  pigeon autostart [on|off]       open pigeon (in the menu bar) when you log in, or say whether it does
+  pigeon tui                      the same thing, in the terminal (serves the gateway while open when no pigeon does)
+  pigeon web [--addr host:port] [--lan] [--no-open] [--gateway] [--tls-cert <file> --tls-key <file>]
                                   the app's window in a browser, with the gateway (no desktop needed: WSL, a server over SSH)
                                   a new key each run; MAGPIE_WEB_KEY (16+ letters, digits, - . _ ~) keeps one, signed in for 400 days
                                   behind a reverse proxy, MAGPIE_WEB_URL=https://<the page there> prints the link through it
                                   --gateway: gateway mode, no Agents, Sessions or Library (on by itself with no agents here; Settings › General turns it off)
                                   --tls-cert/--tls-key: the page and the gateway over https:// to other computers
-  magpie ls                       list detected agents and their settings
-  magpie <agent>                  show one agent
-  magpie <agent> <model>          set an agent's model   e.g. magpie claude deepseek/deepseek-chat
-  magpie <agent> <field>          show one field   e.g. magpie codex effort
-  magpie <agent> <field> <value>  set another field   e.g. magpie codex effort high
-  magpie <agent> default          take magpie out: the agent back on what it had before
-  magpie <agent> <field> default  that field back to the agent's own default
-  magpie <command> --help         what a command or an agent takes; -h or --help anywhere does nothing else
+  pigeon ls                       list detected agents and their settings
+  pigeon <agent>                  show one agent
+  pigeon <agent> <model>          set an agent's model   e.g. pigeon claude deepseek/deepseek-chat
+  pigeon <agent> <field>          show one field   e.g. pigeon codex effort
+  pigeon <agent> <field> <value>  set another field   e.g. pigeon codex effort high
+  pigeon <agent> default          take pigeon out: the agent back on what it had before
+  pigeon <agent> <field> default  that field back to the agent's own default
+  pigeon <command> --help         what a command or an agent takes; -h or --help anywhere does nothing else
 
-  magpie save <name>              snapshot every agent's settings as a profile
-  magpie use <name>               apply a profile
-  magpie profiles                 list profiles
-  magpie rm <name>                delete a profile
+  pigeon save <name>              snapshot every agent's settings as a profile
+  pigeon use <name>               apply a profile
+  pigeon profiles                 list profiles
+  pigeon rm <name>                delete a profile
 
-  magpie backup [--no-keys] [--no-library] [file]    providers, keys, settings, profiles, agent models and the library in one file, sealed with a passphrase
-  magpie restore [--no-agents] [--no-library] <file> put a backup in on this machine
-  magpie webdav [on <address>|set k=v…|now|off]      the same, kept the same on every computer through a WebDAV folder (magpie webdav help)
-  magpie s3 [on s3://<bucket>[/<prefix>]|set k=v…|now|off]   the same through an S3-compatible bucket: AWS, R2, B2, MinIO… (magpie s3 help)
-  magpie github [on github://<owner>/<repo>[/<folder>]|set k=v…|now|off]   the same in an encrypted GitHub repository (magpie github help)
+  pigeon backup [--no-keys] [--no-library] [file]    providers, keys, settings, profiles, agent models and the library in one file, sealed with a passphrase
+  pigeon restore [--no-agents] [--no-library] <file> put a backup in on this machine
+  pigeon webdav [on <address>|set k=v…|now|off]      the same, kept the same on every computer through a WebDAV folder (pigeon webdav help)
+  pigeon s3 [on s3://<bucket>[/<prefix>]|set k=v…|now|off]   the same through an S3-compatible bucket: AWS, R2, B2, MinIO… (pigeon s3 help)
+  pigeon github [on github://<owner>/<repo>[/<folder>]|set k=v…|now|off]   the same in an encrypted GitHub repository (pigeon github help)
 
-  magpie library [sync|instructions|mcp|skill]   the instructions, MCP servers and skills written into every agent (magpie library help)
+  pigeon library [sync|instructions|mcp|skill]   the instructions, MCP servers and skills written into every agent (pigeon library help)
 
-  magpie providers                list your providers: host, key, models, who uses them
-  magpie presets                  the vendors magpie knows: add one with just a key
-  magpie provider add <preset> <key>   e.g. magpie provider add deepseek sk-…
-  magpie provider add <name> k=v…      a custom vendor (magpie provider for the fields)
-  magpie provider key|models|test|rm <id>
-  magpie provider fallback <id> <provider/model>…   use these when it's out of quota or down
-  magpie import [-y] <link>       add the provider a magpie://import?… link describes
-  magpie models [<agent>]         every model agents can pick, as provider/model; an agent's, and why others aren't
-  magpie model name <provider/model> <name>|--reset       the name a model goes by, everywhere
-  magpie model efforts <provider/model> <l>,<l>|--reset   the reasoning levels a model offers (magpie model help)
-  magpie visible [<agent> <family|provider|group>,… | all | --only-picked | --show-new]
-                                  which models an agent is shown: families (magpie provider/group set <id> family=…),
+  pigeon providers                list your providers: host, key, models, who uses them
+  pigeon presets                  the vendors pigeon knows: add one with just a key
+  pigeon provider add <preset> <key>   e.g. pigeon provider add deepseek sk-…
+  pigeon provider add <name> k=v…      a custom vendor (pigeon provider for the fields)
+  pigeon provider key|models|test|rm <id>
+  pigeon provider fallback <id> <provider/model>…   use these when it's out of quota or down
+  pigeon import [-y] <link>       add the provider a magpie://import?… link describes
+  pigeon models [<agent>]         every model agents can pick, as provider/model; an agent's, and why others aren't
+  pigeon model name <provider/model> <name>|--reset       the name a model goes by, everywhere
+  pigeon model efforts <provider/model> <l>,<l>|--reset   the reasoning levels a model offers (pigeon model help)
+  pigeon visible [<agent> <family|provider|group>,… | all | --only-picked | --show-new]
+                                  which models an agent is shown: families (pigeon provider/group set <id> family=…),
                                   or only the models ticked for it, a new one off until it is ticked
-  magpie search [add <api> <key>|rm <api>]   Tavily, Brave, Exa, Firecrawl, You.com, DeepSeek or SearXNG for web search when no provider can search
-  magpie groups                   routing groups: several models agents pick as one, group/<id>
-  magpie group add <name> models=<m1>,<m2> [routing=smart|order|rotate|usage|pace] [stays=auto|session|turn|off]
-  magpie group <id> | set <id> k=v… | rm <id>   show, change or remove one (magpie group help for more)
-  magpie accounts [agent] [--json]  every subscription magpie knows, with each one's allowance used and when it resets
-  magpie accounts add <agent>     sign in to one more Claude, ChatGPT or Google (Gemini CLI, Antigravity) subscription
-  magpie accounts add copilot [--host <name>.ghe.com]   one more Copilot account, on github.com or an enterprise's GHE.com
-  magpie accounts discovery [on|off]   read agents' sign-ins (default on; MAGPIE_NO_ACCOUNTS=1 disables too)
-  magpie accounts import <codex|claude|antigravity|factory> <file>... [--yes]   bring in accounts from other tools' files (Codex's auth.json, Cockpit Tools, CLIProxyAPI, Sub2API); the tool a ChatGPT or Claude file came from is signed out of it
-  magpie accounts switch <agent> <email>   sign the agent in to another of them
-  magpie accounts refresh         renew the saved ChatGPT sign-ins now (the gateway does it daily)
-  magpie accounts checkin         WorkBuddy's daily check-in (签到) for each WorkBuddy account, now (Settings can do it daily)
-  magpie accounts project <gemini|antigravity> <email> <project>   the Google Cloud project a Google account's requests go to
-  magpie accounts alias <agent> <email> [<name>|--clear]   a name of your own for an account, shown on its card, in the menu bar and in magpie quota
-  magpie accounts switch-only codex [on|off]   only switch Codex's own sign-in to an account with room; its requests go straight to OpenAI, never through magpie
-  magpie claude-code [install [--yes]|remove]   the Claude Code a Claude subscription runs; install downloads Anthropic's own build, checked against its manifest, for a server or container without one
-  magpie plugin [add <package>|rm|update|on|off|login <provider>|logout <provider>]
+  pigeon search [add <api> <key>|rm <api>]   Tavily, Brave, Exa, Firecrawl, You.com, DeepSeek or SearXNG for web search when no provider can search
+  pigeon groups                   routing groups: several models agents pick as one, group/<id>
+  pigeon group add <name> models=<m1>,<m2> [routing=smart|order|rotate|usage|pace] [stays=auto|session|turn|off]
+  pigeon group <id> | set <id> k=v… | rm <id>   show, change or remove one (pigeon group help for more)
+  pigeon accounts [agent] [--json]  every subscription pigeon knows, with each one's allowance used and when it resets
+  pigeon accounts add <agent>     sign in to one more Claude, ChatGPT or Google (Gemini CLI, Antigravity) subscription
+  pigeon accounts add copilot [--host <name>.ghe.com]   one more Copilot account, on github.com or an enterprise's GHE.com
+  pigeon accounts discovery [on|off]   read agents' sign-ins (default on; MAGPIE_NO_ACCOUNTS=1 disables too)
+  pigeon accounts import <codex|claude|antigravity|factory> <file>... [--yes]   bring in accounts from other tools' files (Codex's auth.json, Cockpit Tools, CLIProxyAPI, Sub2API); the tool a ChatGPT or Claude file came from is signed out of it
+  pigeon accounts switch <agent> <email>   sign the agent in to another of them
+  pigeon accounts refresh         renew the saved ChatGPT sign-ins now (the gateway does it daily)
+  pigeon accounts checkin         WorkBuddy's daily check-in (签到) for each WorkBuddy account, now (Settings can do it daily)
+  pigeon accounts project <gemini|antigravity> <email> <project>   the Google Cloud project a Google account's requests go to
+  pigeon accounts alias <agent> <email> [<name>|--clear]   a name of your own for an account, shown on its card, in the menu bar and in pigeon quota
+  pigeon accounts switch-only codex [on|off]   only switch Codex's own sign-in to an account with room; its requests go straight to OpenAI, never through pigeon
+  pigeon claude-code [install [--yes]|remove]   the Claude Code a Claude subscription runs; install downloads Anthropic's own build, checked against its manifest, for a server or container without one
+  pigeon plugin [add <package>|rm|update|on|off|login <provider>|logout <provider>]
                                   OpenCode provider plugins and pi packages: subscriptions signed in to, and served, through a plugin
-  magpie plugin move|migrate <subscription>   run a built-in subscription's accounts on its community plugin
+  pigeon plugin move|migrate <subscription>   run a built-in subscription's accounts on its community plugin
 
-  magpie serve [--web[=host:port]] [--tls-cert <file> --tls-key <file>]
-                                  run the gateway alone (the app runs it too); --web serves magpie web's page too, from the same process (127.0.0.1:3430 unless told);
+  pigeon serve [--web[=host:port]] [--tls-cert <file> --tls-key <file>]
+                                  run the gateway alone (the app runs it too); --web serves pigeon web's page too, from the same process (127.0.0.1:3430 unless told);
                                   with a certificate and key (PEM; MAGPIE_TLS_CERT, MAGPIE_TLS_KEY) other computers reach both over https://
-  magpie daemon [install|uninstall|start|stop|restart|status]
-                                  magpie serve as a service of yours, from boot or login and started again when it stops (systemd --user on Linux, launchd on the Mac)
-  magpie daemon install [--web] [--lan] [--addr host:port] [--no-web] [--tls-cert <file> --tls-key <file>|--no-tls]
-                                  --web: the service serves magpie web's page too, with a key kept across restarts; installed again, it keeps what it served
-  magpie daemon web [on|off] [--lan] [--addr host:port]
+  pigeon daemon [install|uninstall|start|stop|restart|status]
+                                  pigeon serve as a service of yours, from boot or login and started again when it stops (systemd --user on Linux, launchd on the Mac)
+  pigeon daemon install [--web] [--lan] [--addr host:port] [--no-web] [--tls-cert <file> --tls-key <file>|--no-tls]
+                                  --web: the service serves pigeon web's page too, with a key kept across restarts; installed again, it keeps what it served
+  pigeon daemon web [on|off] [--lan] [--addr host:port]
                                   the service's page: its link, or turn it on or off
-  magpie healthcheck              exit 0 when the gateway answers (a container's HEALTHCHECK)
-  magpie heap [<file>]            a Go heap profile of the running magpie, with its memory numbers, for a report of it using too much memory
-  magpie cpu [<file>] [--seconds N]   a Go CPU profile of the running magpie over 30s (5..120) while you use it, for a report of it using too much CPU
-  magpie goroutines [<file>]      every goroutine of the running magpie, its stack and how long it waited, for a report of it stuck at something
-  magpie gateway-key list|add <name>|rotate <id>|remove <id>   manage the keys clients use to call a shared gateway
-  magpie gateway-key limit <id> [list|off|reset [n]|remove <n>|[add] day|week|month|<N>d|<N>h --tokens N --cost USD --cache-reads]   a key's own limits, and what it used
-  magpie gateway-key models <id> [all|<provider>/<model>|<provider>/* ...]   the models a key may use, every one unless it names some
-  magpie gateway-key quotas <id> [on|off]   whether a key held to a budget, models or accounts is told the quotas of what it may use
-  magpie mcp image                the image and video generation MCP server an agent is given from the library (stdio)
-  magpie usage [today|7d|30d|all] tokens and cost per agent, model and subscription account (30d)
-  magpie usage --csv [--account <name>] [today|7d|30d|all]   every request as CSV (or one account's): the model asked for, sent and served, tokens, cost, time, status, account
-  magpie usage [--csv [--account <name>]] --last <dur>|--days <n>   the same for a window ending now (24h, 90m, 1.5 days), not from a midnight
-  magpie sessions [--model <m>] [--folder <f>] [--json]   the latest Claude Code, Codex, OpenCode and Pi sessions, with what each cost
-  magpie sessions --days N|today|all [--model <m>] [--folder <f>] [--json]
+  pigeon healthcheck              exit 0 when the gateway answers (a container's HEALTHCHECK)
+  pigeon heap [<file>]            a Go heap profile of the running pigeon, with its memory numbers, for a report of it using too much memory
+  pigeon cpu [<file>] [--seconds N]   a Go CPU profile of the running pigeon over 30s (5..120) while you use it, for a report of it using too much CPU
+  pigeon goroutines [<file>]      every goroutine of the running pigeon, its stack and how long it waited, for a report of it stuck at something
+  pigeon gateway-key list|add <name>|rotate <id>|remove <id>   manage the keys clients use to call a shared gateway
+  pigeon gateway-key limit <id> [list|off|reset [n]|remove <n>|[add] day|week|month|<N>d|<N>h --tokens N --cost USD --cache-reads]   a key's own limits, and what it used
+  pigeon gateway-key models <id> [all|<provider>/<model>|<provider>/* ...]   the models a key may use, every one unless it names some
+  pigeon gateway-key quotas <id> [on|off]   whether a key held to a budget, models or accounts is told the quotas of what it may use
+  pigeon mcp image                the image and video generation MCP server an agent is given from the library (stdio)
+  pigeon usage [today|7d|30d|all] tokens and cost per agent, model and subscription account (30d)
+  pigeon usage --csv [--account <name>] [today|7d|30d|all]   every request as CSV (or one account's): the model asked for, sent and served, tokens, cost, time, status, account
+  pigeon usage [--csv [--account <name>]] --last <dur>|--days <n>   the same for a window ending now (24h, 90m, 1.5 days), not from a midnight
+  pigeon sessions [--model <m>] [--folder <f>] [--json]   the latest Claude Code, Codex, OpenCode and Pi sessions, with what each cost
+  pigeon sessions --days N|today|all [--model <m>] [--folder <f>] [--json]
                                   what every session spent, day by day, with the top models and folders (7 days)
-  magpie quota [<provider>] [--json]  what is left of every subscription, plan and key balance
-  magpie quota wait <provider|account> [--timeout <d>] [--quiet]
+  pigeon quota [<provider>] [--json]  what is left of every subscription, plan and key balance
+  pigeon quota wait <provider|account> [--timeout <d>] [--quiet]
                                   block until that subscription (any of its accounts) or account has allowance again
-  magpie quota history [<provider|account>] [--days N] [--json]
+  pigeon quota history [<provider|account>] [--days N] [--json]
                                   each window's readings over time, kept 45 days
-  magpie statusline [<provider|account>]   one line for Claude Code's status line: the session's model and each account's windows
-  magpie sync                     refresh the model catalog and vendor model lists
-  magpie agents                   list every supported agent
-  magpie update [check] [--proxy <url>] [--mirror <prefix>]
+  pigeon statusline [<provider|account>]   one line for Claude Code's status line: the session's model and each account's windows
+  pigeon sync                     refresh the model catalog and vendor model lists
+  pigeon agents                   list every supported agent
+  pigeon update [check] [--proxy <url>] [--mirror <prefix>]
                                   install the newest release (check: only say if there is one); --proxy: an
                                   http(s):// or socks5:// proxy for it; --mirror: a GitHub download mirror put
                                   before the github.com URL (none unless given; still checked against usemagpie.ai's SHA-256)
-  magpie update mirror [<prefix>|off]  the mirror every update, the app's own too, is downloaded through
-  magpie update auto [on|off] [download|notify] [30m|1h|6h|24h]
+  pigeon update mirror [<prefix>|off]  the mirror every update, the app's own too, is downloaded through
+  pigeon update auto [on|off] [download|notify] [30m|1h|6h|24h]
                                   whether the app looks for updates by itself, how often (6h), and whether
                                   it downloads one at once or only says it is out (notify: for metered networks)
 
@@ -154,34 +154,34 @@ var (
 	green = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#0F9D58", Dark: "#7EE2A8"})
 )
 
-// Main runs magpie with os.Args, at the version the build was stamped with.
+// Main runs pigeon with os.Args, at the version the build was stamped with.
 func Main(v string) {
 	version = v
 	// before anything reads or writes a file: no home, or a relative one,
-	// would put the agents' configs and magpie's keys under the working
-	// folder. What needs no file still answers (magpie version in a
-	// container or a script without HOME): run makes magpie's folders first.
+	// would put the agents' configs and pigeon's keys under the working
+	// folder. What needs no file still answers (pigeon version in a
+	// container or a script without HOME): run makes pigeon's folders first.
 	ignored, err := appdir.CheckEnv()
 	if err != nil {
 		if len(os.Args) > 1 {
 			switch os.Args[1] {
 			case "-v", "--version", "version":
-				fmt.Println("magpie", version)
+				fmt.Println("pigeon", version)
 				return
 			case "-h", "--help", "help":
 				fmt.Print(usage)
 				return
 			}
 		}
-		fmt.Fprintln(os.Stderr, "magpie:", err)
+		fmt.Fprintln(os.Stderr, "pigeon:", err)
 		os.Exit(1)
 	}
 	slices.Sort(ignored)
 	for _, v := range ignored {
-		fmt.Fprintf(os.Stderr, "magpie: ignoring %s: not an absolute path (the programs magpie starts still get it)\n", v)
+		fmt.Fprintf(os.Stderr, "pigeon: ignoring %s: not an absolute path (the programs pigeon starts still get it)\n", v)
 	}
 	if provider.TookOpenedURL(os.Args[1:]) {
-		// Claude Code, signing in for magpie, handed over the page to open
+		// Claude Code, signing in for pigeon, handed over the page to open
 		return
 	}
 	endProbesOnSignal()
@@ -199,7 +199,7 @@ func Main(v string) {
 			code = e.code
 		}
 		if msg := err.Error(); msg != "" {
-			fmt.Fprintln(os.Stderr, "magpie:", msg)
+			fmt.Fprintln(os.Stderr, "pigeon:", msg)
 		}
 		os.Exit(code)
 	}
@@ -221,21 +221,21 @@ var tuiRun = tui.Run
 // Windows, half a second for each one another program holds open).
 func syncAgentsOnChange() { catalog.Changed = agent.SyncCatalogSoon }
 
-// startUp brings the files magpie and its agents keep up to what this
-// magpie reads, before a command that may read them; a var so a test can
+// startUp brings the files pigeon and its agents keep up to what this
+// pigeon reads, before a command that may read them; a var so a test can
 // tell it ran.
 var startUp = func() {
-	// started by an update, the magpie it replaces goes first: the moves
+	// started by an update, the pigeon it replaces goes first: the moves
 	// below write the files it may still be writing
 	update.AwaitPredecessor()
 	makeDirs()
 	settings.Migrate()
 	// every built-in plugin starts on (plugins.yml), on a new install too
 	if _, err := pluginrt.Settle(); err != nil {
-		fmt.Fprintf(os.Stderr, "magpie: plugins.yml: %v\n", err)
+		fmt.Fprintf(os.Stderr, "pigeon: plugins.yml: %v\n", err)
 	}
 	if _, err := pluginrt.Refresh(); err != nil {
-		fmt.Fprintf(os.Stderr, "magpie: plugins.yml: %v\n", err)
+		fmt.Fprintf(os.Stderr, "pigeon: plugins.yml: %v\n", err)
 	}
 	// the providers and settings read once for every agent's fields, which
 	// the moves below look at (a write among them reads them again)
@@ -266,15 +266,15 @@ func run(args []string) error {
 		return healthcheck() // every few seconds in a container: nothing else
 	}
 	if len(args) > 0 && args[0] == "heap" {
-		// the running magpie's heap profile: asks it, and moves nothing here
+		// the running pigeon's heap profile: asks it, and moves nothing here
 		return heapCmd(args[1:])
 	}
 	if len(args) > 0 && args[0] == "cpu" {
-		// the running magpie's CPU profile: asks it, and moves nothing here
+		// the running pigeon's CPU profile: asks it, and moves nothing here
 		return cpuCmd(args[1:])
 	}
 	if len(args) > 0 && args[0] == "goroutines" {
-		// the running magpie's goroutines: asks it, and moves nothing here
+		// the running pigeon's goroutines: asks it, and moves nothing here
 		return goroutinesCmd(args[1:])
 	}
 	if len(args) == 2 && args[0] == agent.DryRunArg {
@@ -306,24 +306,24 @@ func run(args []string) error {
 	// the model lists agents keep in files of their own, behind the save
 	// that changed it (agent.SyncCatalogSoon)
 	syncAgentsOnChange()
-	// a model Claude Code names that magpie doesn't serve goes to the one
+	// a model Claude Code names that pigeon doesn't serve goes to the one
 	// it is set to use for that tier
 	gateway.StandIn = agent.StandIn
 	// and its auto mode classifier, on a sonnet tier that follows a main
 	// model /model has moved, to the model it moved to
 	gateway.ClassifierStandIn = agent.ClassifierStandIn
-	// a Codex that reaches magpie for account failover alone is handed
+	// a Codex that reaches pigeon for account failover alone is handed
 	// only its own models (#1385)
 	gateway.CodexOwnOnly = agent.CodexOwnOnly
 	// the Codex app's titles, descriptions and summaries, which it asks
-	// for on a model of its own, on the model of magpie's picked beside
+	// for on a model of its own, on the model of pigeon's picked beside
 	// its ChatGPT sign-in rather than on that account (atom_Ray on X)
 	gateway.CodexSideModel = agent.CodexSideModel
 	// the setup kept the same on every computer, by whichever serves
 	gateway.WhileServing = append(gateway.WhileServing, davsync.Run)
 	// and dsh's patch lists, which dsh reads live: a route left behind by
 	// something else writing the file fails every session there until
-	// magpie writes its own list again
+	// pigeon writes its own list again
 	gateway.WhileServing = append(gateway.WhileServing, agent.KeepDshWired)
 	// and Cursor Private Inference's variables, which the Mac's launchd
 	// forgets at a restart, for the gateway's address now
@@ -347,13 +347,13 @@ func run(args []string) error {
 	}
 	// a magpie:// link the system handed over (Windows, Linux): the app
 	// opens it for the user to confirm
-	if strings.HasPrefix(strings.ToLower(args[0]), "magpie:") {
+	if strings.HasPrefix(strings.ToLower(args[0]), "pigeon:") {
 		if !hasGUI {
 			return importCmd(args)
 		}
 		return runGUI(false, args[0])
 	}
-	// how this process was started, for the Routing page of another magpie on
+	// how this process was started, for the Routing page of another pigeon on
 	// this computer to name the one that serves the gateway (#2606)
 	switch args[0] {
 	case "tui", "web", "serve", "tray":
@@ -367,7 +367,7 @@ func run(args []string) error {
 	case "web":
 		return webCmd(args[1:])
 	case "app", "gui":
-		// `magpie gui settings`: the window on that tab, as a restart to
+		// `pigeon gui settings`: the window on that tab, as a restart to
 		// update from it comes back (update.RelaunchArgs)
 		if len(args) > 1 {
 			return runWindow(args[1])
@@ -376,7 +376,7 @@ func run(args []string) error {
 	case "tray":
 		return runGUI(false, "")
 	case "-Embedding":
-		// Windows starting magpie for a click on one of its notifications
+		// Windows starting pigeon for a click on one of its notifications
 		// (a usage alert, #368) left in the Action Center after it quit:
 		// the window, on the Usage page
 		return runWindow("usage")
@@ -390,7 +390,7 @@ func run(args []string) error {
 		fmt.Print(usage)
 		return nil
 	case "-v", "--version", "version":
-		fmt.Println("magpie", version)
+		fmt.Println("pigeon", version)
 		return nil
 	case "ls", "list":
 		// in the order the app lists them; those hidden there come last, dimmed
@@ -466,17 +466,17 @@ func run(args []string) error {
 		return err
 	}
 	// no agent form takes a flag: one is never set as a model or a value
-	// (`magpie snow --verbose` would take magpie out of Snow, #1457)
+	// (`pigeon snow --verbose` would take pigeon out of Snow, #1457)
 	if f := flagArg(args[1:]); f != "" {
 		return fmt.Errorf("unknown flag %s: nothing was changed\n\n%s", f, strings.TrimRight(agentHelp(a), "\n"))
 	}
 	if len(a.Fields) == 0 && a.Import != nil {
-		// `magpie cindy`: it takes magpie through its own link, confirmed there
+		// `pigeon cindy`: it takes pigeon through its own link, confirmed there
 		if len(args) > 1 {
 			link := a.Import()
 			if link == "" {
 				// Lody takes only a gateway on this computer's loopback
-				return fmt.Errorf("%s takes magpie only at a loopback address, and the gateway is at %s: nothing was opened", a.Name, gateway.URL())
+				return fmt.Errorf("%s takes pigeon only at a loopback address, and the gateway is at %s: nothing was opened", a.Name, gateway.URL())
 			}
 			if a.ID == "lody" {
 				// Lody on Linux is run with the link (agent.OpenLody)
@@ -484,7 +484,7 @@ func run(args []string) error {
 			} else {
 				openInBrowser(link)
 			}
-			fmt.Println(green.Render("✓"), bold.Render(a.Name), muted.Render("opened to add magpie — confirm it there"))
+			fmt.Println(green.Render("✓"), bold.Render(a.Name), muted.Render("opened to add pigeon — confirm it there"))
 			fmt.Println(muted.Render("  " + link))
 			return nil
 		}
@@ -493,21 +493,21 @@ func run(args []string) error {
 	case 1:
 		return list([]*agent.Agent{a}, true, -1)
 	case 2:
-		// default is magpie's word in any case, as an agent's name and a
-		// field's are: magpie codex DEFAULT wrote model = "DEFAULT"
+		// default is pigeon's word in any case, as an agent's name and a
+		// field's are: pigeon codex DEFAULT wrote model = "DEFAULT"
 		if strings.EqualFold(args[1], "default") {
 			if a.Wired() {
 				return disconnect(a)
 			}
 			return set(a, a.Fields[0].Key, "")
 		}
-		// `magpie codex model`: a field's name alone asks what it is set to,
+		// `pigeon codex model`: a field's name alone asks what it is set to,
 		// where it was set as the model (model = "model"). Claude Code's
 		// opus is a model's name as well as a tier's, and stays the model
 		if f := a.Field(args[1]); f != nil && !modelAlias(a, args[1]) {
 			return showField(a, f)
 		}
-		// `magpie codex xhigh`: a bare value that belongs to a non-model field
+		// `pigeon codex xhigh`: a bare value that belongs to a non-model field
 		// (effort levels, for instance) is routed there; anything else is a model.
 		if f := fieldForValue(a, args[1]); f != nil {
 			return set(a, f.Key, args[1])
@@ -532,7 +532,7 @@ func set(a *agent.Agent, key, value string) error {
 		}
 		return fmt.Errorf("%s has no field %q (fields: %s)", a.Name, key, strings.Join(keys, ", "))
 	}
-	// a field's name is no value: magpie codex subagent effort ran Codex's
+	// a field's name is no value: pigeon codex subagent effort ran Codex's
 	// subagents on a model called effort. Claude Code's opus is a model's
 	// name as well as a tier's
 	if g := a.Field(value); value != "" && g != nil && !modelAlias(a, value) {
@@ -544,14 +544,14 @@ func set(a *agent.Agent, key, value string) error {
 	}
 	before := f.Get()
 	wired := a.Wired()
-	// a magpie model picked on an agent not connected yet connects it
+	// a pigeon model picked on an agent not connected yet connects it
 	// first, as the Agents page's picker does (#1900): the agent is wired
 	// in, and Disconnect puts back what it had before
 	if err := a.Pick(f.Key, value); err != nil {
 		return err
 	}
 	// what the config reads now, not what was asked: an agent may name the
-	// model under a provider of its own (OpenCode's magpie-relay/…), and a
+	// model under a provider of its own (OpenCode's pigeon-relay/…), and a
 	// value it had already is said to be so
 	now := f.Get()
 	shown := now
@@ -562,12 +562,12 @@ func set(a *agent.Agent, key, value string) error {
 		shown += " " + muted.Render("(unchanged)")
 	}
 	fmt.Println(green.Render("✓"), bold.Render(a.Name), muted.Render(f.Label), shown)
-	// a value that is the agent's own, not one of magpie's, takes magpie
-	// out: said, as Disconnect is, with the way back (#2000: magpie claude
+	// a value that is the agent's own, not one of pigeon's, takes pigeon
+	// out: said, as Disconnect is, with the way back (#2000: pigeon claude
 	// sonnet put Claude Code back on its DeepSeek endpoint, which refused
 	// Sonnet, and only "✓ Claude Code model sonnet" was printed)
 	if wired && now != "" && !a.Wired() {
-		fmt.Println(muted.Render(fmt.Sprintf("  disconnected from magpie: %s is %s's own, sent to the endpoint it had before magpie; magpie %s <model> with one of magpie's models connects it again", now, a.Name, a.ID)))
+		fmt.Println(muted.Render(fmt.Sprintf("  disconnected from pigeon: %s is %s's own, sent to the endpoint it had before pigeon; pigeon %s <model> with one of pigeon's models connects it again", now, a.Name, a.ID)))
 	}
 	if a.Notice != nil && (!f.Live || !wired && a.Wired()) {
 		if n := a.Notice(); n != "" {
@@ -584,24 +584,24 @@ func modelAlias(a *agent.Agent, w string) bool {
 }
 
 // fieldAsValue refuses field g's name given as field f's value, for what
-// was meant: two words that are one field's label (magpie codex subagent
+// was meant: two words that are one field's label (pigeon codex subagent
 // effort), a switch, which is turned on (Claude Code's ultracode), or the
 // field, which its name alone shows.
 func fieldAsValue(a *agent.Agent, f, g *agent.Field, value string) error {
 	for _, name := range []string{f.Key + " " + value, f.Key + "_" + value} {
 		if h := a.Field(name); h != nil {
-			return fmt.Errorf("%q is one field of %s's: magpie %s %s shows it", h.Label, a.Name, a.ID, h.Key)
+			return fmt.Errorf("%q is one field of %s's: pigeon %s %s shows it", h.Label, a.Name, a.ID, h.Key)
 		}
 	}
 	if g.Options != nil {
 		if o := g.Options(a.Values()); len(o) == 1 && o[0].Value == "on" {
-			return fmt.Errorf("%q is a switch of %s's, not a value for its %s: magpie %s %s on", value, a.Name, f.Label, a.ID, g.Key)
+			return fmt.Errorf("%q is a switch of %s's, not a value for its %s: pigeon %s %s on", value, a.Name, f.Label, a.ID, g.Key)
 		}
 	}
-	return fmt.Errorf("%q is a field of %s's, not a value for its %s: magpie %s %s shows it", value, a.Name, f.Label, a.ID, g.Key)
+	return fmt.Errorf("%q is a field of %s's, not a value for its %s: pigeon %s %s shows it", value, a.Name, f.Label, a.ID, g.Key)
 }
 
-// showField is `magpie <agent> <field>`: what the field is set to, as set
+// showField is `pigeon <agent> <field>`: what the field is set to, as set
 // prints it
 func showField(a *agent.Agent, f *agent.Field) error {
 	v := f.Get()
@@ -612,11 +612,11 @@ func showField(a *agent.Agent, f *agent.Field) error {
 	return nil
 }
 
-// disconnect is `magpie <agent> default` on an agent magpie is wired into:
+// disconnect is `pigeon <agent> default` on an agent pigeon is wired into:
 // the Agents page's Disconnect, which puts back what the user had before
-// magpie — Claude Code's own model, its endpoint — where a field's default
-// leaves the agent as installed (__jingling on X: magpie claude default
-// took the model they had set away with magpie's)
+// pigeon — Claude Code's own model, its endpoint — where a field's default
+// leaves the agent as installed (__jingling on X: pigeon claude default
+// took the model they had set away with pigeon's)
 func disconnect(a *agent.Agent) error {
 	before := a.Values()
 	if err := a.Disconnect(); err != nil {
@@ -633,7 +633,7 @@ func disconnect(a *agent.Agent) error {
 		}
 		fmt.Println(green.Render("✓"), bold.Render(a.Name), muted.Render(f.Label), shown)
 	}
-	fmt.Println(muted.Render("  disconnected from magpie, back to what it had before"))
+	fmt.Println(muted.Render("  disconnected from pigeon, back to what it had before"))
 	if a.Notice != nil {
 		if n := a.Notice(); n != "" {
 			fmt.Println(muted.Render("  ↻ " + n))
@@ -720,21 +720,21 @@ func list(agents []*agent.Agent, detectedOnly bool, dimFrom int) error {
 				r.name = faint.Render(a.Name) + " " + faint.Render("hidden")
 			}
 			r.vals = strings.Join(parts, label.Render("  ·  "))
-			// through magpie for account failover while not connected (#1385)
+			// through pigeon for account failover while not connected (#1385)
 			if said := a.FailoverSaid(); said != "" {
 				r.vals += label.Render("  ·  " + said)
 			}
 			if a.Import != nil {
 				// unknown reads as not added here: the line only offers the
-				// command, never says magpie is missing
+				// command, never says pigeon is missing
 				added := false
 				if a.Added != nil {
 					added, _ = a.Added()
 				}
 				if added {
-					r.vals = value.Render("magpie added")
+					r.vals = value.Render("pigeon added")
 				} else {
-					r.vals = label.Render("magpie "+a.ID+" add") + faint.Render("  to add magpie")
+					r.vals = label.Render("pigeon "+a.ID+" add") + faint.Render("  to add pigeon")
 				}
 			}
 		}
@@ -763,7 +763,7 @@ func profiles(args []string) error {
 			return err
 		}
 		if len(ps) == 0 {
-			fmt.Println(muted.Render("no profiles yet · magpie save <name>"))
+			fmt.Println(muted.Render("no profiles yet · pigeon save <name>"))
 			return nil
 		}
 		detected := agent.Detected()
@@ -778,7 +778,7 @@ func profiles(args []string) error {
 		return nil
 	case "save":
 		if len(args) < 2 {
-			return fmt.Errorf("usage: magpie save <name>")
+			return fmt.Errorf("usage: pigeon save <name>")
 		}
 		p, err := profile.Snapshot()
 		if err != nil {
@@ -794,7 +794,7 @@ func profiles(args []string) error {
 		return nil
 	case "use":
 		if len(args) < 2 {
-			return fmt.Errorf("usage: magpie use <name>")
+			return fmt.Errorf("usage: pigeon use <name>")
 		}
 		ps, err := profile.Load()
 		if err != nil {
@@ -815,7 +815,7 @@ func profiles(args []string) error {
 		return nil
 	case "rm":
 		if len(args) < 2 {
-			return fmt.Errorf("usage: magpie rm <name>")
+			return fmt.Errorf("usage: pigeon rm <name>")
 		}
 		if err := profile.Delete(args[1]); err != nil {
 			return err

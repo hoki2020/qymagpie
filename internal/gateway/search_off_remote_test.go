@@ -3,8 +3,8 @@ package gateway
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // With provider search Off, this magpie's model list no longer tells
@@ -21,8 +21,8 @@ func TestSearchProviderOffTellsRemoteMagpie(t *testing.T) {
 		t.Fatal(err)
 	}
 	e := provider.Entry{Provider: p, Model: "kimi-for-coding"}
-	if got := webSearchOf(e, canSearch()); got != searchMagpie {
-		t.Fatalf("automatic: %q, want %q", got, searchMagpie)
+	if got := webSearchOf(e, canSearch()); got != searchPigeon {
+		t.Fatalf("automatic: %q, want %q", got, searchPigeon)
 	}
 	st := settings.Load()
 	st.Searcher = "off"

@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #3168 (miaomiaozi on Discord): a slow-starting MCP server couldn't be
-// given a longer startup timeout in magpie. The server's editor has a
+// given a longer startup timeout in pigeon. The server's editor has a
 // "Startup timeout" in seconds, shown only when an agent that takes one
 // (Codex, startup_timeout_sec) is here, digits only, saved with the
 // server as startupTimeout and shown again; emptied, it saves 0 (the

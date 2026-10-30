@@ -9,11 +9,11 @@ package agent
 // reasoning). jcode starts on [provider] default_provider and default_model,
 // a profile's name and one of its models.
 //
-// magpie adds itself as the profile "magpie": the gateway, with one model
+// pigeon adds itself as the profile "pigeon": the gateway, with one model
 // entry per catalog model, so the catalog is in jcode's /model picker, and
 // jcode is started on the model picked. What [provider] named before is
-// stashed and put back when magpie steps out. Every other key of the file is
-// the user's and stays as written, the user's own keys in magpie's profile
+// stashed and put back when pigeon steps out. Every other key of the file is
+// the user's and stays as written, the user's own keys in pigeon's profile
 // too (headers, extra_body, a model's reasoning_effort).
 
 import (
@@ -27,20 +27,20 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
-// jcodeProfile is magpie's profile's table in jcode's config.toml, and
+// jcodeProfile is pigeon's profile's table in jcode's config.toml, and
 // jcodeModels its models' array.
 const (
-	jcodeProfile = "providers." + magpieID
+	jcodeProfile = "providers." + pigeonID
 	jcodeModels  = jcodeProfile + ".models"
 )
 
 // what jcode says after a change (notice.go)
 var noticeJcode = newNotice("jcode reads its settings at start-up — restart open jcode sessions to use this.")
 
-// jcodeContext is what jcode is told of a model whose context magpie
+// jcodeContext is what jcode is told of a model whose context pigeon
 // doesn't know; without one it takes 200k.
 const jcodeContext = 128000
 
@@ -63,7 +63,7 @@ type jcodeModel struct {
 	Input           []string `toml:"input,omitempty"`
 }
 
-// jcodeConf is what magpie reads of jcode's config.toml.
+// jcodeConf is what pigeon reads of jcode's config.toml.
 type jcodeConf struct {
 	Provider struct {
 		DefaultProvider string `toml:"default_provider"`
@@ -88,15 +88,15 @@ func jcodeRead(path string) (jcodeConf, error) {
 		return c, err
 	}
 	if err := toml.Unmarshal(b, &c); err != nil {
-		return c, fmt.Errorf("jcode's %s isn't TOML magpie can read; it was left as it is: %w", path, err)
+		return c, fmt.Errorf("jcode's %s isn't TOML pigeon can read; it was left as it is: %w", path, err)
 	}
 	return c, nil
 }
 
-// jcodeWant is magpie's models as jcode is told them: the context window
-// (one magpie doesn't know is jcodeContext), whether it takes images, and
+// jcodeWant is pigeon's models as jcode is told them: the context window
+// (one pigeon doesn't know is jcodeContext), whether it takes images, and
 // reasoning on for a model with effort levels, so jcode's /effort offers
-// them. A reasoning_effort the user set on one of magpie's models stays
+// them. A reasoning_effort the user set on one of pigeon's models stays
 // while the model has that level.
 func jcodeWant(was []jcodeModel) []jcodeModel {
 	kept := map[string]string{}
@@ -104,7 +104,7 @@ func jcodeWant(was []jcodeModel) []jcodeModel {
 		kept[m.ID] = m.ReasoningEffort
 	}
 	var out []jcodeModel
-	for _, m := range magpieModels("jcode") {
+	for _, m := range pigeonModels("jcode") {
 		ctx := m.Context
 		if ctx <= 0 {
 			ctx = jcodeContext
@@ -169,7 +169,7 @@ func jcodeSame(a, b []jcodeModel) bool {
 	})
 }
 
-// jcodePick is what [provider] named before magpie: a profile (or one of
+// jcodePick is what [provider] named before pigeon: a profile (or one of
 // jcode's providers) and a model, "" each for none.
 type jcodePick struct {
 	Provider string `json:"provider,omitempty"`
@@ -184,11 +184,11 @@ func jcodeAt(at place) *Agent {
 	keyPick := at.key("jcode:" + path + ":default")
 	key := func() string { return agentKeyAt("jcode", at.gw()) }
 	read := func() jcodeConf { c, _ := jcodeRead(path); return c }
-	ours := func(c jcodeConf) bool { return c.Provider.DefaultProvider == magpieID }
+	ours := func(c jcodeConf) bool { return c.Provider.DefaultProvider == pigeonID }
 	get := func() string {
 		c := read()
 		if ours(c) && c.Provider.DefaultModel != "" {
-			return magpieID + "/" + c.Provider.DefaultModel
+			return pigeonID + "/" + c.Provider.DefaultModel
 		}
 		return c.Provider.DefaultModel
 	}
@@ -208,7 +208,7 @@ func jcodeAt(at place) *Agent {
 		}
 		return nil
 	}
-	// wire writes magpie's profile, its own keys set and the user's others
+	// wire writes pigeon's profile, its own keys set and the user's others
 	// left as they are, with model, if given, the profile's default; it
 	// writes nothing when the file has it all already
 	wire := func(model string) error {
@@ -216,7 +216,7 @@ func jcodeAt(at place) *Agent {
 		if err != nil {
 			return err
 		}
-		have, on := c.Providers[magpieID]
+		have, on := c.Providers[pigeonID]
 		want := jcodeWant(have.Models)
 		t, err := edit.GetTOMLTable(path, jcodeProfile)
 		if err != nil {
@@ -255,8 +255,8 @@ func jcodeAt(at place) *Agent {
 		}
 		return edit.SetTOMLKey(path, jcodeProfile, "models", jcodeArray(want))
 	}
-	// unwire takes magpie's profile out, and jcode back to what it started
-	// on before — when it still starts on magpie: a pick the user made in
+	// unwire takes pigeon's profile out, and jcode back to what it started
+	// on before — when it still starts on pigeon: a pick the user made in
 	// jcode since is theirs and stands
 	unwire := func(own string) error {
 		c, err := jcodeRead(path)
@@ -281,7 +281,7 @@ func jcodeAt(at place) *Agent {
 			}
 		}
 		// the profile whole: its models' tables and the user's own in it
-		// (headers, extra_body) are magpie's profile's, and go with it
+		// (headers, extra_body) are pigeon's profile's, and go with it
 		return edit.SetTOMLTablesMatching(path, []string{jcodeProfile}, []string{jcodeProfile + "."}, nil)
 	}
 	return atomic(&Agent{
@@ -298,7 +298,7 @@ func jcodeAt(at place) *Agent {
 			if err != nil {
 				return err
 			}
-			if _, on := c.Providers[magpieID]; !on {
+			if _, on := c.Providers[pigeonID]; !on {
 				return nil
 			}
 			return wire("")
@@ -311,9 +311,9 @@ func jcodeAt(at place) *Agent {
 			if !ours(c) {
 				return ""
 			}
-			p, on := c.Providers[magpieID]
+			p, on := c.Providers[pigeonID]
 			if !on {
-				return "jcode's [" + jcodeProfile + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "jcode's [" + jcodeProfile + "] (config.toml) is gone, so it no longer reaches pigeon"
 			}
 			return wiringOff("jcode", path, func(k string) (string, bool) {
 				switch k {
@@ -326,8 +326,8 @@ func jcodeAt(at place) *Agent {
 			}, "base_url", at.v1(), "api_key", key())
 		},
 		Fields: []Field{{
-			// the model jcode starts on: one of magpie's is
-			// magpie/<provider>/<model>, magpie's profile with the model's
+			// the model jcode starts on: one of pigeon's is
+			// magpie/<provider>/<model>, pigeon's profile with the model's
 			// id in it
 			Key: "model", Label: "model",
 			Get: get,
@@ -336,7 +336,7 @@ func jcodeAt(at place) *Agent {
 				if err != nil {
 					return err
 				}
-				if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
+				if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok && isPigeon(ref) {
 					if !ours(c) {
 						b, _ := json.Marshal(jcodePick{c.Provider.DefaultProvider, c.Provider.DefaultModel})
 						stash(map[string]string{keyPick: string(b)})
@@ -344,22 +344,22 @@ func jcodeAt(at place) *Agent {
 					if err := wire(ref); err != nil {
 						return err
 					}
-					return setPick(jcodePick{magpieID, ref})
+					return setPick(jcodePick{pigeonID, ref})
 				}
-				if _, on := c.Providers[magpieID]; on || ours(c) {
+				if _, on := c.Providers[pigeonID]; on || ours(c) {
 					return unwire(v)
 				}
 				return setPick(jcodePick{c.Provider.DefaultProvider, v})
 			},
 			Options: func(cur map[string]string) []Option {
-				return append(jcodeOwn(path, keyPick, cur["model"]), viaMagpie("jcode", magpieID+"/")...)
+				return append(jcodeOwn(path, keyPick, cur["model"]), viaPigeon("jcode", pigeonID+"/")...)
 			},
 		}},
 	}, path)
 }
 
-// jcodeOwn is the model jcode started on before magpie, or starts on now,
-// for the picker: jcode's own providers are its sign-ins, which magpie
+// jcodeOwn is the model jcode started on before pigeon, or starts on now,
+// for the picker: jcode's own providers are its sign-ins, which pigeon
 // can't list.
 func jcodeOwn(path, keyPick, cur string) []Option {
 	var was jcodePick

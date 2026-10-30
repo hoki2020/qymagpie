@@ -12,14 +12,14 @@ package agent
 // Its settings offer a custom provider on OpenAI Completions, OpenAI
 // Responses or Anthropic Messages (docs.pen.dev, Authentication) — Pi's
 // openai-completions, openai-responses and anthropic-messages — set for the
-// provider as a whole. So magpie's models are Pi's entries (piModelJSON)
+// provider as a whole. So pigeon's models are Pi's entries (piModelJSON)
 // with every model on the provider's openai-completions at the gateway's
 // /v1, which the gateway takes for every model: a model's own api and
 // baseUrl, which Pi reads but Pencil's own editor never writes, are left
 // out. Each model carries every field Pencil writes for one. The model is
-// picked in Pencil's agent composer, not in a file magpie knows of, so what
-// magpie sets is whether its models are in that picker; the user's other
-// providers stay as they are. Its requests carry magpie-pencil, as its
+// picked in Pencil's agent composer, not in a file pigeon knows of, so what
+// pigeon sets is whether its models are in that picker; the user's other
+// providers stay as they are. Its requests carry pigeon-pencil, as its
 // User-Agent isn't known.
 
 import (
@@ -27,14 +27,14 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 func pencil(home string) *Agent {
 	dir := filepath.Join(home, ".pencil")
 	path := filepath.Join(dir, "models.json")
-	key := "providers." + magpieID
+	key := "providers." + pigeonID
 	wired := func() bool { _, ok := edit.GetJSON(path, key); return ok }
 	return &Agent{
 		ID: "pencil", Name: "Pencil", Icon: "generic", Aliases: []string{"pen.dev", "pen-dev", "pendev"},
@@ -58,7 +58,7 @@ func pencil(home string) *Agent {
 			Key: "provider", Label: "provider",
 			Get: func() string {
 				if wired() {
-					return magpieID
+					return pigeonID
 				}
 				return ""
 			},
@@ -69,7 +69,7 @@ func pencil(home string) *Agent {
 				return edit.SetJSON(path, edit.KV{Path: key, Value: theirsKept(path, key, func() any { return pencilProviderJSON(gateway.URL()) }, "models")()})
 			},
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie", Note: "every magpie model in Pencil's model picker"}}
+				return []Option{{Value: pigeonID, Label: "pigeon", Icon: "pigeon", Note: "every pigeon model in Pencil's model picker"}}
 			},
 		}},
 	}
@@ -91,14 +91,14 @@ func pencilApp(home string) bool {
 	return false
 }
 
-// pencilProviderJSON is magpie's provider in Pencil's models.json: Pi's
+// pencilProviderJSON is pigeon's provider in Pencil's models.json: Pi's
 // entries (piModelJSON), on the provider's openai-completions throughout,
 // each with the fields Pencil writes for a model — Pi's defaults where
-// magpie knows no better (a 128K window, 16K out) and no cost, magpie's
-// spend being counted by magpie.
+// pigeon knows no better (a 128K window, 16K out) and no cost, pigeon's
+// spend being counted by pigeon.
 func pencilProviderJSON(gw string) map[string]any {
 	ms := []map[string]any{}
-	for _, m := range magpieModels("pencil") {
+	for _, m := range pigeonModels("pencil") {
 		e := piModelJSON(m, gw, false)
 		if _, ok := e["input"]; !ok {
 			e["input"] = []string{"text"}
@@ -113,11 +113,11 @@ func pencilProviderJSON(gw string) map[string]any {
 		e["compat"] = map[string]any{}
 		ms = append(ms, e)
 	}
-	return map[string]any{"name": "magpie", "baseUrl": gw + "/v1", "api": "openai-completions",
+	return map[string]any{"name": "pigeon", "baseUrl": gw + "/v1", "api": "openai-completions",
 		"apiKey": agentKeyAt("pencil", gw), "models": ms}
 }
 
 // what pencil says after a change (notice.go)
 var (
-	noticePencil = newNotice("Pencil reads its custom models at start-up — restart Pencil to see magpie's models in its model picker.")
+	noticePencil = newNotice("Pencil reads its custom models at start-up — restart Pencil to see pigeon's models in its model picker.")
 )

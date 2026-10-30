@@ -1,6 +1,6 @@
 // Account discovery off (#1535, MaxHaiCom): with Settings → Privacy's
-// "Subscription accounts" off, `magpie accounts discovery off`, or
-// MAGPIE_NO_ACCOUNTS=1, magpie reads no agent's sign-in — no
+// "Subscription accounts" off, `pigeon accounts discovery off`, or
+// MAGPIE_NO_ACCOUNTS=1, pigeon reads no agent's sign-in — no
 // ~/.claude/.credentials.json, ~/.codex/auth.json, Copilot, Cursor, Kiro,
 // Devin or other credential file, no Keychain or Secret Service item, and
 // no agent CLI asked who is signed in — and serves no subscription. API-key
@@ -9,7 +9,7 @@
 // The gates sit at every source (the readers below Accounts, Logins,
 // usage, renewal, warm-up, session identities) and every sink that would
 // write a sign-in (switching, forgetting, sign-in, imports, moves onto
-// plugins), so a route that skips Accounts still reads nothing. What magpie
+// plugins), so a route that skips Accounts still reads nothing. What pigeon
 // kept of its own (logins.json, plugin-auth.json) is left as it is, unread
 // and unwritten, and comes back when discovery is turned on again.
 // Middleware plugins and Pi extensions in the plugin host are not
@@ -21,10 +21,10 @@ import (
 	"errors"
 	"os"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
-var errAccountDiscoveryOff = errors.New("subscription accounts are off in magpie (Settings → Privacy, or `magpie accounts discovery on`)")
+var errAccountDiscoveryOff = errors.New("subscription accounts are off in pigeon (Settings → Privacy, or `pigeon accounts discovery on`)")
 
 // discoveryOff is whether agents' sign-ins are left unread; see above.
 func discoveryOff() bool { return settings.AccountDiscoveryOff() }

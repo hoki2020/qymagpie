@@ -1,9 +1,9 @@
 #!/bin/sh
-# magpie installer: curl -fsSL https://usemagpie.ai/install.sh | sh
+# pigeon installer: curl -fsSL https://usemagpie.ai/install.sh | sh
 #
-# macOS: puts magpie.app in /Applications (~/Applications when that is not
-# writable) and links the magpie command into ~/.local/bin.
-# Linux: puts magpie in ~/.local/bin — the desktop app when GTK 3 and
+# macOS: puts pigeon.app in /Applications (~/Applications when that is not
+# writable) and links the pigeon command into ~/.local/bin.
+# Linux: puts pigeon in ~/.local/bin — the desktop app when GTK 3 and
 # WebKitGTK 4.1 are installed (with a menu entry), the terminal build
 # otherwise or with MAGPIE_CLI=1.
 # Termux: installs the Android terminal build into $PREFIX/bin.
@@ -28,7 +28,7 @@ proxy="${MAGPIE_PROXY:-}"
 mirror="${MAGPIE_MIRROR:-}"
 
 say() { printf '  %s\n' "$*"; }
-die() { printf 'magpie: %s\n' "$*" >&2; exit 1; }
+die() { printf 'pigeon: %s\n' "$*" >&2; exit 1; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -66,18 +66,18 @@ case "$(uname -m)" in
   *) die "unsupported CPU: $(uname -m)" ;;
 esac
 case "$(uname -s)" in
-  Darwin) os=darwin; file="magpie-darwin-$arch.zip" ;;
+  Darwin) os=darwin; file="pigeon-darwin-$arch.zip" ;;
   Linux)
     termux="${TERMUX_VERSION:-}"
     case "${PREFIX:-}" in */com.termux/files/usr) termux=1 ;; esac
     if [ -n "$termux" ]; then
       [ -n "${PREFIX:-}" ] || die "Termux requires PREFIX to locate its bin directory"
-      os=android; file="magpie-cli-android-$arch"
+      os=android; file="pigeon-cli-android-$arch"
       bin="${MAGPIE_BIN_DIR:-$PREFIX/bin}"
     else
-      os=linux; file="magpie-cli-linux-$arch"
+      os=linux; file="pigeon-cli-linux-$arch"
       if [ -z "${MAGPIE_CLI:-}" ] && { ldconfig -p 2>/dev/null | grep -q 'libwebkit2gtk-4\.1\.so\.0'; }; then
-        file="magpie-linux-$arch"
+        file="pigeon-linux-$arch"
       fi
     fi ;;
   *) die "unsupported system: $(uname -s); see $site" ;;
@@ -102,8 +102,8 @@ from=$url
 case "$url" in
   https://github.com/*) [ -z "$mirror" ] || from="$mirror$url" ;;
 esac
-if [ "$from" != "$url" ]; then say "downloading magpie $version ($file) through $mirror"
-else say "downloading magpie $version ($file)"; fi
+if [ "$from" != "$url" ]; then say "downloading pigeon $version ($file) through $mirror"
+else say "downloading pigeon $version ($file)"; fi
 get -o "$tmp/$file" "$from" || die "could not download $from"
 if command -v sha256sum >/dev/null; then got=$(sha256sum "$tmp/$file" | cut -d' ' -f1)
 else got=$(shasum -a 256 "$tmp/$file" | cut -d' ' -f1); fi
@@ -119,48 +119,48 @@ if [ "$os" = darwin ]; then
   ditto -x -k "$tmp/$file" "$tmp/x"
   # the new app beside the old one first: a move failing (a full disk)
   # leaves the old app in place
-  rm -rf "$apps/.magpie.app.new"
-  mv "$tmp/x/magpie.app" "$apps/.magpie.app.new"
-  rm -rf "$apps/magpie.app"
-  mv "$apps/.magpie.app.new" "$apps/magpie.app"
-  ln -sf "$apps/magpie.app/Contents/MacOS/magpie" "$bin/magpie"
-  say "installed $apps/magpie.app"
+  rm -rf "$apps/.pigeon.app.new"
+  mv "$tmp/x/pigeon.app" "$apps/.pigeon.app.new"
+  rm -rf "$apps/pigeon.app"
+  mv "$apps/.pigeon.app.new" "$apps/pigeon.app"
+  ln -sf "$apps/pigeon.app/Contents/MacOS/pigeon" "$bin/pigeon"
+  say "installed $apps/pigeon.app"
 else
-  install -m 755 "$tmp/$file" "$bin/magpie"
-  if [ "$file" = "magpie-linux-$arch" ]; then
+  install -m 755 "$tmp/$file" "$bin/pigeon"
+  if [ "$file" = "pigeon-linux-$arch" ]; then
     share="${XDG_DATA_HOME:-$HOME/.local/share}"
     mkdir -p "$share/applications" "$share/icons/hicolor/256x256/apps"
-    get -o "$share/icons/hicolor/256x256/apps/magpie.png" "$site/img/icon-256.png" || true
-    cat > "$share/applications/magpie.desktop" <<EOF
+    get -o "$share/icons/hicolor/256x256/apps/pigeon.png" "$site/img/icon-256.png" || true
+    cat > "$share/applications/pigeon.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=magpie
+Name=pigeon
 Comment=Every agent's model. One place.
-Exec=$bin/magpie %u
-Icon=magpie
-StartupWMClass=magpie
+Exec=$bin/pigeon %u
+Icon=pigeon
+StartupWMClass=pigeon
 Categories=Development;Utility;
-MimeType=x-scheme-handler/magpie;
+MimeType=x-scheme-handler/pigeon;
 Terminal=false
 EOF
-    # magpie://import links open in magpie
+    # magpie://import links open in pigeon
     command -v update-desktop-database >/dev/null && update-desktop-database "$share/applications" 2>/dev/null || true
-    command -v xdg-mime >/dev/null && xdg-mime default magpie.desktop x-scheme-handler/magpie 2>/dev/null || true
-    say "installed the magpie desktop app (menu entry: magpie)"
+    command -v xdg-mime >/dev/null && xdg-mime default pigeon.desktop x-scheme-handler/pigeon 2>/dev/null || true
+    say "installed the pigeon desktop app (menu entry: pigeon)"
   elif [ "$os" = android ]; then
-    say "installed the Termux build; use magpie web for the browser UI or magpie tui for the terminal UI"
+    say "installed the Termux build; use pigeon web for the browser UI or pigeon tui for the terminal UI"
   else
     say "installed the terminal build; for the desktop app, install WebKitGTK 4.1 (libwebkit2gtk-4.1-0) and run this again"
   fi
 fi
-say "installed $bin/magpie"
+say "installed $bin/pigeon"
 case ":$PATH:" in
   *":$bin:"*) ;;
-  *) say "add $bin to your PATH to run magpie from a terminal" ;;
+  *) say "add $bin to your PATH to run pigeon from a terminal" ;;
 esac
 case "$file" in
-  *.zip) say "open it: open -a magpie" ;;
-  magpie-cli-android-*) say "run it: magpie web" ;;
-  magpie-linux-*) say "open it from your app menu, or run: magpie app" ;;
-  *) say "run it: magpie" ;;
+  *.zip) say "open it: open -a pigeon" ;;
+  pigeon-cli-android-*) say "run it: pigeon web" ;;
+  pigeon-linux-*) say "open it from your app menu, or run: pigeon app" ;;
+  *) say "run it: pigeon" ;;
 esac

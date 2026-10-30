@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // airHome is a sandbox home with Air's config folder and an OpenCode at a
@@ -88,7 +88,7 @@ func TestAirAddsMagpieAgent(t *testing.T) {
 	if d := a.Drift(); d != nil {
 		t.Fatalf("drift: %+v", d)
 	}
-	if n := a.Notice(); !strings.Contains(n, "pick Magpie") {
+	if n := a.Notice(); !strings.Contains(n, "pick Pigeon") {
 		t.Fatalf("notice: %q", n)
 	}
 	// one of Air's own agents isn't set from here
@@ -226,7 +226,7 @@ func TestAirProviderWritesKeepCustomFields(t *testing.T) {
 						t.Errorf("%s = %q, want %q", k, got, want)
 					}
 				}
-				want := magpieProviderJSONFor("opencode", "air").(map[string]any)
+				want := pigeonProviderJSONFor("opencode", "air").(map[string]any)
 				for k, v := range want["options"].(map[string]any) {
 					if got, _ := edit.GetJSON(cfg, "provider.magpie.options."+k); got != v {
 						t.Errorf("options.%s = %q, want %v", k, got, v)

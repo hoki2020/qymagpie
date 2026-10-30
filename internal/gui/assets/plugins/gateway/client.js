@@ -83,10 +83,10 @@ function renderGatewayView() {
 }
 
 // The status card's button (leslie_luo on Discord: told to quit the older
-// magpie serving the gateway, with no way to tell which one it was): with
-// an older magpie on the port it quits that one, checked to be magpie by
+// pigeon serving the gateway, with no way to tell which one it was): with
+// an older pigeon on the port it quits that one, checked to be pigeon by
 // its process, and this one serves the gateway at once; otherwise it
-// restarts the gateway this one serves, or starts it. A magpie of this
+// restarts the gateway this one serves, or starts it. A pigeon of this
 // version or newer serving it gets none: that one is not to be quit here.
 // What stood in the way stays under it until the gateway's state changes.
 let gatewayFix = { busy: false, err: "", when: "" };
@@ -96,8 +96,8 @@ function gatewayFixButton(g, older) {
   // bordered: a plain text button read as words on the card in dark mode
   const b = el("button", "text action gw-fix");
   b.textContent = gatewayFix.busy
-    ? (older ? t("Quitting magpie {v}…", { v: g.version }) : t(g.running ? "Restarting the gateway…" : "Starting the gateway…"))
-    : (older ? t("Quit magpie {v} and take over", { v: g.version }) : t(g.running ? "Restart gateway" : "Start gateway"));
+    ? (older ? t("Quitting pigeon {v}…", { v: g.version }) : t(g.running ? "Restarting the gateway…" : "Starting the gateway…"))
+    : (older ? t("Quit pigeon {v} and take over", { v: g.version }) : t(g.running ? "Restart gateway" : "Start gateway"));
   b.disabled = gatewayFix.busy;
   b.onclick = async () => {
     const when = gatewayFixWhen(g);
@@ -116,18 +116,18 @@ function gatewayFixButton(g, older) {
 function gatewayFixSays(o) {
   const p = { port: o.port || "", pid: o.pid || "", path: o.path || "", v: o.version || "", error: o.error || "" };
   switch (o.reason) {
-    case "not-magpie": return t("Port {port} is held by {path} (pid {pid}), which isn't magpie, so magpie leaves it alone. Quit it yourself, or move the gateway to another port in Settings.", p);
-    // leslie_luo on Discord: an old magpie in OrbStack, its helper named
+    case "not-pigeon": return t("Port {port} is held by {path} (pid {pid}), which isn't pigeon, so pigeon leaves it alone. Quit it yourself, or move the gateway to another port in Settings.", p);
+    // leslie_luo on Discord: an old pigeon in OrbStack, its helper named
     // as the program to quit
-    case "container": return t("Port {port} is forwarded by {path} (pid {pid}) to a container or a VM: the magpie {v} answering there runs inside it, out of this magpie's reach. Stop that container (docker ps lists it, docker stop <name> stops it, or stop it in OrbStack or Docker Desktop), or move this magpie's gateway to another port in Settings.", p);
-    case "unseen": return t("magpie can't see which process holds port {port}: it runs as another user or as administrator. Quit it there.", p);
-    case "denied": return t("magpie {v} (pid {pid}, {path}) runs as another user or as administrator, so this magpie can't quit it. Quit it there.", p);
-    case "stuck": return t("magpie {v} (pid {pid}) didn't quit. End it in your system's process list (Activity Monitor, Task Manager).", p);
-    case "respawned": return t("Something started magpie on port {port} again at once ({path}, pid {pid}): a login item or a service keeps it running (a LaunchAgent, a systemd unit, a scheduled task). Remove that, then try again.", p);
+    case "container": return t("Port {port} is forwarded by {path} (pid {pid}) to a container or a VM: the pigeon {v} answering there runs inside it, out of this pigeon's reach. Stop that container (docker ps lists it, docker stop <name> stops it, or stop it in OrbStack or Docker Desktop), or move this pigeon's gateway to another port in Settings.", p);
+    case "unseen": return t("pigeon can't see which process holds port {port}: it runs as another user or as administrator. Quit it there.", p);
+    case "denied": return t("pigeon {v} (pid {pid}, {path}) runs as another user or as administrator, so this pigeon can't quit it. Quit it there.", p);
+    case "stuck": return t("pigeon {v} (pid {pid}) didn't quit. End it in your system's process list (Activity Monitor, Task Manager).", p);
+    case "respawned": return t("Something started pigeon on port {port} again at once ({path}, pid {pid}): a login item or a service keeps it running (a LaunchAgent, a systemd unit, a scheduled task). Remove that, then try again.", p);
     case "taken": return p.pid
       ? t("Port {port} is in use by {path} (pid {pid}): quit it, or move the gateway to another port in Settings.", p)
       : t("Port {port} is in use by another program: quit it, or move the gateway to another port in Settings.", p);
-    case "other": return t("magpie {v} serves the gateway, and it isn't older than this one: quit it there to serve the gateway here.", p);
+    case "other": return t("pigeon {v} serves the gateway, and it isn't older than this one: quit it there to serve the gateway here.", p);
   }
   return t("The gateway couldn't be served here: {error}", p);
 }
@@ -137,27 +137,27 @@ function renderGateway() {
   const g = providers.gateway;
   const box = $("#gateway");
   box.replaceChildren();
-  // an older magpie keeping the port sends every agent's request its own
+  // an older pigeon keeping the port sends every agent's request its own
   // way, without this version's fixes (#506): said in place of the counts
   const older = g.running && !g.mine && g.older;
   const dot = el("span", "dot " + (older ? "old" : g.running ? "on" : ""));
   const who = el("div", "who");
   const name = el("div", "name", t("Gateway"));
   name.append(el("span", "state", older
-    ? t("running · served by magpie {v}, older than this one", { v: g.version })
-    : t(g.running ? (g.mine ? "running" : "running · served by another magpie") : "not running")));
+    ? t("running · served by pigeon {v}, older than this one", { v: g.version })
+    : t(g.running ? (g.mine ? "running" : "running · served by another pigeon") : "not running")));
   const routed = new Set();
   for (const p of providers.providers) for (const a of p.agents) if (a.current) routed.add(a.id);
   const n = routed.size;
   if (older) {
-    who.append(name, el("div", "sub old", t("Agents' requests go through magpie {v} and are sent as it sends them, without this version's fixes. Quit it here and this one serves the gateway at once.", { v: g.version })));
+    who.append(name, el("div", "sub old", t("Agents' requests go through pigeon {v} and are sent as it sends them, without this version's fixes. Quit it here and this one serves the gateway at once.", { v: g.version })));
   } else who.append(name, el("div", "sub", g.running
     ? [t(g.models === 1 ? "{n} model" : "{n} models", { n: g.models }), n ? t(n === 1 ? "{n} agent routed through it" : "{n} agents routed through it", { n }) : t("no agent routed through it yet"), t("five APIs, one URL")].join(" · ")
-    : t("start it with magpie serve, or open magpie at login")));
+    : t("start it with pigeon serve, or open pigeon at login")));
   const fix = gatewayFixButton(g, older);
   if (fix) who.append(fix);
   if (gatewayFix.err && gatewayFix.when === gatewayFixWhen(g)) who.append(el("div", "sub old err", gatewayFix.err));
-  // served to other machines' browsers (magpie web), the address shown is
+  // served to other machines' browsers (pigeon web), the address shown is
   // the one they reach, MAGPIE_PUBLIC_URL's, not this computer's loopback
   // (#1551)
   const shown = web && g.publicURL || g.url;
@@ -254,7 +254,7 @@ const ai = new GoogleGenAI({
 const r = await ai.models.generateContent({ model: "${m}", contents: "hi" });
 console.log(r.text);`,
   },
-  // magpie's own System One API (ARNO on Discord: gateway添加system one
+  // pigeon's own System One API (ARNO on Discord: gateway添加system one
   // api 有想法吗): a decision model — Jev, Clef, Bailian's — answers typed
   // questions about a state; no SDK speaks it, so no shell variables
   systemone: {
@@ -299,7 +299,7 @@ console.log(a.choice, a.confidence);`,
 // as plain curl there is Invoke-WebRequest; the body goes in on stdin,
 // since Windows PowerShell drops the quotes inside an argument), or a POSIX
 // shell (bash, zsh) on macOS and Linux. They start as the shell of the
-// machine magpie runs on, and can be switched to the other: a Windows
+// machine pigeon runs on, and can be switched to the other: a Windows
 // desktop's user often runs them on a Linux server over ssh (FourLeafTec,
 // #1514). The choice is kept with the snippet language.
 const WIN = /^Win/.test(navigator.platform);
@@ -403,7 +403,7 @@ function renderConnect() {
     queueMicrotask(() => selectConnectKey(keys[0].id));
   }
   const key = keys.find((k) => k.id === connectKeyID);
-  const secret = key ? (connectSecret?.id === key.id ? connectSecret.secret : "") : remote ? "" : "magpie";
+  const secret = key ? (connectSecret?.id === key.id ? connectSecret.secret : "") : remote ? "" : "pigeon";
   const base = f.base(connectURL);
   const fold = $("#foldConnect");
   fold.setAttribute("aria-expanded", String(!connectFolded));
@@ -430,17 +430,17 @@ function renderConnect() {
   const options = keys.map((k) => ({ v: k.id, name: k.name, literalName: true, note: k.masked }));
   if (!remote) options.unshift({ v: "", name: "This computer", note: t("Any key · no key attribution") });
   const keyLabel = remote || key ? "Gateway key" : "API key";
-  if (!g.lan) k.append(el("code", "", "magpie"));
+  if (!g.lan) k.append(el("code", "", "pigeon"));
   else if (options.length) k.append(connectPick("connectKey", keyLabel, key ? key.name : remote ? t("Choose a gateway key") : t("This computer"),
     options, connectKeyID, (id) => { connectKeyWant = id; keepPick("magpie.connectKey", id); selectConnectKey(id); }));
   else k.append(el("code", "", t("Create a gateway key above to connect")));
   if (key) k.append(copyCallerKeyBtn(key));
-  else if (!remote) k.append(copyBtn("magpie", t("Key")));
+  else if (!remote) k.append(copyBtn("pigeon", t("Key")));
   box.append(...field(t(keyLabel), k, !f.keyEnv ? t(g.lan && (remote || gatewayKeys?.length)
     ? "Choose a gateway key to send as Authorization: Bearer; usage is tracked by key."
     : "Sent as Authorization: Bearer. The gateway trusts everything on loopback, so any value works.") : t(g.lan && (remote || gatewayKeys?.length)
     ? "Choose a gateway key to use as {env}; usage is tracked by key."
-    : "{env}=magpie. The gateway trusts everything on loopback, so any value works.", { env: f.keyEnv })));
+    : "{env}=pigeon. The gateway trusts everything on loopback, so any value works.", { env: f.keyEnv })));
 
   const m = el("div", "val");
   m.append(el("code", "", model), copyBtn(model, t("Model id")));
@@ -478,7 +478,7 @@ function renderConnect() {
   wrap.append(pre);
   if (secret) wrap.append(copyBtn(code, t("Snippet")));
   ex.append(wrap);
-  box.append(...field(t("Example"), ex, snipLang === "shell" ? t("Put these in the shell (or the tool's settings) and the tool talks to magpie instead of the vendor.") : ""));
+  box.append(...field(t("Example"), ex, snipLang === "shell" ? t("Put these in the shell (or the tool's settings) and the tool talks to pigeon instead of the vendor.") : ""));
 }
 
 let modelQuery = "";
@@ -575,7 +575,7 @@ function renderActivity() {
   const kept = new Map();
   for (const item of box.querySelectorAll(".call-item[data-id]")) kept.set(item.dataset.id, [...item.querySelectorAll("pre")].map((p) => p.scrollTop));
   box.replaceChildren();
-  $("#callsNote").textContent = g.running && !g.mine ? t("shown by the magpie that serves the gateway") : "";
+  $("#callsNote").textContent = g.running && !g.mine ? t("shown by the pigeon that serves the gateway") : "";
   const calls = g.calls.slice(0, callsShown);
   if (!calls.length) { box.append(el("div", "none", t("No requests yet. Point an agent at a model, or run the example above; every call shows up here as it happens."))); return; }
   for (const c of calls) {

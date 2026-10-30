@@ -3,7 +3,7 @@ package stats
 import (
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // The tests run in a home of their own, never the user's real files.

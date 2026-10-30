@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/filememo"
 )
 
 // newProcess is what a magpie run from a terminal starts with: nothing

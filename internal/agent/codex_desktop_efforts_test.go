@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #310: the Codex app's model picker offers only the efforts in its
@@ -54,7 +54,7 @@ func TestCodexDesktopEfforts(t *testing.T) {
 		}
 		// again: nothing missing, nothing written
 		before, _ := os.Stat(filepath.Join(home, ".codex", "config.toml"))
-		if err := codexEnableEfforts(filepath.Join(home, ".codex", "config.toml"), magpieModels("codex")); err != nil {
+		if err := codexEnableEfforts(filepath.Join(home, ".codex", "config.toml"), pigeonModels("codex")); err != nil {
 			t.Fatal(err)
 		}
 		if after, _ := os.Stat(filepath.Join(home, ".codex", "config.toml")); !after.ModTime().Equal(before.ModTime()) || read() != cfg {
@@ -124,7 +124,7 @@ func TestCodexDesktopEffortsFollowTheCatalog(t *testing.T) {
 	if err := provider.SaveGroup(provider.Group{ID: "normal", Name: "普通性能", Members: []string{"volc/glm-5.3", "volc/deepseek-v4"}}); err != nil {
 		t.Fatal(err)
 	}
-	if e := catalog.Efforts(magpieModels("codex"), "group/normal"); strings.Join(e, ",") != "high,max" {
+	if e := catalog.Efforts(pigeonModels("codex"), "group/normal"); strings.Join(e, ",") != "high,max" {
 		t.Fatalf("group levels %v", e)
 	}
 	if err := cx.Sync(); err != nil {

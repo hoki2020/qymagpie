@@ -10,12 +10,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/lastgood"
-	"github.com/yetone/magpie/internal/library"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/lastgood"
+	"github.com/hoki2020/pigeon/internal/library"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Profile is every agent's fields, and the library's setup.
@@ -27,7 +27,7 @@ type Profile struct {
 	// or before profiles kept it, which leaves the library as it is.
 	Library *library.Setup
 	// Models are the agents' model lists (#1368), by the id their lists are
-	// kept under (agent.ListsFor): which of magpie's models each shows and
+	// kept under (agent.ListsFor): which of pigeon's models each shows and
 	// in what order. An agent not named, every one in a profile saved
 	// before profiles kept them, keeps the list it has.
 	Models map[string]provider.ModelList

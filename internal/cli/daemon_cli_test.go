@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // magpie daemon: status before an install says how to install; start
@@ -164,7 +164,7 @@ func TestDaemonStatusPrintsPage(t *testing.T) {
 func TestServeArgs(t *testing.T) {
 	helpHome(t)
 	for _, args := range [][]string{{"serve", "--lan"}, {"serve", "--web=3430"}, {"serve", "web"}} {
-		if _, err := runOut(t, args...); err == nil || !strings.Contains(err.Error(), "magpie serve") {
+		if _, err := runOut(t, args...); err == nil || !strings.Contains(err.Error(), "pigeon serve") {
 			t.Errorf("%q: %v", args, err)
 		}
 	}

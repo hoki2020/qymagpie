@@ -5,11 +5,11 @@ package agent
 // Python kimi-cli's in ~/.kimi ($KIMI_SHARE_DIR), in the same shape (see
 // KimiDir): the model sessions start with as default_model, a key
 // of its [models."<key>"] tables, each naming a [providers.<name>] table and
-// the model to ask it for. magpie adds itself as the provider "magpie" (the
+// the model to ask it for. pigeon adds itself as the provider "pigeon" (the
 // gateway, spoken to as Kimi's own chat completions, so the thinking goes
 // both ways as reasoning_content) and one model table per catalog model,
 // keyed "magpie/<provider>/<model>", so the catalog joins Kimi's /model
-// picker. The default the user had is stashed and put back when magpie steps
+// picker. The default the user had is stashed and put back when pigeon steps
 // out. Kimi refuses a config whose default_model or a model's provider is
 // missing, so the provider goes in before the models and the default after,
 // and out the other way round.
@@ -21,13 +21,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
-// kimiModelTable is the header prefix of every model table magpie writes.
-var kimiModelTable = `models."` + magpieID + "/"
+// kimiModelTable is the header prefix of every model table pigeon writes.
+var kimiModelTable = `models."` + pigeonID + "/"
 
-// kimiContext is what Kimi is told of a model whose context magpie doesn't
+// kimiContext is what Kimi is told of a model whose context pigeon doesn't
 // know: it has to be told one, and compacts as it nears it.
 const kimiContext = 128000
 
@@ -58,16 +58,16 @@ func kimiDir(at place) (dir string, legacy bool) {
 	return code, false
 }
 
-// kimiModelTables are magpie's model tables; the new Kimi Code is told of
+// kimiModelTables are pigeon's model tables; the new Kimi Code is told of
 // tool calling too, which kimi-cli has no word for and refuses. wrote is
-// what magpie wrote in them last (kimiOwn), and the tables come back with
+// what pigeon wrote in them last (kimiOwn), and the tables come back with
 // what this write puts there.
 func kimiModelTables(path string, legacy bool, wrote map[string]map[string]string) ([]edit.Table, map[string]map[string]string) {
 	var out []edit.Table
 	now := map[string]map[string]string{}
 	names, _ := edit.TOMLTables(path)
-	for _, m := range magpieModels("kimi") {
-		name := "models." + strconv.Quote(magpieID+"/"+m.ID)
+	for _, m := range pigeonModels("kimi") {
+		name := "models." + strconv.Quote(pigeonID+"/"+m.ID)
 		ctx := m.Context
 		if ctx <= 0 {
 			ctx = kimiContext
@@ -77,7 +77,7 @@ func kimiModelTables(path string, legacy bool, wrote map[string]map[string]strin
 			was, _ = edit.GetTOMLTable(path, name)
 		}
 		kvs := []edit.KV{
-			{Path: "provider", Value: magpieID},
+			{Path: "provider", Value: pigeonID},
 			{Path: "model", Value: m.ID},
 			{Path: "max_context_size", Value: ctx},
 		}
@@ -108,7 +108,7 @@ func kimiModelTables(path string, legacy bool, wrote map[string]map[string]strin
 		}
 		if !legacy {
 			// the new Kimi Code's cap on a reply (max_completion_tokens),
-			// where magpie knows the model's; kimi-cli has no such key
+			// where pigeon knows the model's; kimi-cli has no such key
 			if was["max_output_size"] != "" && !kimiInt(was["max_output_size"]) {
 				delete(was, "max_output_size")
 			}
@@ -130,9 +130,9 @@ func kimiModelTables(path string, legacy bool, wrote map[string]map[string]strin
 	return out, now
 }
 
-// kimiOwn is the value of key in one of magpie's model tables: one the user
-// set there themselves (was, other than what magpie wrote last) stays,
-// else magpie's own (mine, "" for none), and by says it is magpie's.
+// kimiOwn is the value of key in one of pigeon's model tables: one the user
+// set there themselves (was, other than what pigeon wrote last) stays,
+// else pigeon's own (mine, "" for none), and by says it is pigeon's.
 func kimiOwn(was, wrote map[string]string, key, mine string) (v string, by bool) {
 	if v, ok := was[key]; ok && v != "" && v != wrote[key] {
 		return v, false
@@ -154,7 +154,7 @@ func setWrote(m map[string]map[string]string, table, key, v string) {
 	m[table][key] = v
 }
 
-// kimiWroteKey is where the stash keeps what magpie last wrote in its model
+// kimiWroteKey is where the stash keeps what pigeon last wrote in its model
 // tables of the config at path, as JSON: {table: {key: value}}.
 func kimiWroteKey(path string) string { return "kimi:" + path + ":wrote" }
 
@@ -197,7 +197,7 @@ func kimiEfforts(efforts []string, was string) []edit.KV {
 
 func kimi(home string) *Agent { return kimiIn(here(home)) }
 
-// kimiProvider writes magpie's keys into its provider table, each in place
+// kimiProvider writes pigeon's keys into its provider table, each in place
 // when the table is there, so the rest of it stays: custom_headers, env or a
 // default_model the user set on it (Kimi Code's ProviderConfig,
 // packages/agent-core-v2/src/app/kosongConfig/configSection.ts), which a
@@ -221,8 +221,8 @@ func kimiIn(at place) *Agent {
 	path := filepath.Join(dir, "config.toml")
 	key := "kimi:" + path + ":default_model"
 	get := func() string { v, _ := edit.GetTOMLTop(path, "default_model"); return v }
-	providerTable := "providers." + magpieID
-	writeMagpie := func() error {
+	providerTable := "providers." + pigeonID
+	writePigeon := func() error {
 		if err := kimiProvider(path, providerTable,
 			edit.KV{Path: "type", Value: "kimi"},
 			edit.KV{Path: "base_url", Value: at.v1()},
@@ -238,7 +238,7 @@ func kimiIn(at place) *Agent {
 		stash(map[string]string{kimiWroteKey(path): string(b)})
 		return nil
 	}
-	dropMagpie := func() error {
+	dropPigeon := func() error {
 		if err := edit.SetTOMLTables(path, []string{kimiModelTable}, nil); err != nil {
 			return err
 		}
@@ -266,7 +266,7 @@ func kimiIn(at place) *Agent {
 			if err != nil || t == nil {
 				return err
 			}
-			return writeMagpie()
+			return writePigeon()
 		},
 		Notice: func() string {
 			if Running(`(^|/)kimi( |$)`, `(^|/)kimi-cli( |$)`) {
@@ -276,7 +276,7 @@ func kimiIn(at place) *Agent {
 		},
 		Check: func() string {
 			v := get()
-			if !usesMagpie(v) {
+			if !usesPigeon(v) {
 				return ""
 			}
 			m, err := kimiModelTableForKey(path, v)
@@ -284,14 +284,14 @@ func kimiIn(at place) *Agent {
 				return err.Error()
 			}
 			if m == nil {
-				return "Kimi Code's [models." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Kimi Code's [models." + strconv.Quote(v) + "] (config.toml) is gone, so it no longer reaches pigeon"
 			}
 			t, err := edit.GetTOMLTable(path, providerTable)
 			if err != nil {
 				return err.Error()
 			}
 			if t == nil {
-				return "Kimi Code's [" + providerTable + "] (config.toml) is gone, so it no longer reaches magpie"
+				return "Kimi Code's [" + providerTable + "] (config.toml) is gone, so it no longer reaches pigeon"
 			}
 			return wiringOff("Kimi Code", path, func(k string) (string, bool) { v, ok := t[k]; return v, ok },
 				"base_url", at.v1(), "api_key", at.gwKey())
@@ -301,28 +301,28 @@ func kimiIn(at place) *Agent {
 			Get: get,
 			Set: func(v string) error {
 				cur := get()
-				if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
-					if !usesMagpie(cur) {
+				if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok && isPigeon(ref) {
+					if !usesPigeon(cur) {
 						stash(map[string]string{key: cur})
 					}
-					if err := writeMagpie(); err != nil {
+					if err := writePigeon(); err != nil {
 						return err
 					}
 					return setDefault(v)
 				}
-				if v == "" && usesMagpie(cur) {
+				if v == "" && usesPigeon(cur) {
 					// back to the default the user had, if Kimi still has it
-					if was := unstash(key); was != "" && !usesMagpie(was) && ownModel(was) {
+					if was := unstash(key); was != "" && !usesPigeon(was) && ownModel(was) {
 						v = was
 					}
 				}
 				if err := setDefault(v); err != nil {
 					return err
 				}
-				return dropMagpie()
+				return dropPigeon()
 			},
 			Options: func(cur map[string]string) []Option {
-				return append(kimiOwnOptions(path, cur["model"]), viaMagpie("kimi", magpieID+"/")...)
+				return append(kimiOwnOptions(path, cur["model"]), viaPigeon("kimi", pigeonID+"/")...)
 			},
 		}},
 	}, path)
@@ -339,7 +339,7 @@ func kimiOwnOptions(path, cur string) []Option {
 		if !ok {
 			continue
 		}
-		if seen[k] || strings.HasPrefix(k, magpieID+"/") {
+		if seen[k] || strings.HasPrefix(k, pigeonID+"/") {
 			continue
 		}
 		seen[k] = true
@@ -350,7 +350,7 @@ func kimiOwnOptions(path, cur string) []Option {
 		}
 		out = append(out, Option{Value: k, Icon: icon})
 	}
-	if cur != "" && !seen[cur] && !strings.HasPrefix(cur, magpieID+"/") {
+	if cur != "" && !seen[cur] && !strings.HasPrefix(cur, pigeonID+"/") {
 		out = append([]Option{{Value: cur, Icon: modelIcon("", cur)}}, out...)
 	}
 	return group("Kimi Code", out)

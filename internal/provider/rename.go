@@ -10,12 +10,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Rename gives a provider another id, the one its models are picked by
-// (<id>/<model>). What magpie keeps that names it by id follows: the
+// (<id>/<model>). What pigeon keeps that names it by id follows: the
 // routing groups it is in and their rules and classifiers, the other
 // providers' fallbacks, which agents are shown it, and its StepFun sign-in. The old id stays
 // with it (Was), so an agent still running on a config that names it the
@@ -47,7 +47,7 @@ func Rename(from, to string) error {
 	}
 	switch {
 	case to == "magpie":
-		return errors.New(`"magpie" is what agents call the gateway itself; pick another id`)
+		return errors.New(`"magpie" is the id agents know the gateway by; pick another id`)
 	case to == strings.TrimSuffix(GroupPrefix, "/"):
 		return errors.New(`"group" starts the ids of routing groups; pick another id`)
 	case to == autoID:

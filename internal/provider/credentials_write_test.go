@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/steady"
+	"github.com/hoki2020/pigeon/internal/steady"
 )
 
 // fakeCodexRefresh answers a refresh with a fresh access token and the

@@ -4,7 +4,7 @@ package provider
 // on days 4 and 7): MiniMax Code is served only by its community plugin,
 // @magpie-community/opencode-minimax-auth (provider "minimax-code", the
 // China site, and "minimax-code-global", the international one; no
-// built-in, no mover). While the setting is on, whichever magpie runs the
+// built-in, no mover). While the setting is on, whichever pigeon runs the
 // gateway presses it for each of the plugin's accounts once a Beijing day,
 // as MiniMax Code's web page does: it asks the check-in's panel on the
 // account's site (agent.minimax.cn, agent.minimax.io), and claims while
@@ -37,8 +37,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // MiniMaxCodeID is the MiniMax Code plugin's provider (the China site),
@@ -214,7 +214,7 @@ func miniMaxCall(ctx context.Context, a miniMaxAccount, method, path string, dst
 	}
 	defer res.Body.Close()
 	b, _ := io.ReadAll(io.LimitReader(res.Body, 1<<20))
-	if strings.EqualFold(res.Header.Get("X-Magpie-Sign-In"), "expired") || res.StatusCode == http.StatusUnauthorized {
+	if strings.EqualFold(res.Header.Get("X-Pigeon-Sign-In"), "expired") || res.StatusCode == http.StatusUnauthorized {
 		return errors.New("MiniMax Code's sign-in has expired — sign in again")
 	}
 	if err := json.Unmarshal(b, dst); err != nil || res.StatusCode < 200 || res.StatusCode >= 300 {

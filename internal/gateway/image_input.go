@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 const imageOmitted = "[Image omitted: this model accepts text only.]"

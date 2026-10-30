@@ -1,11 +1,11 @@
 package cli
 
-// magpie cpu: a Go CPU profile of the running magpie, recorded for some
-// seconds while the user goes on using it, for a report of magpie using
+// pigeon cpu: a Go CPU profile of the running pigeon, recorded for some
+// seconds while the user goes on using it, for a report of pigeon using
 // too much CPU (@LeiCheng42 on X, while Codex runs). Activity Monitor and
 // a macOS `sample` show Go's frames as ???, so the profile is asked of the
 // process itself, through the gateway it serves on this computer
-// (gateway.CPUPath, loopback only, as magpie heap's).
+// (gateway.CPUPath, loopback only, as pigeon heap's).
 
 import (
 	"bytes"
@@ -21,24 +21,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
-const cpuUsage = `usage: magpie cpu [<file>] [--seconds N]
-  records a Go CPU profile of the magpie serving the gateway on this computer (the app,
-  the menu bar, magpie serve or magpie web) for 30 seconds, or N from 5 to 120, for a
-  report of magpie using too much CPU. While it records, use magpie as you do when it is
+const cpuUsage = `usage: pigeon cpu [<file>] [--seconds N]
+  records a Go CPU profile of the pigeon serving the gateway on this computer (the app,
+  the menu bar, pigeon serve or pigeon web) for 30 seconds, or N from 5 to 120, for a
+  report of pigeon using too much CPU. While it records, use pigeon as you do when it is
   busy: run Codex or whichever agent it was. The profile is written to <file>, else to
-  magpie-cpu-<date>-<time>.pb.gz in this folder, and never over a file that is there.
-  magpie then prints the file, the CPU time the process used while recording and its
+  pigeon-cpu-<date>-<time>.pb.gz in this folder, and never over a file that is there.
+  pigeon then prints the file, the CPU time the process used while recording and its
   goroutines: send both. The profile holds where the time went (function names, source
-  lines) and the path of the magpie program, not keys or messages; go tool pprof <file>
+  lines) and the path of the pigeon program, not keys or messages; go tool pprof <file>
   reads it. It asks the gateway at the port in Settings' Gateway address (or MAGPIE_ADDR) over loopback.`
 
-// cpuArgs reads magpie cpu's arguments: the file, "" for the default, and
+// cpuArgs reads pigeon cpu's arguments: the file, "" for the default, and
 // the seconds to record.
 func cpuArgs(args []string) (file string, secs int, err error) {
-	const form = "(magpie cpu [<file>] [--seconds N])"
+	const form = "(pigeon cpu [<file>] [--seconds N])"
 	secs = gateway.CPUSeconds
 	seen := false
 	setSecs := func(v string) error {
@@ -72,7 +72,7 @@ func cpuArgs(args []string) (file string, secs int, err error) {
 		case a == "-" || strings.TrimSpace(a) == "":
 			return "", 0, fmt.Errorf("%q is not a file name: nothing was recorded %s", a, form)
 		case file != "":
-			return "", 0, fmt.Errorf("magpie cpu takes one file: nothing was recorded %s", form)
+			return "", 0, fmt.Errorf("pigeon cpu takes one file: nothing was recorded %s", form)
 		default:
 			file = a
 		}
@@ -80,25 +80,25 @@ func cpuArgs(args []string) (file string, secs int, err error) {
 	return file, secs, nil
 }
 
-// cpuCmd: magpie cpu [<file>] [--seconds N]
+// cpuCmd: pigeon cpu [<file>] [--seconds N]
 func cpuCmd(args []string) error {
 	file, secs, err := cpuArgs(args)
 	if err != nil {
 		return err
 	}
 	if file == "" {
-		file = "magpie-cpu-" + time.Now().Format("20060102-150405") + ".pb.gz"
+		file = "pigeon-cpu-" + time.Now().Format("20060102-150405") + ".pb.gz"
 	}
 	// before the seconds of recording, not after them: the file is
 	// opened without writing over one again once the profile is here
 	if _, err := os.Lstat(file); err == nil {
-		return fmt.Errorf("%s is there already: name another file (magpie cpu <file>)", file)
+		return fmt.Errorf("%s is there already: name another file (pigeon cpu <file>)", file)
 	}
 	base := gateway.URL()
-	if err := pingMagpie(base); err != nil {
+	if err := pingPigeon(base); err != nil {
 		return err
 	}
-	fmt.Printf("%s magpie's CPU for %ds, until %s. Use magpie as you do when it is busy (run Codex) until then.\n",
+	fmt.Printf("%s pigeon's CPU for %ds, until %s. Use pigeon as you do when it is busy (run Codex) until then.\n",
 		green.Render("Recording"), secs, time.Now().Add(time.Duration(secs)*time.Second).Format("15:04:05"))
 	prof, stats, err := fetchCPU(base, secs)
 	if err != nil {
@@ -107,7 +107,7 @@ func cpuCmd(args []string) error {
 	f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
 		if errors.Is(err, os.ErrExist) {
-			return fmt.Errorf("%s is there already: name another file (magpie cpu <file>)", file)
+			return fmt.Errorf("%s is there already: name another file (pigeon cpu <file>)", file)
 		}
 		return err
 	}
@@ -129,13 +129,13 @@ func cpuCmd(args []string) error {
 	return nil
 }
 
-// pingMagpie checks that a magpie answers at base before the seconds of
+// pingPigeon checks that a pigeon answers at base before the seconds of
 // recording are waited out.
-func pingMagpie(base string) error {
+func pingPigeon(base string) error {
 	c := &http.Client{Timeout: 5 * time.Second}
 	res, err := c.Get(base + "/")
 	if err != nil {
-		return fmt.Errorf("no magpie answers at %s, so there is nothing to profile: is magpie running? (%v)", base, err)
+		return fmt.Errorf("no pigeon answers at %s, so there is nothing to profile: is pigeon running? (%v)", base, err)
 	}
 	defer res.Body.Close()
 	io.Copy(io.Discard, io.LimitReader(res.Body, 4096))
@@ -150,7 +150,7 @@ func fetchCPU(base string, secs int) ([]byte, gateway.CPUStats, error) {
 	c := &http.Client{Timeout: time.Duration(secs)*time.Second + 2*time.Minute}
 	res, err := c.Get(base + gateway.CPUPath + "?seconds=" + url.QueryEscape(strconv.Itoa(secs)))
 	if err != nil {
-		return nil, st, fmt.Errorf("no magpie answers at %s, so there is nothing to profile: is magpie running? (%v)", base, err)
+		return nil, st, fmt.Errorf("no pigeon answers at %s, so there is nothing to profile: is pigeon running? (%v)", base, err)
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
@@ -158,7 +158,7 @@ func fetchCPU(base string, secs int) ([]byte, gateway.CPUStats, error) {
 		return nil, st, fmt.Errorf("the profile from %s was cut off: %w", base, err)
 	}
 	if res.StatusCode == http.StatusNotFound {
-		return nil, st, fmt.Errorf("the magpie at %s is older than this one and has no CPU profile: update it, then run magpie cpu again", base)
+		return nil, st, fmt.Errorf("the pigeon at %s is older than this one and has no CPU profile: update it, then run pigeon cpu again", base)
 	}
 	if res.StatusCode != http.StatusOK {
 		var e struct {
@@ -170,25 +170,25 @@ func fetchCPU(base string, secs int) ([]byte, gateway.CPUStats, error) {
 		if json.Unmarshal(body, &e) == nil && e.Error.Message != "" {
 			msg = e.Error.Message
 		}
-		return nil, st, fmt.Errorf("the magpie at %s answered %s: %s", base, res.Status, msg)
+		return nil, st, fmt.Errorf("the pigeon at %s answered %s: %s", base, res.Status, msg)
 	}
 	if !bytes.HasPrefix(body, []byte{0x1f, 0x8b}) {
-		return nil, st, fmt.Errorf("what %s answered is not a CPU profile (%d bytes): is it magpie?", base, len(body))
+		return nil, st, fmt.Errorf("what %s answered is not a CPU profile (%d bytes): is it pigeon?", base, len(body))
 	}
 	if err := json.Unmarshal([]byte(res.Header.Get(gateway.CPUStatsHeader)), &st); err != nil {
-		return nil, st, fmt.Errorf("the magpie at %s sent no CPU numbers with its profile: %v", base, err)
+		return nil, st, fmt.Errorf("the pigeon at %s sent no CPU numbers with its profile: %v", base, err)
 	}
 	return body, st, nil
 }
 
-// cpuSummary is the lines magpie cpu prints of st.
+// cpuSummary is the lines pigeon cpu prints of st.
 func cpuSummary(st gateway.CPUStats) string {
 	var b strings.Builder
 	who := st.Program
 	if st.Window {
 		who += ", with a window"
 	}
-	fmt.Fprintf(&b, "  process     %d (%s) magpie %s, up %s\n", st.PID, who, st.Version, st.Uptime)
+	fmt.Fprintf(&b, "  process     %d (%s) pigeon %s, up %s\n", st.PID, who, st.Version, st.Uptime)
 	if st.CPUKnown && st.Seconds > 0 {
 		fmt.Fprintf(&b, "  CPU         %.2fs in the %.1fs recorded (%.0f%% of one core)\n", st.CPU, st.Seconds, 100*st.CPU/st.Seconds)
 		fmt.Fprintf(&b, "  CPU total   %.1fs since it started\n", st.CPUTotal)

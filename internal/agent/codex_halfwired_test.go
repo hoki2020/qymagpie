@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Tystem on Discord: Codex wouldn't load its config ("Model provider
@@ -60,7 +60,7 @@ func TestCodexSteppingOutLeavesNoHalfState(t *testing.T) {
 			if err := tc.out(cx); err != nil {
 				t.Fatal(err)
 			}
-			if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p == magpieID {
+			if p, _ := edit.GetTOMLTop(cx.Path, "model_provider"); p == pigeonID {
 				t.Fatalf("model_provider left:\n%s", read())
 			}
 			if tb, _ := edit.GetTOMLTable(cx.Path, "model_providers.magpie"); tb == nil {

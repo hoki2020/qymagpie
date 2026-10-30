@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
 )
 
 // zooCodeHere is Zoo Code in a VS Code User folder under home, the
@@ -98,7 +98,7 @@ func TestZooCode(t *testing.T) {
 	// the key in the file written over: Sync writes it again, as Zoo Code
 	// reads the file on each start
 	writeFile(t, file, strings.ReplaceAll(readFile(file), agentKey("zoo-code"), "stale"))
-	if c := a.Check(); !strings.Contains(c, "magpie-import.json") {
+	if c := a.Check(); !strings.Contains(c, "pigeon-import.json") {
 		t.Fatalf("check: %q", c)
 	}
 	if err := a.Sync(); err != nil {

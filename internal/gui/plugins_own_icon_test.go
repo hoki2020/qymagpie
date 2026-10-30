@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // #1775 (peterroe): a plugin of several providers gives each its own
@@ -31,7 +31,7 @@ func TestPluginsStateGivesThePluginsOwnIcon(t *testing.T) {
 		}
 		pj := map[string]any{"name": name, "version": "1.0.0", "main": "index.js"}
 		if icon != "" {
-			pj["magpie"] = map[string]any{"icon": icon}
+			pj["pigeon"] = map[string]any{"icon": icon}
 		}
 		b, _ := json.Marshal(pj)
 		if err := os.WriteFile(filepath.Join(d, "package.json"), b, 0o644); err != nil {

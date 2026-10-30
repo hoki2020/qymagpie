@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Sharing gates remote access; each authorized remote call carries the same
@@ -344,7 +344,7 @@ func TestNetworkGatewayGuardsEveryRoute(t *testing.T) {
 		{"POST", "/v1/embeddings"}, {"POST", "/v1/rerank"},
 		{"POST", "/v1/audio/transcriptions"}, {"POST", "/v1/audio/translations"},
 		{"POST", "/v1/videos"}, {"GET", "/v1/videos/v1"}, {"GET", "/v1/videos/v1/content"},
-		{"POST", "/_magpie/claude-mcp/tok"}, {"POST", "/mcp/neon"},
+		{"POST", "/_pigeon/claude-mcp/tok"}, {"POST", "/mcp/neon"},
 		{"POST", CodexPath + "/responses"}, {"GET", CodexCatalogPath},
 		{"GET", "/v1beta/models"}, {"POST", "/v1beta/models/m:generateContent"},
 		{"GET", "/nowhere"},

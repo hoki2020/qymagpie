@@ -12,11 +12,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/services/notifications"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
 )
 
 // notifier is the system's notifications, started the first time an alert
@@ -92,10 +92,10 @@ func (n *notifier) problem() string {
 }
 
 // turnNotice is the id a turn's end is notified under, an alert's
-// "magpie-alert-"
-const turnNotice = "magpie-turn-"
+// "pigeon-alert-"
+const turnNotice = "pigeon-turn-"
 
-func (n *notifier) send(title, body string) { n.sendAs("magpie-alert-", title, body) }
+func (n *notifier) send(title, body string) { n.sendAs("pigeon-alert-", title, body) }
 
 func (n *notifier) sendAs(kind, title, body string) {
 	if !n.allowed() {
@@ -120,7 +120,7 @@ func (n *notifier) sendAs(kind, title, body string) {
 const linuxClick = "default"
 
 var clickCategory = notifications.NotificationCategory{
-	ID:      "magpie-click",
+	ID:      "pigeon-click",
 	Actions: []notifications.NotificationAction{{ID: linuxClick, Title: "Open"}},
 }
 
@@ -135,7 +135,7 @@ func notice(goos, id, title, body string) notifications.NotificationOptions {
 
 // opensUsage says whether a response to a notification opens the Usage
 // page: a click on an alert does. On a turn's end, where the user goes is
-// their agent, not magpie. On Linux only a click (linuxClick) is one: an
+// their agent, not pigeon. On Linux only a click (linuxClick) is one: an
 // alert dismissed there opened the main window, maximised if it was left
 // so, over the desktop with the focus (#2513).
 func opensUsage(goos string, r notifications.NotificationResponse) bool {

@@ -24,7 +24,7 @@ func (launchd) file() string {
 	return filepath.Join(home(), "Library", "LaunchAgents", Label+".plist")
 }
 
-func logFile() string { return filepath.Join(home(), "Library", "Logs", "magpie", "serve.log") }
+func logFile() string { return filepath.Join(home(), "Library", "Logs", "pigeon", "serve.log") }
 
 func (launchd) logs() string { return "tail -f " + strconv.Quote(logFile()) }
 
@@ -37,7 +37,7 @@ func plist(exe string, args, env []string) string {
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Written by magpie daemon install; magpie daemon uninstall removes it. -->
+<!-- Written by pigeon daemon install; pigeon daemon uninstall removes it. -->
 <plist version="1.0">
 <dict>
 	<key>Label</key>` + s(Label) + `

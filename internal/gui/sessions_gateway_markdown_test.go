@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
-// akic404 on Discord: a magpie on a server that other magpies reach as a
+// akic404 on Discord: a magpie on a server that other pigeons reach as a
 // remote magpie records their agents' conversations, and the Sessions page
 // shows them, but its download of one as Markdown was a 400: the agent ran
 // on the other machine, so there is no file of the session here, and the

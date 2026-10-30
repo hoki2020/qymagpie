@@ -5,20 +5,20 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/middleware"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/gwmw"
+	"github.com/hoki2020/pigeon/internal/middleware"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // serveAgent is serve for a request an agent sent: the agent middleware
 // of the gateway's middleware point (gwmw.Agents: the JS gateway middleware
 // plugins, internal/middleware, while plugins/middleware is on) see its
 // body first, and its reply on the way back, in the agent's own API.
-// magpie's own requests through serve (titles, the router's classifier,
+// pigeon's own requests through serve (titles, the router's classifier,
 // search and vision stand-ins) go without them, as their replies are
-// magpie's to read.
+// pigeon's to read.
 func (s *Server) serveAgent(w http.ResponseWriter, r *http.Request, from provider.Protocol, body []byte) {
 	withGatewaySession(w, r)
 	w, recorded := recordConversation(w, r, from, body)

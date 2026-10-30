@@ -97,7 +97,7 @@ async function open(engine, lang, width, agent, t) {
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("dialog", (d) => { errors.push("a browser dialog: " + d.message()); d.dismiss(); });
   const calls = [];
-  await page.addInitScript((a) => { localStorage.setItem("magpie.sessionsAgent", a); }, agent);
+  await page.addInitScript((a) => { localStorage.setItem("pigeon.sessionsAgent", a); }, agent);
   await page.route("**/*", serve(lang, calls));
   await page.goto("http://magpie.test/?view=providers");
   await page.locator('#nav button[data-view="sessions"]').click();

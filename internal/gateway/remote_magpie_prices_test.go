@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // Sorghum on Discord: a magpie with another computer's magpie as its
@@ -46,7 +46,7 @@ func TestRemoteMagpiePrices(t *testing.T) {
 	}
 	gw := httptest.NewServer(lanGuard(New().Handler()))
 	t.Cleanup(gw.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "sk-magpie-office", Chat: strings.TrimPrefix(gw.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "sk-magpie-office", Chat: strings.TrimPrefix(gw.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +100,7 @@ func TestRemoteMagpiePrices(t *testing.T) {
 		io.WriteString(w, `{"object":"list","data":[{"id":"relay-a/house-model-1","object":"model","owned_by":"relay-a","display_name":"House Model","native_endpoints":["/v1/chat/completions"]}]}`)
 	}))
 	t.Cleanup(old.Close)
-	oid, err := provider.Add(provider.Provider{ID: "attic", Name: "Attic", Preset: provider.RemoteMagpiePreset, Key: "k", Chat: old.URL})
+	oid, err := provider.Add(provider.Provider{ID: "attic", Name: "Attic", Preset: provider.RemotePigeonPreset, Key: "k", Chat: old.URL})
 	if err != nil {
 		t.Fatal(err)
 	}

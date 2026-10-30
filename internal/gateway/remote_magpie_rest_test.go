@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // bigsteven on Discord: another computer's magpie (LAN share) serves each
@@ -40,7 +40,7 @@ func TestRemoteMagpieQuotaRestsTheModel(t *testing.T) {
 		io.WriteString(w, `{"id":"x","choices":[{"index":0,"message":{"role":"assistant","content":"from `+req.Model+`"},"finish_reason":"stop"}]}`)
 	}))
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "k",
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "k",
 		Chat: remote.URL + "/v1", Models: []string{"codex/gpt-5.5", "glm/glm-5", "kimi/kimi-k3"}}); err != nil {
 		t.Fatal(err)
 	}

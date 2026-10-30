@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // WuSix on Discord, codex/gpt-6-astra: "compaction: codex/gpt-6-astra
@@ -97,7 +97,7 @@ func TestCodexLiteCompactionOffersNoTools(t *testing.T) {
 		}
 	}
 	enc, _ := item["encrypted_content"].(string)
-	sum, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, magpieCompaction))
+	sum, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(enc, pigeonCompaction))
 	if item["type"] != "compaction" || string(sum) != "SUMMARY of the work" {
 		t.Errorf("compaction: %s", rec.Body.String())
 	}

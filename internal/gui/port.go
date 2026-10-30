@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yetone/magpie/internal/agent"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/agent"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // portJSON is what setting the gateway's port did: the port it is on, the
@@ -32,13 +32,13 @@ var portFree = func(addr string) error {
 	return ln.Close()
 }
 
-// magpieOnPort says whether a magpie program of this user's listens on
+// pigeonOnPort says whether a pigeon program of this user's listens on
 // port: the one serving the gateway is then this computer's, whose port is
 // set there. Not when the program listening is another one answering for
-// a magpie inside a container (OrbStack Helper, docker-proxy) or none this
+// a pigeon inside a container (OrbStack Helper, docker-proxy) or none this
 // user can see; when the processes can't be listed at all, it is taken to
 // be one.
-func magpieOnPort(port string) bool {
+func pigeonOnPort(port string) bool {
 	n, _ := strconv.Atoi(port)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -50,7 +50,7 @@ func magpieOnPort(port string) bool {
 		if pid == os.Getpid() {
 			continue
 		}
-		if path, err := proc.Executable(pid); err == nil && proc.IsMagpie(path) {
+		if path, err := proc.Executable(pid); err == nil && proc.IsPigeon(path) {
 			return true
 		}
 	}
@@ -65,11 +65,11 @@ func errPortTaken(p int) error {
 // setPort moves the gateway to port p (0 for the default) — the port in
 // Settings' Gateway address (Magic_zero on Discord: 3425 was taken, and a port of one's
 // own is easier to tell apart): it checks nothing listens there, saves it,
-// moves the gateway this magpie serves (or starts it, when the port it was
-// on was taken), and then every agent connected to magpie, whose configs
-// have the gateway's URL in them. A magpie of this computer's serving the
+// moves the gateway this pigeon serves (or starts it, when the port it was
+// on was taken), and then every agent connected to pigeon, whose configs
+// have the gateway's URL in them. A pigeon of this computer's serving the
 // gateway has it moved there; one out of this one's reach — in a container
-// (leslie_luo on Discord: an old magpie in OrbStack held 3425, so the port
+// (leslie_luo on Discord: an old pigeon in OrbStack held 3425, so the port
 // could be changed neither there nor here), another user's — is left on
 // its port, and this one serves on the new one.
 func setPort(p int) (portJSON, error) {
@@ -95,8 +95,8 @@ func setPort(p int) (portJSON, error) {
 		return portJSON{Port: want}, nil
 	}
 	gw := served.Load()
-	if gw == nil && gateway.Running() && magpieOnPort(gateway.Port()) {
-		return portJSON{}, fmt.Errorf("another magpie serves the gateway at %s: set its port there, or quit it first", gateway.URL())
+	if gw == nil && gateway.Running() && pigeonOnPort(gateway.Port()) {
+		return portJSON{}, fmt.Errorf("another pigeon serves the gateway at %s: set its port there, or quit it first", gateway.URL())
 	}
 	host := "127.0.0.1"
 	if cur.LAN {

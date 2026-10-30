@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/filememo"
-	"github.com/yetone/magpie/internal/plugin"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/filememo"
+	"github.com/hoki2020/pigeon/internal/plugin"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // A request that only reads builds the catalog once for all its look-ups
@@ -89,7 +89,7 @@ func TestHoldKeptForTheNextRequest(t *testing.T) {
 // What is held across requests is built again when anything it was built
 // from may have moved: a write that only tells filememo (settings.Save, an
 // account's file), the providers' or the settings' file written by
-// another process (the CLI's "magpie group add"), the groups served or
+// another process (the CLI's "pigeon group add"), the groups served or
 // not (GateGroups, ServeGroups), and the models.dev catalog read again.
 func TestHoldKeptUntilAWrite(t *testing.T) {
 	defer func(d time.Duration) { heldFor = d }(heldFor)
@@ -394,7 +394,7 @@ func TestHeldGroupsAreTheCallers(t *testing.T) {
 	}
 }
 
-// Pricing an agent's models (agent.magpieModels) asks All for each model,
+// Pricing an agent's models (agent.pigeonModels) asks All for each model,
 // under one Hold: settings.json is read with the providers, not once per
 // signed-in account per model. Asked for each account, a magpie at rest
 // parsed it hundreds of times on every drift look the GUI makes each 15s

@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // raceVendor is a vendor that spends a refresh token once (plugins

@@ -1,9 +1,9 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// An answer that is a proxy's own web page, not magpie's: magpie web behind
+// An answer that is a proxy's own web page, not pigeon's: pigeon web behind
 // Cloudflare, an install that outlasted its 100 seconds, and the toast
 // showed "<!DOCTYPE html> <!--[if lt IE 7]> <html class="no-js ie…"
 // (precisionz installing Zed, #2032). The page says a proxy answered, by
-// its title, and for a timeout that magpie may still be finishing; a
+// its title, and for a timeout that pigeon may still be finishing; a
 // plain-text error is still said as it came. English, Chinese, Japanese
 // and German; the API is faked here.
 const assert = require("node:assert/strict");
@@ -77,23 +77,23 @@ const bad = "magpie.example.com | 502: Bad gateway";
 const L = {
   en: {
     install: "Install",
-    timeout: `A proxy in front of magpie stopped waiting; magpie may still be finishing, check again in a minute (${what})`,
-    other: `A proxy in front of magpie answered, not magpie (${bad})`,
+    timeout: `A proxy in front of pigeon stopped waiting; pigeon may still be finishing, check again in a minute (${what})`,
+    other: `A proxy in front of pigeon answered, not pigeon (${bad})`,
   },
   zh: {
     install: "安装",
-    timeout: `magpie 前面的代理等不及先返回了；magpie 可能仍在处理，请过一分钟再看看（${what}）`,
-    other: `这是 magpie 前面的代理返回的，不是 magpie 的回应（${bad}）`,
+    timeout: `pigeon 前面的代理等不及先返回了；pigeon 可能仍在处理，请过一分钟再看看（${what}）`,
+    other: `这是 pigeon 前面的代理返回的，不是 pigeon 的回应（${bad}）`,
   },
   ja: {
     install: "インストール",
-    timeout: `magpie の前のプロキシが待ちきれずに応答しました。magpie はまだ処理中かもしれません。1 分ほどして確認してください（${what}）`,
-    other: `magpie ではなく、その前のプロキシからの応答です（${bad}）`,
+    timeout: `pigeon の前のプロキシが待ちきれずに応答しました。pigeon はまだ処理中かもしれません。1 分ほどして確認してください（${what}）`,
+    other: `pigeon ではなく、その前のプロキシからの応答です（${bad}）`,
   },
   de: {
     install: "Installieren",
-    timeout: `Ein Proxy vor magpie hat nicht länger gewartet; magpie arbeitet möglicherweise noch, prüfen Sie es in einer Minute erneut (${what})`,
-    other: `Ein Proxy vor magpie hat geantwortet, nicht magpie (${bad})`,
+    timeout: `Ein Proxy vor pigeon hat nicht länger gewartet; pigeon arbeitet möglicherweise noch, prüfen Sie es in einer Minute erneut (${what})`,
+    other: `Ein Proxy vor pigeon hat geantwortet, nicht pigeon (${bad})`,
   },
 };
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // kiroCrewUser is config.json as Kiro Crew's dashboard saves it: the
@@ -101,7 +101,7 @@ func TestKiroCrewConnect(t *testing.T) {
 	if v, _ := kiroCrewKey(t, a.Path, kiroCrewMember); v != "codex" {
 		t.Errorf("member_acp_backend %v", v)
 	}
-	if v := a.Values(); v["provider"] != magpieID || v["harness"] != "codex" {
+	if v := a.Values(); v["provider"] != pigeonID || v["harness"] != "codex" {
 		t.Errorf("values %v", v)
 	}
 	if n := a.Notice(); n != noticeKiroCrew.String() {
@@ -114,7 +114,7 @@ func TestKiroCrewConnect(t *testing.T) {
 	}
 	// connecting again changes nothing
 	b1, _ := os.ReadFile(a.Path)
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	if b2, _ := os.ReadFile(a.Path); string(b1) != string(b2) {
@@ -231,7 +231,7 @@ func TestKiroCrewHarnessPick(t *testing.T) {
 	if err := a.Pick("harness", "claude"); err != nil {
 		t.Fatal(err)
 	}
-	if v := a.Values(); v["provider"] != magpieID || v["harness"] != "claude" {
+	if v := a.Values(); v["provider"] != pigeonID || v["harness"] != "claude" {
 		t.Fatalf("values %v", v)
 	}
 	if v, _ := kiroCrewKey(t, a.Path, kiroCrewMember); v != "claude" {
@@ -476,7 +476,7 @@ func TestKiroCrewOnRealCodexWiring(t *testing.T) {
 	if _, err := a.ConnectHow(); err != nil {
 		t.Fatal(err)
 	}
-	if v := a.Values(); v["provider"] != magpieID || v["harness"] != "codex" {
+	if v := a.Values(); v["provider"] != pigeonID || v["harness"] != "codex" {
 		t.Errorf("values %v", v)
 	}
 	if err := cx.Disconnect(); err != nil {

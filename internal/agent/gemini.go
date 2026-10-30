@@ -5,18 +5,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/proc"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/proc"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Gemini CLI only speaks Google's own API, so "provider" here is how it
 // authenticates: Google sign-in, a Gemini API key, or Vertex AI. The choice
 // lives in settings.json (security.auth.selectedType). A Google provider
-// added in magpie lends its key through ~/.gemini/.env, which the CLI loads.
+// added in pigeon lends its key through ~/.gemini/.env, which the CLI loads.
 //
-// Any catalog model works too: the gateway serves the Gemini API, so magpie
+// Any catalog model works too: the gateway serves the Gemini API, so pigeon
 // points GOOGLE_GEMINI_BASE_URL at it, uses the gateway token as the API
 // key and names the catalog model in model.name.
 
@@ -35,13 +35,13 @@ func geminiIn(at place) *Agent {
 	envKey := func() string { v, _ := edit.GetEnvFile(envPath, "GEMINI_API_KEY"); return v }
 	// routed: the .env names the gateway, or names it at an address it
 	// no longer has (a WSL distro's under NAT changes as WSL restarts) with
-	// magpie's key: either way what is there is magpie's, never stashed as
+	// pigeon's key: either way what is there is pigeon's, never stashed as
 	// the user's own
 	routed := func() bool {
 		b, k := base(), envKey()
 		return b == at.gw() || b != "" && (ourKey(k) || k == at.gwKey())
 	}
-	magpieKey := func() string {
+	pigeonKey := func() string {
 		for _, id := range []string{"google", "gemini"} {
 			if p, err := provider.Find(id); err == nil && p.Key != "" {
 				return p.Key
@@ -94,7 +94,7 @@ func geminiIn(at place) *Agent {
 			}
 			return delModelName(path)
 		}
-		if isMagpie(v) {
+		if isPigeon(v) {
 			if !routed() {
 				stash(map[string]string{at.key("gemini.base_url"): base(), at.key("gemini.api_key"): envKey(), at.key("gemini.auth"): auth(), at.key("gemini.model"): model()})
 			}
@@ -111,7 +111,7 @@ func geminiIn(at place) *Agent {
 
 	current := func() string {
 		if routed() {
-			return magpieID
+			return pigeonID
 		}
 		if base() != "" {
 			return "custom"
@@ -129,15 +129,15 @@ func geminiIn(at place) *Agent {
 		return "google"
 	}
 	use := func(id string) error {
-		if id == magpieID {
+		if id == pigeonID {
 			if routed() {
 				return nil
 			}
-			return fmt.Errorf("pick a model via magpie instead; that routes Gemini CLI through the gateway")
+			return fmt.Errorf("pick a model via pigeon instead; that routes Gemini CLI through the gateway")
 		}
-		// an auth it doesn't know is refused before magpie is taken out:
-		// `magpie gemini <a model it has no option for>` comes here, and
-		// unrouted Gemini CLI first, as `magpie snow --help` took magpie
+		// an auth it doesn't know is refused before pigeon is taken out:
+		// `pigeon gemini <a model it has no option for>` comes here, and
+		// unrouted Gemini CLI first, as `pigeon snow --help` took pigeon
 		// out of Snow (#1457)
 		switch id {
 		case "", "custom", "google", "vertex", "api-key":
@@ -170,7 +170,7 @@ func geminiIn(at place) *Agent {
 			if err := edit.SetJSON(path, edit.KV{Path: "security.auth.selectedType", Value: "gemini-api-key"}); err != nil {
 				return err
 			}
-			if k := magpieKey(); k != "" && envKey() != k {
+			if k := pigeonKey(); k != "" && envKey() != k {
 				if err := edit.SetEnvFile(envPath, edit.KV{Path: "GEMINI_API_KEY", Value: k}); err != nil {
 					return err
 				}
@@ -185,7 +185,7 @@ func geminiIn(at place) *Agent {
 		ID: "gemini", Name: "Gemini CLI", Icon: "geminicli-color", Aliases: []string{"gemini-cli"}, NoNames: true,
 		UA:  []string{"geminicli", "gemini-cli"},
 		Bin: "gemini", Dir: dir, Path: path,
-		// its model's default forgets what it had before magpie, its
+		// its model's default forgets what it had before pigeon, its
 		// sign-in's default forgets the sign-in: this puts both back
 		Unwire: unroute,
 		// Gemini CLI is its binary. What it leaves in ~/.gemini stays when it
@@ -202,7 +202,7 @@ func geminiIn(at place) *Agent {
 			return err == nil
 		},
 		Check: func() string {
-			if !isMagpie(model()) {
+			if !isPigeon(model()) {
 				return ""
 			}
 			if d := wiringOff("Gemini CLI", envPath, func(k string) (string, bool) { return edit.GetEnvFile(envPath, k) },
@@ -210,7 +210,7 @@ func geminiIn(at place) *Agent {
 				return d
 			}
 			if a := auth(); a != "gemini-api-key" {
-				return "Gemini CLI signs in with " + orDefault(a) + " rather than magpie's key, so it asks Google directly"
+				return "Gemini CLI signs in with " + orDefault(a) + " rather than pigeon's key, so it asks Google directly"
 			}
 			return ""
 		},
@@ -228,12 +228,12 @@ func geminiIn(at place) *Agent {
 				Options: func(map[string]string) []Option {
 					key := Option{Value: "api-key", Label: "API key", Icon: "gemini-color"}
 					switch {
-					case magpieKey() != "":
-						key.Note = "the Google key from magpie's providers"
+					case pigeonKey() != "":
+						key.Note = "the Google key from pigeon's providers"
 					case envKey() != "":
 						key.Note = "GEMINI_API_KEY from ~/.gemini/.env"
 					default:
-						key.Note = "needs GEMINI_API_KEY — add Google Gemini in magpie's providers"
+						key.Note = "needs GEMINI_API_KEY — add Google Gemini in pigeon's providers"
 					}
 					out := []Option{
 						{Value: "google", Label: "Google", Icon: "gemini-color", Note: "Google account · OAuth sign-in"},
@@ -243,8 +243,8 @@ func geminiIn(at place) *Agent {
 					switch current() {
 					case "custom":
 						out = append(out, Option{Value: "custom", Note: hostOf(base()) + " (from .env)"})
-					case magpieID:
-						out = append(out, Option{Value: magpieID, Label: "magpie", Note: "the local gateway · every provider's models"})
+					case pigeonID:
+						out = append(out, Option{Value: pigeonID, Label: "pigeon", Note: "the local gateway · every provider's models"})
 					}
 					return out
 				},
@@ -261,7 +261,7 @@ func geminiIn(at place) *Agent {
 						}
 					}
 					own := group("Gemini CLI", options(ms, ""))
-					return append(own, viaMagpie("gemini", "")...)
+					return append(own, viaPigeon("gemini", "")...)
 				},
 			},
 		},

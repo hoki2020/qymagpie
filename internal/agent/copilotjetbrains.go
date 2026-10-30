@@ -19,7 +19,7 @@ package agent
 //	  "isCustomModel": true, "modelCapabilities": {"name": …, "maxInputTokens": …,
 //	  "maxOutputTokens": …, "toolCalling": true, "vision": …}}}
 //
-// So magpie adds the provider "magpie" there: its catalog, each model at the
+// So pigeon adds the provider "pigeon" there: its catalog, each model at the
 // gateway's /v1/chat/completions, sent with the key as a Bearer token (the
 // key is the file's, not the IDE's password safe). Tool calling is on, as
 // Copilot's agent mode lists only models that call tools; a model's
@@ -28,38 +28,38 @@ package agent
 //
 // The IDE lists the server's providers when Copilot signs in, so the models
 // show after the IDE restarts. The model is picked in Copilot Chat, kept in
-// the IDE's project files, so what magpie sets is whether its models are in
+// the IDE's project files, so what pigeon sets is whether its models are in
 // that picker. BYOK needs a GitHub sign-in with Copilot: the server offers
 // it to a personal plan (Free, Pro, Pro+) and to Business or Enterprise
 // where the organisation's policy allows it. Its requests say
 // "GithubCopilot/<server version>" as every client of that server does, so
 // they are told apart by their key. Xcode's and Eclipse's Copilot run the
-// same server and read the same file: they list magpie's models too.
+// same server and read the same file: they list pigeon's models too.
 //
 // Checked with the language server 1.545.1 bundled in plugin 1.18.0, under
-// a sandbox HOME signed in to a real Copilot account: the file magpie
+// a sandbox HOME signed in to a real Copilot account: the file pigeon
 // writes is listed by copilot/byok/listCustomProviderConfigs and
 // listModels, and a Chat turn on one of its models reached the gateway with
-// magpie's key. Not with a JetBrains IDE's own window.
+// pigeon's key. Not with a JetBrains IDE's own window.
 
 import (
 	"os"
 	"path/filepath"
 	"runtime"
 
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/edit"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/edit"
 )
 
 // copilotJBID is the agent's id, and what its token names.
 const copilotJBID = "copilot-jetbrains"
 
-// The keys of magpie's provider in byok.json.
+// The keys of pigeon's provider in byok.json.
 const (
-	copilotJBConfig = magpieID + "-provider-config"
-	copilotJBKey    = magpieID + "-api-key"
-	copilotJBModels = magpieID + "-models-config"
+	copilotJBConfig = pigeonID + "-provider-config"
+	copilotJBKey    = pigeonID + "-api-key"
+	copilotJBModels = pigeonID + "-models-config"
 )
 
 // copilotJBPlugin is the folder the plugin is installed in, under an IDE's
@@ -120,7 +120,7 @@ func copilotJetBrainsAt(path string, installed func() bool) *Agent {
 		Aliases: []string{"jetbrains", "jetbrains-copilot", "copilot-idea", "copilot-intellij", "intellij", "idea"},
 		Dir:     filepath.Dir(path), Path: path,
 		// the folder is every Copilot's (VS Code's sign-in too): the
-		// plugin installed in an IDE, or magpie's provider written, says
+		// plugin installed in an IDE, or pigeon's provider written, says
 		// it is here
 		detect: func() bool { return installed() || wired() },
 		Notice: func() string {
@@ -161,7 +161,7 @@ func copilotJetBrainsAt(path string, installed func() bool) *Agent {
 			Key: "provider", Label: "provider",
 			Get: func() string {
 				if wired() {
-					return magpieID
+					return pigeonID
 				}
 				return ""
 			},
@@ -172,14 +172,14 @@ func copilotJetBrainsAt(path string, installed func() bool) *Agent {
 				return copilotJBWrite(path)
 			},
 			Options: func(map[string]string) []Option {
-				return []Option{{Value: magpieID, Label: "magpie", Icon: "magpie", Note: "every magpie model in Copilot Chat's model picker"}}
+				return []Option{{Value: pigeonID, Label: "pigeon", Icon: "pigeon", Note: "every pigeon model in Copilot Chat's model picker"}}
 			},
 		}},
 	}, path)
 }
 
-// copilotJBWrite writes magpie's provider into byok.json, made private as
-// the language server makes it when there is none. A model of magpie's the
+// copilotJBWrite writes pigeon's provider into byok.json, made private as
+// the language server makes it when there is none. A model of pigeon's the
 // user hid in the IDE's Manage Models stays hidden.
 func copilotJBWrite(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -200,7 +200,7 @@ func copilotJBWrite(path string) error {
 	}
 	models := copilotJBModelsJSON(hidden)
 	kvs := []edit.KV{
-		{Path: copilotJBConfig, Value: map[string]string{"groupName": magpieID, "apiType": "chatCompletions"}},
+		{Path: copilotJBConfig, Value: map[string]string{"groupName": pigeonID, "apiType": "chatCompletions"}},
 		{Path: copilotJBKey, Value: agentKey(copilotJBID)},
 		{Path: copilotJBModels, Value: models},
 	}
@@ -218,11 +218,11 @@ func copilotJBWrite(path string) error {
 	return edit.SetJSON(path, set...)
 }
 
-// copilotJBModelsJSON is magpie's models-config: the catalog as Copilot
+// copilotJBModelsJSON is pigeon's models-config: the catalog as Copilot
 // (JetBrains) is shown it, keyed by model id.
 func copilotJBModelsJSON(hidden map[string]bool) map[string]any {
 	out := map[string]any{}
-	for _, m := range magpieModels(copilotJBID) {
+	for _, m := range pigeonModels(copilotJBID) {
 		context := m.Context
 		if context == 0 {
 			context = 128000 // the server's own default for a custom endpoint
@@ -248,5 +248,5 @@ func copilotJBModelsJSON(hidden map[string]bool) map[string]any {
 
 // what copilotjetbrains says after a change (notice.go)
 var (
-	noticeCopilotjetbrains = newNotice("magpie's models are in Copilot Chat's model picker in your JetBrains IDE, under magpie, once the IDE restarts. They need Copilot signed in to GitHub on a plan with Bring Your Own Key: Copilot Free, Pro and Pro+ have it, Business and Enterprise when the organisation's policy allows it.")
+	noticeCopilotjetbrains = newNotice("pigeon's models are in Copilot Chat's model picker in your JetBrains IDE, under pigeon, once the IDE restarts. They need Copilot signed in to GitHub on a plan with Bring Your Own Key: Copilot Free, Pro and Pro+ have it, Business and Enterprise when the organisation's policy allows it.")
 )

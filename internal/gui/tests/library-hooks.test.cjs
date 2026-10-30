@@ -2,7 +2,7 @@
 // #1790 (AllenReder): Hooks, the Library's fifth tab. A hook is kept once
 // and given to agents with the chips every other tab has. The tab lists
 // each hook with what it runs on, in words (After a tool runs · File
-// edits), and its command; an agent magpie can't write hooks for has its
+// edits), and its command; an agent pigeon can't write hooks for has its
 // chip greyed, saying why, and a click on it posts nothing. Asides say
 // what an agent does with a hook given to it: Codex runs one only once it
 // is trusted in its /hooks, Cursor runs Claude Code's too. A row's chip
@@ -37,7 +37,7 @@ const HOOK_AGENTS = [
   { id: "codex", file: `${HOME}/.codex/hooks.json`, events: ["PreToolUse", "PostToolUse", "Stop"] },
   { id: "cursor", file: `${HOME}/.cursor/hooks.json`, events: ["afterFileEdit", "stop"] },
   { id: "gemini", file: `${HOME}/.gemini/settings.json`, events: ["AfterTool", "AfterAgent"] },
-  { id: "opencode", no: "OpenCode has no hooks magpie can write" },
+  { id: "opencode", no: "OpenCode has no hooks pigeon can write" },
 ];
 const lib = (hooks) => ({
   dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
@@ -183,14 +183,14 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // what an agent does with one given to it
         await v.locator(".lib-hooks-codex").filter({ hasText: w("Codex runs a new or changed hook only once you trust it: review it in Codex's /hooks.") }).waitFor();
         await v.locator(".lib-hooks-twice").filter({ hasText: w("Cursor runs Claude Code's hooks too: a hook given to both runs twice in Cursor.") }).waitFor();
-        await v.locator(".lib-hooks-no").filter({ hasText: w("magpie can't give hooks to {agents} yet: their chips are greyed, and say why.", { agents: "OpenCode" }) }).waitFor();
+        await v.locator(".lib-hooks-no").filter({ hasText: w("pigeon can't give hooks to {agents} yet: their chips are greyed, and say why.", { agents: "OpenCode" }) }).waitFor();
         assert.equal(await v.locator(".lib-hooks-off").count(), 0, "Gemini CLI, given none, said to have hooks off");
         assert.deepEqual(await sideways(page), [], "sideways scroll with the list");
 
         // OpenCode's chip is greyed, says why, and a click posts nothing
         const oc = row("bark").locator('.lib-ag[data-agent="opencode"]');
         assert.equal(await oc.getAttribute("aria-disabled"), "true");
-        assert.equal(await oc.getAttribute("title"), w("{agent} has no hooks magpie can write", { agent: "OpenCode" }));
+        assert.equal(await oc.getAttribute("title"), w("{agent} has no hooks pigeon can write", { agent: "OpenCode" }));
         await press(page, oc);
         await page.waitForTimeout(150);
         assert.deepEqual(posts, [], "a greyed chip posted");

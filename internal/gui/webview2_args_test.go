@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/webview2env"
 	"github.com/wailsapp/wails/v3/pkg/application"
-	"github.com/yetone/magpie/internal/webview2env"
 )
 
 // wailsBrowserArgs is the command line Wails v3.0.0-beta.24 makes from the

@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // programsUpstream stands in for every upstream a test names, by the
@@ -97,7 +97,7 @@ func TestAccessProgramsGoToOpenAIAlone(t *testing.T) {
 		Responses: "https://asis.test/v1", Models: []string{"gpt-5.5"}}, "responses")
 	save(provider.Provider{ID: "oai", Name: "OpenAI", Key: "sk-k",
 		Responses: "https://api.openai.com/v1", Models: []string{"gpt-5.5"}}, "responses")
-	save(provider.Provider{ID: "other-magpie", Name: "Another magpie", Key: "k", Preset: provider.RemoteMagpiePreset,
+	save(provider.Provider{ID: "other-magpie", Name: "Another magpie", Key: "k", Preset: provider.RemotePigeonPreset,
 		Responses: "http://remote-magpie.test/v1", Models: []string{"codex/gpt-5.5"}}, "responses")
 	save(provider.Provider{ID: "chatonly", Name: "Chat only", Key: "k",
 		Chat: "https://chat.test/v1", Models: []string{"deepseek-chat"}}, "chat")

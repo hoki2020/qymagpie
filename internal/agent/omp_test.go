@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 	"gopkg.in/yaml.v3"
 )
 
@@ -230,7 +230,7 @@ func TestOmpNamedToTheGateway(t *testing.T) {
 	if err := yaml.Unmarshal(b, &m); err != nil {
 		t.Fatal(err)
 	}
-	ua := m.Providers[magpieID].Headers["User-Agent"]
+	ua := m.Providers[pigeonID].Headers["User-Agent"]
 	if ua == "" || usage.AgentOf(ua) != "omp" {
 		t.Fatalf("magpie's provider names omp as %q, which the gateway takes for %q:\n%s", ua, usage.AgentOf(ua), b)
 	}
@@ -776,7 +776,7 @@ func TestOmpKeepsTheUsersSettings(t *testing.T) {
 		if err := yaml.Unmarshal([]byte(raw), &c); err != nil {
 			t.Fatalf("%v\n%s", err, raw)
 		}
-		mp := c.Providers[magpieID]
+		mp := c.Providers[pigeonID]
 		if mp.Overrides["deepseek/pro"]["contextWindow"] != 64000 || !mp.NoStrict || mp.Headers["X-Mine"] != "1" || mp.Compat["supportsStore"] != false {
 			t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 		}

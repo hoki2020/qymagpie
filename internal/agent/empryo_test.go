@@ -57,7 +57,7 @@ func TestEmpryo(t *testing.T) {
 	m := read()
 	ps, _ := m["providers"].([]any)
 	if len(ps) != 2 || !reflect.DeepEqual(ps[0], want["providers"].([]any)[0]) ||
-		!reflect.DeepEqual(ps[1], map[string]any{"id": "magpie", "name": "Magpie", "baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models"}) {
+		!reflect.DeepEqual(ps[1], map[string]any{"id": "magpie", "name": "Pigeon", "baseURL": gatewayV1(), "modelsAPI": gatewayV1() + "/models"}) {
 		t.Fatalf("providers: %v", m["providers"])
 	}
 	if m["defaultModel"] != "magpie/deepseek/pro" || m["theme"] != "dark" {

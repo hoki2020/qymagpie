@@ -71,7 +71,7 @@ func TestWatchWindows(t *testing.T) {
 	stream := strings.Join([]string{
 		`{"Ok":"Handled"}`,
 		`{"WorkspacesChanged":{"workspaces":[]}}`,
-		`{"WindowsChanged":{"windows":[` + panelJSON(3, pid, "magpie", false) + `,` + panelJSON(7, pid, "magpie panel", true) + `,` + panelJSON(8, 99, "magpie panel", true) + `]}}`,
+		`{"WindowsChanged":{"windows":[` + panelJSON(3, pid, "pigeon", false) + `,` + panelJSON(7, pid, "magpie panel", true) + `,` + panelJSON(8, 99, "magpie panel", true) + `]}}`,
 		`{"WindowFocusChanged":{"id":7}}`,
 		`{"WindowOpenedOrChanged":{"window":` + panelJSON(7, pid, "magpie panel", true) + `}}`,
 		`{"WindowLayoutsChanged":{"changes":[[7,{"pos_in_scrolling_layout":null,"tile_size":[440.0,520.0],"window_size":[440,520],"tile_pos_in_workspace_view":[1000.0,6.0],"window_offset_in_tile":[0.0,0.0]}]]}}`,

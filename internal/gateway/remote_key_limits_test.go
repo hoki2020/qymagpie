@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/budget"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/budget"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
-// #1547 (PennyVibe), between two magpies: a computer with another magpie
+// #1547 (PennyVibe), between two pigeons: a computer with another magpie
 // as its provider, through two gateway keys that magpie gave it, is shown
 // each key's own limit and what it used, read with that key alone. The
 // numbers move with the key's own requests, never with the other key's;
@@ -30,7 +30,7 @@ func TestRemoteMagpieKeyLimitCards(t *testing.T) {
 	setLimit(t, keys[1].ID, &access.Limit{Period: "week", Tokens: 5000})
 	gw := httptest.NewServer(lanGuard(New().Handler()))
 	defer gw.Close()
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: secrets[0], KeyName: "laptop",
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: secrets[0], KeyName: "laptop",
 		Keys: []provider.KeyAccount{{Name: "desk", Key: secrets[1]}}, Chat: gw.URL}); err != nil {
 		t.Fatal(err)
 	}

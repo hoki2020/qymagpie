@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // magpie group copy <id> [name] duplicates a group (lc on Discord): its
@@ -46,7 +46,7 @@ func TestGroupCopyCLI(t *testing.T) {
 	if err := groupCmd([]string{"group", "copy", "nope"}); err == nil {
 		t.Error("copied a group that isn't")
 	}
-	if err := groupCmd([]string{"group", "copy"}); err == nil || !strings.Contains(err.Error(), "magpie group copy <id>") {
+	if err := groupCmd([]string{"group", "copy"}); err == nil || !strings.Contains(err.Error(), "pigeon group copy <id>") {
 		t.Errorf("no id: %v", err)
 	}
 }

@@ -11,8 +11,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/davsync"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/davsync"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // s3Server is an S3 server with buckets of any name, path-style, keeping
@@ -139,7 +139,7 @@ func TestS3Cmd(t *testing.T) {
 	if err := webdavCmd([]string{"set", "keys=yes"}); err == nil || !strings.Contains(err.Error(), "S3 sync is on") {
 		t.Fatalf("webdav set while S3 is on: %v", err)
 	}
-	if err := webdavCmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie s3 off") {
+	if err := webdavCmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "pigeon s3 off") {
 		t.Fatalf("webdav off while S3 is on: %v", err)
 	}
 	if _, ok := davsync.Load(); !ok {
@@ -182,7 +182,7 @@ func TestS3Cmd(t *testing.T) {
 	if c, _ := davsync.Load(); c.S3() || c.URL != dav.url || c.User != "me" || c.Password != "pw" || c.Other == nil || c.Other.Password != "s3cr3t2" {
 		t.Fatalf("back to WebDAV: %+v", c)
 	}
-	if err := s3Cmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "magpie webdav off") {
+	if err := s3Cmd([]string{"off"}); err == nil || !strings.Contains(err.Error(), "pigeon webdav off") {
 		t.Fatalf("s3 off while WebDAV is on: %v", err)
 	}
 	if err := webdavCmd([]string{"off"}); err != nil {

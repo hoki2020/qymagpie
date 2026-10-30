@@ -7,17 +7,17 @@ package agent
 // configDirForOS). Its fields (config.Settings, ProviderConfig,
 // ModelConfig, mothx 1.3.104):
 //
-//	{"defaultProvider":"magpie","defaultModel":"<model>",
+//	{"defaultProvider":"pigeon","defaultModel":"<model>",
 //	 "defaultThinkingLevel":"high",
-//	 "providers":{"magpie":{"baseUrl":"http://127.0.0.1:3425/v1",
-//	   "api":"openai-chat","apiKey":"magpie-mothx","thinkingFormat":"openai",
+//	 "providers":{"pigeon":{"baseUrl":"http://127.0.0.1:3425/v1",
+//	   "api":"openai-chat","apiKey":"pigeon-mothx","thinkingFormat":"openai",
 //	   "models":[{"id":…,"name":…,"reasoning":true,"contextWindow":…,
 //	     "maxTokens":…,"cost":{…},"input":["text","image"]}]}}}
 //
 // A session asks provider defaultProvider for model defaultModel on the
 // provider's api (openai-chat: baseUrl + /chat/completions) under Bearer
 // apiKey. Its requests carry "Vibecoding Client/<version>" as their
-// User-Agent, its old name an alias here; the key magpie gives it names it
+// User-Agent, its old name an alias here; the key pigeon gives it names it
 // too (gateway.TokenFor). It
 // reads settings.json at start-up, and its own /model and /auth dialogs
 // write the whole file back (SaveGlobalSettings), every default spelled out.
@@ -33,9 +33,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yetone/magpie/internal/appdir"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/appdir"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 // mothxLevels are the thinking levels MothX takes (provider.ThinkingLevel,
@@ -56,12 +56,12 @@ func mothxIn(at place) *Agent {
 	pair := pairSet(set, "defaultProvider", "defaultModel")
 	key := func() string { return agentKeyAt("mothx", at.gw()) }
 	block := mothxBlockKept(path, func() any { return mothxProvider(at, key()) })
-	writeMagpie := func() error {
-		return set(edit.KV{Path: "providers." + magpieID, Value: block()})
+	writePigeon := func() error {
+		return set(edit.KV{Path: "providers." + pigeonID, Value: block()})
 	}
-	// the file as it was before magpie's first write, put back byte for
+	// the file as it was before pigeon's first write, put back byte for
 	// byte by Disconnect where it leaves it saying the same
-	before := beforeMagpie{at.key("mothx.before.absent"), []string{path}}
+	before := beforePigeon{at.key("mothx.before.absent"), []string{path}}
 	return atomic(&Agent{
 		ID: "mothx", Name: "MothX", Icon: "mothx", Bin: "mothx", Dir: dir, Path: path, Spelled: prefixed,
 		// the command and the package were vibecoding before (its npm
@@ -71,15 +71,15 @@ func mothxIn(at place) *Agent {
 		Aliases: []string{"vibecoding"},
 		Restore: before.restore,
 		Check: func() string {
-			if p, _ := get("defaultProvider"); p != magpieID {
+			if p, _ := get("defaultProvider"); p != pigeonID {
 				return ""
 			}
-			return wiringOff("MothX", path, func(k string) (string, bool) { return edit.GetJSON(path, "providers."+magpieID+"."+k) },
+			return wiringOff("MothX", path, func(k string) (string, bool) { return edit.GetJSON(path, "providers."+pigeonID+"."+k) },
 				"baseUrl", at.v1(), "apiKey", key())
 		},
-		Sync: func() error { return syncJSON(path, "providers."+magpieID, block) },
+		Sync: func() error { return syncJSON(path, "providers."+pigeonID, block) },
 		Notice: func() string {
-			if p, _ := get("defaultProvider"); p == magpieID && Running(`(^|/)mothx( |$)`, `(^|/)vibecoding( |$)`) {
+			if p, _ := get("defaultProvider"); p == pigeonID && Running(`(^|/)mothx( |$)`, `(^|/)vibecoding( |$)`) {
 				return noticeMothx.String()
 			}
 			return ""
@@ -94,31 +94,31 @@ func mothxIn(at place) *Agent {
 						if err := edit.DelJSON(path, "defaultProvider", "defaultModel"); err != nil {
 							return err
 						}
-						if err := edit.DelJSON(path, "providers."+magpieID); err != nil {
+						if err := edit.DelJSON(path, "providers."+pigeonID); err != nil {
 							return err
 						}
-						// providers left empty is magpie's: MothX writes none
+						// providers left empty is pigeon's: MothX writes none
 						// (omitempty), and reads none the same as {}
 						if raw, ok := get("providers"); ok && strings.TrimSpace(raw) == "{}" {
 							return edit.DelJSON(path, "providers")
 						}
 						return nil
 					}
-					// a model of magpie's: its provider block goes in beside the pick
-					if ref, ok := strings.CutPrefix(v, magpieID+"/"); ok && isMagpie(ref) {
-						if _, has := get("providers." + magpieID); !has {
-							if p, _ := get("defaultProvider"); p != magpieID {
+					// a model of pigeon's: its provider block goes in beside the pick
+					if ref, ok := strings.CutPrefix(v, pigeonID+"/"); ok && isPigeon(ref) {
+						if _, has := get("providers." + pigeonID); !has {
+							if p, _ := get("defaultProvider"); p != pigeonID {
 								before.take()
 							}
 						}
-						if err := writeMagpie(); err != nil {
+						if err := writePigeon(); err != nil {
 							return err
 						}
 					}
 					return pair(v)
 				},
 				Options: func(cur map[string]string) []Option {
-					return append(mothxOwn(path, cur["model"]), viaMagpie("mothx", magpieID+"/")...)
+					return append(mothxOwn(path, cur["model"]), viaPigeon("mothx", pigeonID+"/")...)
 				},
 			},
 			{
@@ -144,7 +144,7 @@ func mothxIn(at place) *Agent {
 }
 
 // mothxDir is MothX's config folder at a place: $MOTHX_DIR (a relative one
-// is its working directory's, which magpie can't know), else
+// is its working directory's, which pigeon can't know), else
 // %APPDATA%\mothx on Windows, else ~/.mothx. A distro's variables aren't
 // read, so it is ~/.mothx there.
 func mothxDir(at place) string {
@@ -160,13 +160,13 @@ func mothxDir(at place) string {
 	return filepath.Join(at.home, ".mothx")
 }
 
-// mothxBlockKept is theirsKept for magpie's provider in MothX's
+// mothxBlockKept is theirsKept for pigeon's provider in MothX's
 // settings.json: what else the user put in it (headers, httpProxy) stays,
 // and so does a thinkingFormat already there, which may be theirs.
 func mothxBlockKept(path string, value func() any) func() any {
-	return theirsKept(path, "providers."+magpieID, func() any {
+	return theirsKept(path, "providers."+pigeonID, func() any {
 		v := value()
-		if _, set := edit.GetJSON(path, "providers."+magpieID+".thinkingFormat"); set {
+		if _, set := edit.GetJSON(path, "providers."+pigeonID+".thinkingFormat"); set {
 			if m, ok := v.(map[string]any); ok {
 				delete(m, "thinkingFormat")
 			}
@@ -175,26 +175,26 @@ func mothxBlockKept(path string, value func() any) func() any {
 	}, "models")
 }
 
-// mothxProvider is magpie as MothX's provider: the gateway's Chat
+// mothxProvider is pigeon as MothX's provider: the gateway's Chat
 // Completions, the key that names MothX, and one entry per model of
-// magpie's.
+// pigeon's.
 //
 // thinkingFormat "openai" has MothX ask every model for a level as
 // reasoning_effort, which the gateway carries to each vendor's own form.
 // Without it MothX guesses the vendor from the model id and the base URL
-// (thinkingFormatForModel): a magpie model named qwen3.7… got Qwen's
+// (thinkingFormatForModel): a pigeon model named qwen3.7… got Qwen's
 // enable_thinking and thinking_budget, a deepseek-v4.1… only
 // thinking:{type:enabled}, whatever served it.
 func mothxProvider(at place, key string) any {
 	ms := []map[string]any{}
-	for _, m := range magpieModels("mothx") {
+	for _, m := range pigeonModels("mothx") {
 		ms = append(ms, mothxModelJSON(m))
 	}
 	return map[string]any{"baseUrl": at.v1(), "api": "openai-chat", "apiKey": key,
 		"thinkingFormat": "openai", "models": ms}
 }
 
-// mothxModelJSON is one of magpie's models as an entry of a MothX
+// mothxModelJSON is one of pigeon's models as an entry of a MothX
 // provider's models, as its own presets write one.
 func mothxModelJSON(m catalog.Model) map[string]any {
 	// reasoning is what has MothX send a thinking level at all
@@ -212,7 +212,7 @@ func mothxModelJSON(m catalog.Model) map[string]any {
 	if m.Output > 0 {
 		e["maxTokens"] = maxTokens(m)
 	}
-	// MothX counts a turn's cost by it, per million tokens as magpie's
+	// MothX counts a turn's cost by it, per million tokens as pigeon's
 	if m.Price != nil {
 		e["cost"] = map[string]any{"input": m.Price.Input, "output": m.Price.Output,
 			"cacheRead": m.Price.CacheRead, "cacheWrite": m.Price.CacheWrite}
@@ -236,7 +236,7 @@ func mothxOwn(path, cur string) []Option {
 		if json.Unmarshal([]byte(raw), &ps) == nil {
 			names := make([]string, 0, len(ps))
 			for p := range ps {
-				if p != magpieID {
+				if p != pigeonID {
 					names = append(names, p)
 				}
 			}
@@ -253,21 +253,21 @@ func mothxOwn(path, cur string) []Option {
 			}
 		}
 	}
-	if cur != "" && !usesMagpie(cur) && !seen[cur] {
+	if cur != "" && !usesPigeon(cur) && !seen[cur] {
 		out = append([]Option{{Value: cur, Icon: modelIcon("", cur)}}, out...)
 	}
 	return out
 }
 
 // mothxOffered are the levels MothX offers for model when it is one of
-// magpie's whose efforts magpie knows: those of them MothX has, none read
+// pigeon's whose efforts pigeon knows: those of them MothX has, none read
 // as off. nil for any other model, which is offered MothX's whole list.
 func mothxOffered(model string) []string {
-	ref, ok := strings.CutPrefix(model, magpieID+"/")
+	ref, ok := strings.CutPrefix(model, pigeonID+"/")
 	if !ok {
 		return nil
 	}
-	for _, m := range magpieModels("mothx") {
+	for _, m := range pigeonModels("mothx") {
 		if m.ID != ref || len(m.Efforts) == 0 {
 			continue
 		}

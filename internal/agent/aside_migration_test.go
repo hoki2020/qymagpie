@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 )
 
 func TestAsideLegacyRestorePointIsReadWithoutMigrationWrites(t *testing.T) {

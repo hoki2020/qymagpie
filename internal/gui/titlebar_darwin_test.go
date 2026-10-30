@@ -16,7 +16,7 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 
-	"github.com/yetone/magpie/internal/gui/windowshape"
+	"github.com/hoki2020/pigeon/internal/gui/windowshape"
 )
 
 // titlebarRun is what the separate process measured: the main window, one

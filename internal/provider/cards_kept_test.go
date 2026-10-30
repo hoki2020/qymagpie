@@ -21,7 +21,7 @@ func cardOf(cs []SubscriptionQuota, provider, user string) *SubscriptionQuota {
 	return nil
 }
 
-// #1313 (jorben): a magpie serving only other magpies has nobody on its
+// #1313 (jorben): a magpie serving only other pigeons has nobody on its
 // Usage page, while its Codex accounts' usage is read all the time behind
 // the requests (the account switching, CodexUsedUp). What another magpie
 // is told of its cards (CachedCards) is that reading, not "nothing read";

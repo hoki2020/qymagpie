@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/agentenv"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/agentenv"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // claudeCloudHome is claudeAboutHome with the managed settings in the
@@ -316,7 +316,7 @@ func TestT3CodeSaysAClaudeCloudSwitch(t *testing.T) {
 	if a.Check() != "" {
 		t.Fatal("drift before magpie's instance is there")
 	}
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	if got := a.Check(); !strings.Contains(got, "CLAUDE_CODE_USE_BEDROCK") || !strings.Contains(got, "Amazon Bedrock") {

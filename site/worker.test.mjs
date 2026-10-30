@@ -30,7 +30,7 @@ const FEED = `<?xml version="1.0" encoding="UTF-8"?>
     <id>tag:github.com,2008:Repository/1/v0.1.3</id>
     <updated>2026-10-03T08:54:51Z</updated>
     <link rel="alternate" type="text/html" href="https://github.com/yetone/magpie-releases/releases/tag/v0.1.3"/>
-    <title>magpie v0.1.3</title>
+    <title>pigeon v0.1.3</title>
     <content type="html">&lt;h3&gt;Features&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;One thing (#1)&lt;/li&gt;
@@ -67,10 +67,10 @@ globalThis.fetch = async (u, init = {}) => {
   if (u === "https://github.com/yetone/magpie-releases/releases/latest")
     return new Response(null, { status: 302, headers: { Location: "https://github.com/yetone/magpie-releases/releases/tag/v0.1.3" } });
   if (u.endsWith("/releases.atom")) return new Response(FEED);
-  const gh = (tag) => ({ tag_name: tag, body: BODIES[tag], html_url: "https://github.com/r/" + tag, published_at: "2026-10-01T00:00:00Z", draft: false, prerelease: false, assets: [{ name: "magpie-linux-amd64", size: 1, browser_download_url: "https://dl/x" }] });
+  const gh = (tag) => ({ tag_name: tag, body: BODIES[tag], html_url: "https://github.com/r/" + tag, published_at: "2026-10-01T00:00:00Z", draft: false, prerelease: false, assets: [{ name: "pigeon-linux-amd64", size: 1, browser_download_url: "https://dl/x" }] });
   if (u.endsWith("/releases/latest")) return Response.json(gh("v0.1.3"));
   if (u.includes("/releases?per_page=")) return Response.json(Object.keys(BODIES).map(gh));
-  if (u.endsWith("/SHA256SUMS")) return new Response("abc  magpie-linux-amd64\n");
+  if (u.endsWith("/SHA256SUMS")) return new Response("abc  pigeon-linux-amd64\n");
   return new Response("not found", { status: 404 });
 };
 
@@ -180,7 +180,7 @@ test("latest: with the API limited, the notes come from the releases feed, kept 
     assert.equal(body.version, "0.1.3");
     assert.match(body.notes, /One thing \(#1\)/);
     assert.doesNotMatch(body.notes, /一件事/);
-    assert.equal(body.assets["magpie-linux-amd64"].sha256, "abc");
+    assert.equal(body.assets["pigeon-linux-amd64"].sha256, "abc");
     assert.equal(res.headers.get("Cache-Control"), "public, max-age=60");
     const zh = await (await ask("/api/latest?lang=zh")).json();
     assert.match(zh.notes, /^### 新功能\n\n- 一件事 \(#1\)$/);
@@ -343,18 +343,18 @@ test("partners: links go through /go", () => {
   assert.equal(served([{ ...LIST[0], until: "2026-10-10T00:00:01Z" }], NOW).length, 1);
 });
 
-test("partners: /go sends the browser on, saying it came from magpie", () => {
-  assert.equal(goTarget(LIST, "acme", "keys"), "https://acme.example/keys?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "site"), "https://acme.example/?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "keys", "cn"), "https://cn.acme.example/keys?ref=magpie");
+test("partners: /go sends the browser on, saying it came from pigeon", () => {
+  assert.equal(goTarget(LIST, "acme", "keys"), "https://acme.example/keys?ref=pigeon");
+  assert.equal(goTarget(LIST, "acme", "site"), "https://acme.example/?ref=pigeon");
+  assert.equal(goTarget(LIST, "acme", "keys", "cn"), "https://cn.acme.example/keys?ref=pigeon");
   // a region without its own page has the partner's
-  assert.equal(goTarget(LIST, "acme", "keys", "us east"), "https://acme.example/keys?ref=magpie");
-  assert.equal(goTarget(LIST, "acme", "site", "cn"), "https://acme.example/?ref=magpie");
+  assert.equal(goTarget(LIST, "acme", "keys", "us east"), "https://acme.example/keys?ref=pigeon");
+  assert.equal(goTarget(LIST, "acme", "site", "cn"), "https://acme.example/?ref=pigeon");
   // ended, still goes
-  assert.equal(goTarget(LIST, "gone", "keys"), "https://gone.example/keys?ref=magpie");
+  assert.equal(goTarget(LIST, "gone", "keys"), "https://gone.example/keys?ref=pigeon");
   // the partner's own query and fragment stay; its own ref is its referral code and stays as it is
   const own = [{ id: "own", keysUrl: "https://own.example/keys?aff=7#signup", website: "https://own.example/?ref=abc" }];
-  assert.equal(goTarget(own, "own", "keys"), "https://own.example/keys?aff=7&ref=magpie#signup");
+  assert.equal(goTarget(own, "own", "keys"), "https://own.example/keys?aff=7&ref=pigeon#signup");
   assert.equal(goTarget(own, "own", "site"), "https://own.example/?ref=abc");
   for (const [id, what, region] of [["nobody", "keys"], ["acme", "chat"], ["acme", "keys", "mars"], ["plain", "keys"], ["acme", "constructor"]])
     assert.equal(goTarget(LIST, id, what, region), "", [id, what, region].join(" "));
@@ -378,7 +378,7 @@ test("partners: /go counts the click", async () => {
   assert.equal(new URL(res.headers.get("Location")).searchParams.has("ref"), true);
   await Promise.resolve();
   assert.equal(captured.length, 1);
-  assert.equal(captured[0].event, "magpie partner go");
+  assert.equal(captured[0].event, "pigeon partner go");
   assert.equal(captured[0].properties.id, p.id);
   assert.equal(captured[0].properties.what, what);
   assert.equal(captured[0].properties.$process_person_profile, false);
@@ -404,7 +404,7 @@ test("partners: the list's fetches are counted, one in ten", async () => {
       await new Promise((ok) => setTimeout(ok, 0));
       assert.equal(captured.length, sent ? 1 : 0, "random " + r);
       if (sent) {
-        assert.equal(captured[0].event, "magpie partners fetch");
+        assert.equal(captured[0].event, "pigeon partners fetch");
         assert.equal(captured[0].properties.weight, 10);
       }
     }
@@ -430,7 +430,7 @@ test("icon proxy passes on a picture and nothing of the asker", async () => {
   };
   try {
     const req = new Request("https://usemagpie.ai/api/icon?url=" + encodeURIComponent("https://author.example/logo.png"), {
-      headers: { Cookie: "lang=zh", "User-Agent": "magpie/0.1.1168", "X-Forwarded-For": "203.0.113.9", "CF-Connecting-IP": "203.0.113.9" },
+      headers: { Cookie: "lang=zh", "User-Agent": "pigeon/0.1.1168", "X-Forwarded-For": "203.0.113.9", "CF-Connecting-IP": "203.0.113.9" },
     });
     const res = await worker.fetch(req, {}, { waitUntil() {} });
     assert.equal(res.status, 200);
@@ -474,7 +474,7 @@ test("sponsors: /go/<id>/home and /readme send the browser to the sponsor's own 
       assert.equal(res.headers.get("Location"), s[where]);
       await Promise.resolve();
       assert.equal(captured.length, 1);
-      assert.equal(captured[0].event, "magpie sponsor go");
+      assert.equal(captured[0].event, "pigeon sponsor go");
       assert.equal(captured[0].properties.id, s.id);
       assert.equal(captured[0].properties.where, where);
       // a HEAD goes on but isn't counted

@@ -34,8 +34,8 @@ const githubPart = 16 << 20
 // the one commit; the list's own blob SHA is the version, and it names
 // every part by its blob SHA, so a version pins one whole set. The list
 // says it is format magpie-backup, version 2, with no key derivation, so a
-// magpie before parts opens it as a newer magpie's backup and stops
-// ("update magpie"), never as a damaged one (ErrCorrupt, ErrNotBackup) to
+// pigeon before parts opens it as a newer pigeon's backup and stops
+// ("update pigeon"), never as a damaged one (ErrCorrupt, ErrNotBackup) to
 // rebuild or offer for replacing.
 const githubSplit = "github-parts"
 
@@ -52,7 +52,7 @@ type githubPartRef struct {
 	Size int64  `json:"size"`
 }
 
-// partName is the backup's i-th part (from 0), beside it in magpie's folder.
+// partName is the backup's i-th part (from 0), beside it in pigeon's folder.
 func partName(i int) string { return file + ".parts/" + strconv.Itoa(i+1) }
 
 // parseParts reads b as a list of parts: nil for a file that isn't one (a
@@ -66,7 +66,7 @@ func parseParts(b []byte) (*githubParts, error) {
 		return nil, nil
 	}
 	if m.Format != "magpie-backup" || m.Version != 2 || m.Split != githubSplit {
-		return nil, errors.New("the GitHub backup was sent in parts by a newer magpie; update magpie to read it")
+		return nil, errors.New("the GitHub backup was sent in parts by a newer pigeon; update pigeon to read it")
 	}
 	total := int64(0)
 	for _, p := range m.Parts {
@@ -155,7 +155,7 @@ func (g *github) send(ctx context.Context, method, apiPath string, body []byte, 
 	req.Header.Set("Authorization", "Bearer "+g.token)
 	req.Header.Set("Accept", accept)
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
-	req.Header.Set("User-Agent", "magpie-sync")
+	req.Header.Set("User-Agent", "pigeon-sync")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -547,10 +547,10 @@ func (g *github) gitCommit(ctx context.Context, name string, writes []githubWrit
 	for _, w := range writes {
 		entries = append(entries, entry{Path: w.path, Mode: "100644", Type: "blob", SHA: &w.sha})
 	}
-	message := "magpie: sync " + name
+	message := "pigeon: sync " + name
 	if len(writes) == 0 {
 		entries = append(entries, entry{Path: g.at(name), Mode: "100644", Type: "blob"})
-		message = "magpie: remove " + name
+		message = "pigeon: remove " + name
 	}
 	parts := max(len(writes)-1, 0)
 	for i := parts; i < had; i++ {
@@ -604,11 +604,11 @@ func gitBlobSHA(b []byte) string {
 }
 
 // initialize gives an empty repository its first commit, a short note in
-// magpie's folder, so a backup too large for the Contents API can be
+// pigeon's folder, so a backup too large for the Contents API can be
 // committed on top of it through the Git Data API. Another computer that
 // initialized it first is just as good.
 func (g *github) initialize(ctx context.Context) error {
-	note := []byte("This folder holds magpie's encrypted sync files.\n")
+	note := []byte("This folder holds pigeon's encrypted sync files.\n")
 	if _, err := g.contents(ctx, "README.md", note, "", false); err != nil && !errors.Is(err, errChanged) {
 		return err
 	}
@@ -619,7 +619,7 @@ func (g *github) initialize(ctx context.Context) error {
 // contents writes through the Contents API, which only an empty repository's
 // first write uses.
 func (g *github) contents(ctx context.Context, name string, data []byte, sha string, remove bool) (version, error) {
-	in := map[string]string{"message": "magpie: sync " + name, "content": base64.StdEncoding.EncodeToString(data)}
+	in := map[string]string{"message": "pigeon: sync " + name, "content": base64.StdEncoding.EncodeToString(data)}
 	// Omitting branch lets the first backup initialize an empty repository.
 	if !g.empty {
 		in["branch"] = g.branch
@@ -630,7 +630,7 @@ func (g *github) contents(ctx context.Context, name string, data []byte, sha str
 	method := http.MethodPut
 	if remove {
 		method = http.MethodDelete
-		in["message"] = "magpie: remove " + name
+		in["message"] = "pigeon: remove " + name
 		delete(in, "content")
 	}
 	body, err := json.Marshal(in)

@@ -8,8 +8,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 // claudeCodeTurn is Claude Code 2.1.114's request as #1600 (justrun1983)

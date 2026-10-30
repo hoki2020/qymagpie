@@ -6,7 +6,7 @@
 // which agents it is given to can't bind its skills or servers (only
 // Claude Code binds skills; Claude Code and Droid bind servers), that
 // Cursor's cursor-agent command reads only a project's .cursor/agents,
-// and which agents magpie can't write one for (an agent in WSL), whose
+// and which agents pigeon can't write one for (an agent in WSL), whose
 // chip is greyed, says why, and posts nothing. A row's chip posts
 // subagents/agents. Add opens the editor: the prompt's Enter is a new
 // line, not a save; an input method's Enter saves nothing; the skills and
@@ -35,7 +35,7 @@ const SUB_AGENTS = [
   { id: "cursor", dir: `${HOME}/.cursor/agents` },
   { id: "droid", dir: `${HOME}/.factory/droids`, mcp: true },
   { id: "opencode", dir: `${HOME}/.config/opencode/agents` },
-  { id: WSL, wsl: true, no: "magpie gives no subagents to an agent in WSL yet" },
+  { id: WSL, wsl: true, no: "pigeon gives no subagents to an agent in WSL yet" },
 ];
 const lib = (subagents) => ({
   dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
@@ -173,13 +173,13 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // neither; Claude Code both, so it isn't named
         await v.locator(".lib-subagents-noskills").filter({ hasText: w("{agents} can't bind skills to a subagent: theirs gets its prompt, and every skill the agent has.", { agents: "Codex" }) }).waitFor();
         await v.locator(".lib-subagents-nomcp").filter({ hasText: w("{agents} can't bind MCP servers to a subagent: theirs gets its prompt, and every server the agent has.", { agents: "Codex" }) }).waitFor();
-        await v.locator(".lib-subagents-no").filter({ hasText: w("magpie can't give subagents to {agents} yet: their chips are greyed, and say why.", { agents: "Claude Code (Ubuntu)" }) }).waitFor();
+        await v.locator(".lib-subagents-no").filter({ hasText: w("pigeon can't give subagents to {agents} yet: their chips are greyed, and say why.", { agents: "Claude Code (Ubuntu)" }) }).waitFor();
         assert.equal(await v.locator(".lib-subagents-cursor").count(), 0, "the Cursor aside with no subagent given to Cursor");
 
         // the agent in WSL: greyed, says why, and a click posts nothing
         const wsl = row("reviewer").locator(`.lib-ag[data-agent="${WSL}"]`);
         assert.equal(await wsl.getAttribute("aria-disabled"), "true");
-        assert.equal(await wsl.getAttribute("title"), w("magpie gives subagents only to agents on this computer, not yet to {agent} in WSL", { agent: "Claude Code (Ubuntu)" }));
+        assert.equal(await wsl.getAttribute("title"), w("pigeon gives subagents only to agents on this computer, not yet to {agent} in WSL", { agent: "Claude Code (Ubuntu)" }));
         await press(page, wsl);
         await page.waitForTimeout(150);
         assert.deepEqual(posts, [], "a greyed chip posted");

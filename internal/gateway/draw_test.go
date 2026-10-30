@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 var pngBytes = []byte("\x89PNG\r\n\x1a\n fake")
@@ -617,7 +617,7 @@ func TestGrokDrawsSeveralAndIgnoresWhatItHasNoFieldFor(t *testing.T) {
 	up := newGrokMedia(t)
 	s := New()
 	code, a, raw := postImages(t, s, "/v1/images/generations", "application/json",
-		`{"model":"grok/grok-imagine-image","prompt":"two magpies","n":2,"quality":"high","background":"transparent","output_format":"png","size":"1024x1024"}`)
+		`{"model":"grok/grok-imagine-image","prompt":"two pigeons","n":2,"quality":"high","background":"transparent","output_format":"png","size":"1024x1024"}`)
 	if code != 200 || len(a.Data) != 2 {
 		t.Fatalf("%d %s", code, raw)
 	}

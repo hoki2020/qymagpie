@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // visionOff has no model describe images to one that can't see them, so an
@@ -39,7 +39,7 @@ func TestDescribedModelTakesImages(t *testing.T) {
 		t.Fatal(err)
 	}
 	plain := func() catalog.Model {
-		for _, m := range magpieModels("dsh") {
+		for _, m := range pigeonModels("dsh") {
 			if m.ID == "v/plain" {
 				return m
 			}

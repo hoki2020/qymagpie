@@ -22,7 +22,7 @@ func TestPassesUserAgent(t *testing.T) {
 		{"opencode", Provider{PassUserAgent: true, Chat: "https://opencode.ai/zen/v1"}, false},
 		{"cline", Provider{PassUserAgent: true, Preset: "clinepass", Chat: "https://api.cline.bot/api/v1"}, false},
 		{"kilo", Provider{PassUserAgent: true, Preset: "kilo", Chat: "https://api.kilo.ai/api/gateway"}, false},
-		{"another magpie", Provider{PassUserAgent: true, Preset: RemoteMagpiePreset, Chat: "http://10.0.0.2:3425/v1"}, false},
+		{"another magpie", Provider{PassUserAgent: true, Preset: RemotePigeonPreset, Chat: "http://10.0.0.2:3425/v1"}, false},
 	} {
 		if got := tt.p.PassesUserAgent(); got != tt.want {
 			t.Errorf("%s: %v, want %v", tt.name, got, tt.want)

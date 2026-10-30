@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // clsUp is a Chat vendor that classifies: it answers what answer says,
@@ -171,11 +171,11 @@ func TestIntentRoutesATurn(t *testing.T) {
 	for _, r := range usage.Load(time.Time{}) {
 		switch {
 		case r.Provider == "c":
-			if r.Kind != "routing" || !r.ByMagpie() || usage.PurposeOf(r.Kind) != "kind:routing" {
+			if r.Kind != "routing" || !r.ByPigeon() || usage.PurposeOf(r.Kind) != "kind:routing" {
 				t.Fatalf("the classifier's record: %+v", r)
 			}
 			recs++
-		case r.ByMagpie() || r.Kind == "routing":
+		case r.ByPigeon() || r.Kind == "routing":
 			t.Fatalf("an agent's record marked magpie's or routing: %+v", r)
 		default:
 			agents++

@@ -1,7 +1,7 @@
 package agent
 
 // Reasonix Studio 2.x and its CLI share config.toml and .env under REASONIX_HOME,
-// ~/.reasonix, or %APPDATA%/reasonix on Windows. Magpie owns one [[providers]]
+// ~/.reasonix, or %APPDATA%/reasonix on Windows. Pigeon owns one [[providers]]
 // entry, never the user's other providers. Project/session overrides stay theirs.
 
 import (
@@ -18,10 +18,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 	"github.com/pelletier/go-toml/v2"
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
 )
 
 const reasonixKey = "MAGPIE_REASONIX_API_KEY"
@@ -136,10 +136,10 @@ func reasonixIn(at place) *Agent {
 	}
 	checkOwner := func(cfg reasonixConfig, state *reasonixState) error {
 		for _, p := range cfg.Providers {
-			if p.Name == magpieID && (state == nil || p.APIKeyEnv != reasonixKey) {
-				return fmt.Errorf("Reasonix already has a provider named magpie that magpie does not own")
+			if p.Name == pigeonID && (state == nil || p.APIKeyEnv != reasonixKey) {
+				return fmt.Errorf("Reasonix already has a provider named pigeon that pigeon does not own")
 			}
-			if p.Name != magpieID && p.APIKeyEnv == reasonixKey {
+			if p.Name != pigeonID && p.APIKeyEnv == reasonixKey {
 				return fmt.Errorf("Reasonix's %s is used by another provider", reasonixKey)
 			}
 		}
@@ -153,7 +153,7 @@ func reasonixIn(at place) *Agent {
 			return fmt.Errorf("Reasonix credentials repeat %s", reasonixKey)
 		}
 		if _, exists := edit.GetEnvFile(env, reasonixKey); exists && state == nil {
-			return fmt.Errorf("Reasonix's %s already exists; it was not created by magpie", reasonixKey)
+			return fmt.Errorf("Reasonix's %s already exists; it was not created by pigeon", reasonixKey)
 		}
 		return nil
 	}
@@ -164,7 +164,7 @@ func reasonixIn(at place) *Agent {
 		if err != nil {
 			return err
 		}
-		return edit.SetTOMLArrayTable(path, "providers", "name", magpieID, string(b))
+		return edit.SetTOMLArrayTable(path, "providers", "name", pigeonID, string(b))
 	}
 	// Restore only what this adapter added. A later native selection and edits to
 	// other providers, credentials, and the desktop access list survive.
@@ -178,12 +178,12 @@ func reasonixIn(at place) *Agent {
 		if err := checkOwner(cfg, state); err != nil {
 			return err
 		}
-		if cfg.Agent.Planner != nil && usesMagpie(*cfg.Agent.Planner) {
+		if cfg.Agent.Planner != nil && usesPigeon(*cfg.Agent.Planner) {
 			// Keep the connection while the independently selected Plan uses it.
 			if native != "" {
 				return edit.SetTOMLTopPreserving(path, edit.KV{Path: "default_model", Value: native})
 			}
-			if cfg.DefaultModel != nil && usesMagpie(*cfg.DefaultModel) {
+			if cfg.DefaultModel != nil && usesPigeon(*cfg.DefaultModel) {
 				if state.Default != nil {
 					return edit.SetTOMLTopPreserving(path, edit.KV{Path: "default_model", Value: *state.Default})
 				}
@@ -191,14 +191,14 @@ func reasonixIn(at place) *Agent {
 			}
 			return nil
 		}
-		if err := edit.DelTOMLArrayTable(path, "providers", "name", magpieID); err != nil {
+		if err := edit.DelTOMLArrayTable(path, "providers", "name", pigeonID); err != nil {
 			return err
 		}
 		if native != "" {
 			if err := edit.SetTOMLTopPreserving(path, edit.KV{Path: "default_model", Value: native}); err != nil {
 				return err
 			}
-		} else if cfg.DefaultModel != nil && usesMagpie(*cfg.DefaultModel) {
+		} else if cfg.DefaultModel != nil && usesPigeon(*cfg.DefaultModel) {
 			if state.Default != nil {
 				if err := edit.SetTOMLTopPreserving(path, edit.KV{Path: "default_model", Value: *state.Default}); err != nil {
 					return err
@@ -207,8 +207,8 @@ func reasonixIn(at place) *Agent {
 				return err
 			}
 		}
-		if state.AddedAccess && slices.Contains(cfg.Desktop.Access, magpieID) {
-			access := slices.DeleteFunc(cfg.Desktop.Access, func(v string) bool { return v == magpieID })
+		if state.AddedAccess && slices.Contains(cfg.Desktop.Access, pigeonID) {
+			access := slices.DeleteFunc(cfg.Desktop.Access, func(v string) bool { return v == pigeonID })
 			if err := edit.SetTOMLKey(path, "desktop", "provider_access", reasonixArray(access)); err != nil {
 				return err
 			}
@@ -237,9 +237,9 @@ func reasonixIn(at place) *Agent {
 	}
 	ensureGateway := func(cfg reasonixConfig, state **reasonixState, ref, selected string) error {
 		currentState := *state
-		models := magpieModels("reasonix")
+		models := pigeonModels("reasonix")
 		if !slices.ContainsFunc(models, func(m catalog.Model) bool { return m.ID == ref }) {
-			return fmt.Errorf("magpie has no visible model %q", ref)
+			return fmt.Errorf("pigeon has no visible model %q", ref)
 		}
 		if err := checkOwner(cfg, currentState); err != nil {
 			return err
@@ -248,14 +248,14 @@ func reasonixIn(at place) *Agent {
 			_, cErr := os.Stat(path)
 			_, eErr := os.Stat(env)
 			currentState = &reasonixState{Version: 1, Default: cfg.DefaultModel, NewConfig: os.IsNotExist(cErr), NewEnv: os.IsNotExist(eErr)}
-			currentState.AddedAccess = cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, magpieID)
+			currentState.AddedAccess = cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, pigeonID)
 		}
-		p := reasonixCatalogAt(models, selected, cfg.magpie().Effort, at.v1())
+		p := reasonixCatalogAt(models, selected, cfg.pigeon().Effort, at.v1())
 		if err := writeProvider(p); err != nil {
 			return err
 		}
-		if cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, magpieID) {
-			access := append(cfg.Desktop.Access, magpieID)
+		if cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, pigeonID) {
+			access := append(cfg.Desktop.Access, pigeonID)
 			if err := edit.SetTOMLKey(path, "desktop", "provider_access", reasonixArray(access)); err != nil {
 				return err
 			}
@@ -281,8 +281,8 @@ func reasonixIn(at place) *Agent {
 		if err != nil {
 			return err
 		}
-		ref, magpie := strings.CutPrefix(v, magpieID+"/")
-		if !magpie {
+		ref, pigeon := strings.CutPrefix(v, pigeonID+"/")
+		if !pigeon {
 			known := cfg.hasModel(v) || cfg.DefaultModel != nil && *cfg.DefaultModel == v ||
 				state != nil && state.Default != nil && *state.Default == v
 			if v != "" && !known {
@@ -304,14 +304,14 @@ func reasonixIn(at place) *Agent {
 			return noticeReasonix.String()
 		},
 		Check: func() string {
-			ref, on := strings.CutPrefix(model(), magpieID+"/")
+			ref, on := strings.CutPrefix(model(), pigeonID+"/")
 			if !on {
 				cfg, _, err := load()
 				if err != nil {
 					return "Reasonix configuration cannot be read"
 				}
 				if cfg.Agent.Planner != nil {
-					ref, on = strings.CutPrefix(*cfg.Agent.Planner, magpieID+"/")
+					ref, on = strings.CutPrefix(*cfg.Agent.Planner, pigeonID+"/")
 				}
 				if !on {
 					return ""
@@ -321,24 +321,24 @@ func reasonixIn(at place) *Agent {
 			if err != nil {
 				return "Reasonix configuration cannot be read"
 			}
-			p := cfg.magpie()
+			p := cfg.pigeon()
 			if state == nil || p.APIKeyEnv != reasonixKey {
-				return "Reasonix's magpie provider or restore record is missing"
+				return "Reasonix's pigeon provider or restore record is missing"
 			}
 			if err := checkOwner(cfg, state); err != nil {
 				return err.Error()
 			}
-			if p.Kind != "openai" || p.BaseURL != at.v1() && !reachesMagpie(p.BaseURL, at.v1()) {
-				return "Reasonix's magpie base_url or kind changed"
+			if p.Kind != "openai" || p.BaseURL != at.v1() && !reachesPigeon(p.BaseURL, at.v1()) {
+				return "Reasonix's pigeon base_url or kind changed"
 			}
 			if token, _ := edit.GetEnvFile(env, reasonixKey); !keyHolds(token, gwKey()) {
 				return "Reasonix's gateway credential changed"
 			}
-			if !slices.Contains(p.Models, ref) || cfg.Agent.Planner != nil && usesMagpie(*cfg.Agent.Planner) && !slices.Contains(p.Models, strings.TrimPrefix(*cfg.Agent.Planner, magpieID+"/")) {
-				return "Reasonix's selected model is missing from the magpie catalog"
+			if !slices.Contains(p.Models, ref) || cfg.Agent.Planner != nil && usesPigeon(*cfg.Agent.Planner) && !slices.Contains(p.Models, strings.TrimPrefix(*cfg.Agent.Planner, pigeonID+"/")) {
+				return "Reasonix's selected model is missing from the pigeon catalog"
 			}
-			if cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, magpieID) {
-				return "Reasonix Studio's provider_access excludes magpie"
+			if cfg.Desktop.Access != nil && !slices.Contains(cfg.Desktop.Access, pigeonID) {
+				return "Reasonix Studio's provider_access excludes pigeon"
 			}
 			return ""
 		},
@@ -353,13 +353,13 @@ func reasonixIn(at place) *Agent {
 			if err := checkOwner(cfg, state); err != nil {
 				return err
 			}
-			current := cfg.magpie()
+			current := cfg.pigeon()
 			if current.Name == "" {
 				return nil
 			}
-			models := magpieModels("reasonix")
+			models := pigeonModels("reasonix")
 			if len(models) == 0 {
-				return fmt.Errorf("magpie has no visible Reasonix models")
+				return fmt.Errorf("pigeon has no visible Reasonix models")
 			}
 			next := reasonixCatalogAt(models, current.Default, current.Effort, at.v1())
 			if reflect.DeepEqual(current, next) {
@@ -373,7 +373,7 @@ func reasonixIn(at place) *Agent {
 					cfg, state, _ := load()
 					var own []Option
 					for _, p := range cfg.Providers {
-						if p.Name == magpieID {
+						if p.Name == pigeonID {
 							continue
 						}
 						models := p.Models
@@ -385,7 +385,7 @@ func reasonixIn(at place) *Agent {
 						}
 					}
 					addNative := func(v string) {
-						if v != "" && !usesMagpie(v) && !slices.ContainsFunc(own, func(o Option) bool { return o.Value == v }) {
+						if v != "" && !usesPigeon(v) && !slices.ContainsFunc(own, func(o Option) bool { return o.Value == v }) {
 							own = append(own, Option{Value: v, Icon: ModelIcon(v)})
 						}
 					}
@@ -393,14 +393,14 @@ func reasonixIn(at place) *Agent {
 						addNative(*state.Default)
 					}
 					addNative(cur["model"])
-					return append(group("Reasonix Studio", own), viaMagpie("reasonix", magpieID+"/")...)
+					return append(group("Reasonix Studio", own), viaPigeon("reasonix", pigeonID+"/")...)
 				},
 			},
 			{Key: "effort", Label: "effort", Quiet: true,
 				Get: func() string {
 					cfg, _ := readReasonix(path)
-					if usesMagpie(model()) {
-						return cfg.magpie().Effort
+					if usesPigeon(model()) {
+						return cfg.pigeon().Effort
 					}
 					return ""
 				},
@@ -409,17 +409,17 @@ func reasonixIn(at place) *Agent {
 					if err != nil {
 						return err
 					}
-					if state == nil || cfg.DefaultModel == nil || !usesMagpie(*cfg.DefaultModel) {
+					if state == nil || cfg.DefaultModel == nil || !usesPigeon(*cfg.DefaultModel) {
 						if v == "" {
 							return nil
 						}
-						return fmt.Errorf("select a magpie model in Reasonix before setting effort")
+						return fmt.Errorf("select a pigeon model in Reasonix before setting effort")
 					}
 					if err := checkOwner(cfg, state); err != nil {
 						return err
 					}
-					p := cfg.magpie()
-					ref := strings.TrimPrefix(*cfg.DefaultModel, magpieID+"/")
+					p := cfg.pigeon()
+					ref := strings.TrimPrefix(*cfg.DefaultModel, pigeonID+"/")
 					if v == "auto" {
 						v = ""
 					}
@@ -430,12 +430,12 @@ func reasonixIn(at place) *Agent {
 					return writeProvider(p)
 				},
 				Options: func(cur map[string]string) []Option {
-					ref, ok := strings.CutPrefix(cur["model"], magpieID+"/")
+					ref, ok := strings.CutPrefix(cur["model"], pigeonID+"/")
 					if !ok {
 						return nil
 					}
 					cfg, _ := readReasonix(path)
-					levels := cfg.magpie().Overrides[ref].Efforts
+					levels := cfg.pigeon().Overrides[ref].Efforts
 					if len(levels) == 0 {
 						return nil
 					}
@@ -459,11 +459,11 @@ func reasonixIn(at place) *Agent {
 		if off {
 			v = ""
 		}
-		ref, via := strings.CutPrefix(v, magpieID+"/")
+		ref, via := strings.CutPrefix(v, pigeonID+"/")
 		if via {
 			selected := ref
-			if cfg.DefaultModel != nil && usesMagpie(*cfg.DefaultModel) {
-				selected = strings.TrimPrefix(*cfg.DefaultModel, magpieID+"/")
+			if cfg.DefaultModel != nil && usesPigeon(*cfg.DefaultModel) {
+				selected = strings.TrimPrefix(*cfg.DefaultModel, pigeonID+"/")
 			}
 			if err := ensureGateway(cfg, &state, ref, selected); err != nil {
 				return err
@@ -500,7 +500,7 @@ func reasonixIn(at place) *Agent {
 				return err
 			}
 		}
-		if !via && !usesMagpie(model()) {
+		if !via && !usesPigeon(model()) {
 			next, _, err := load()
 			if err != nil {
 				return err
@@ -514,7 +514,7 @@ func reasonixIn(at place) *Agent {
 		choices := options(cur)
 		cfg, state, _ := load()
 		addNative := func(ref *string) {
-			if ref != nil && *ref != "" && !usesMagpie(*ref) && !slices.ContainsFunc(choices, func(o Option) bool { return o.Value == *ref }) {
+			if ref != nil && *ref != "" && !usesPigeon(*ref) && !slices.ContainsFunc(choices, func(o Option) bool { return o.Value == *ref }) {
 				choices = append(choices, Option{Value: *ref, Icon: ModelIcon(*ref), Group: "Reasonix Studio"})
 			}
 		}
@@ -592,8 +592,8 @@ func readReasonix(path string) (reasonixConfig, error) {
 	}
 	names := map[string]bool{}
 	for _, p := range cfg.Providers {
-		if strings.TrimSpace(p.Name) == magpieID && p.Name != magpieID {
-			return cfg, fmt.Errorf("Reasonix provider has a noncanonical magpie name")
+		if strings.TrimSpace(p.Name) == pigeonID && p.Name != pigeonID {
+			return cfg, fmt.Errorf("Reasonix provider has a noncanonical pigeon name")
 		}
 		if names[p.Name] {
 			return cfg, fmt.Errorf("Reasonix has duplicate provider %q", p.Name)
@@ -603,9 +603,9 @@ func readReasonix(path string) (reasonixConfig, error) {
 	return cfg, nil
 }
 
-func (cfg reasonixConfig) magpie() reasonixProvider {
+func (cfg reasonixConfig) pigeon() reasonixProvider {
 	for _, p := range cfg.Providers {
-		if p.Name == magpieID {
+		if p.Name == pigeonID {
 			return p
 		}
 	}
@@ -614,7 +614,7 @@ func (cfg reasonixConfig) magpie() reasonixProvider {
 
 func (cfg reasonixConfig) hasModel(ref string) bool {
 	for _, p := range cfg.Providers {
-		if p.Name == magpieID {
+		if p.Name == pigeonID {
 			continue
 		}
 		if ref == p.Name || ref == p.Model || slices.Contains(p.Models, ref) {
@@ -634,7 +634,7 @@ func reasonixCatalog(models []catalog.Model, selected, effort string) reasonixPr
 // reasonixCatalogAt is reasonixCatalog for a Reasonix reaching the
 // gateway's /v1 at v1.
 func reasonixCatalogAt(models []catalog.Model, selected, effort, v1 string) reasonixProvider {
-	p := reasonixProvider{Name: magpieID, Kind: "openai", BaseURL: v1, APIKeyEnv: reasonixKey,
+	p := reasonixProvider{Name: pigeonID, Kind: "openai", BaseURL: v1, APIKeyEnv: reasonixKey,
 		Default: selected, Protocol: "openai", NoProxy: true, Overrides: map[string]reasonixModel{}}
 	for _, m := range models {
 		p.Models = append(p.Models, m.ID)

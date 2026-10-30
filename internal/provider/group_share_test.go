@@ -91,7 +91,7 @@ func TestSharedGroupRoundTrip(t *testing.T) {
 // to it; a rule by intent goes when its classifier does.
 func TestSharedGroupMissingMembers(t *testing.T) {
 	shareHome(t, Provider{ID: "mine", Name: "Mine", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"x"}})
-	text, _ := json.Marshal(SharedGroup{Magpie: ShareMark, Version: ShareVersion, Group: Group{
+	text, _ := json.Marshal(SharedGroup{Pigeon: ShareMark, Version: ShareVersion, Group: Group{
 		ID: "theirs", Name: "Theirs", Members: []string{"relay/x", "gone/y", "group/nested"}, Routing: Ordered,
 		Off: []string{"gone/y"}, Classifier: "gone/judge",
 		Rules: []Rule{
@@ -121,7 +121,7 @@ func TestSharedGroupMissingMembers(t *testing.T) {
 	}
 
 	// nothing of it here: nothing is added, and the reader is told why
-	none, _ := json.Marshal(SharedGroup{Magpie: ShareMark, Version: ShareVersion, Group: Group{Name: "N", Members: []string{"gone/y"}}})
+	none, _ := json.Marshal(SharedGroup{Pigeon: ShareMark, Version: ShareVersion, Group: Group{Name: "N", Members: []string{"gone/y"}}})
 	n := len(Groups())
 	if _, err := ImportGroup(string(none)); err == nil || !strings.Contains(err.Error(), "gone/y") {
 		t.Fatalf("none here: %v", err)
@@ -134,10 +134,10 @@ func TestSharedGroupMissingMembers(t *testing.T) {
 func TestSharedGroupBadText(t *testing.T) {
 	shareHome(t, Provider{ID: "a", Name: "A", Key: "k", Chat: "http://127.0.0.1:1/v1", Models: []string{"x"}})
 	for _, c := range []struct{ text, says string }{
-		{"", "not a routing group shared from magpie"},
-		{"hello {not json}", "not a routing group shared from magpie"},
-		{`{"magpie":"something-else","version":1,"group":{"members":["a/x"]}}`, "not a routing group shared from magpie"},
-		{`{"magpie":"routing-group","version":2,"group":{"members":["a/x"]}}`, "newer magpie (format 2)"},
+		{"", "not a routing group shared from pigeon"},
+		{"hello {not json}", "not a routing group shared from pigeon"},
+		{`{"magpie":"something-else","version":1,"group":{"members":["a/x"]}}`, "not a routing group shared from pigeon"},
+		{`{"magpie":"routing-group","version":2,"group":{"members":["a/x"]}}`, "newer pigeon (format 2)"},
 		{`{"magpie":"routing-group","group":{"members":["a/x"]}}`, "no format"},
 		{`{"magpie":"routing-group","version":1,"group":{"members":"a/x"}}`, "can't be read"},
 	} {

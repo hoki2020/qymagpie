@@ -1,8 +1,8 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // #959: the tray panel, opened, showed an account's old usage while the
-// window had the new, until refreshed by hand. magpie answers usage/quotas
+// window had the new, until refreshed by hand. pigeon answers usage/quotas
 // at once with what it kept and reads the accounts again behind it; such an
-// answer says so (X-Magpie-Reading: 1), and the page asks again until the
+// answer says so (X-Pigeon-Reading: 1), and the page asks again until the
 // new reading has landed. The panel and the window both show it without a
 // click; the follow-up asks stop once the read is done, and a run that never
 // lands stops asking after half a minute's worth. English and Chinese,
@@ -30,7 +30,7 @@ function serve(lang, read) {
       const used = stale ? 40 : 100;
       return json([{ provider: "codex", name: "Codex", user: "a@example.com", plan: "plus",
         windows: [{ name: "5 hours", used, resetsAt: new Date(Date.now() + 36e5).toISOString() }] }],
-      stale ? { "X-Magpie-Reading": "1" } : {});
+      stale ? { "X-Pigeon-Reading": "1" } : {});
     }
     if (url.pathname === "/api/usage/quotas/history") return json([]);
     if (url.pathname === "/api/groups") return json({ groups: [], models: [] });

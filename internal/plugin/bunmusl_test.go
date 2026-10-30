@@ -67,7 +67,7 @@ func TestMuslBunKeptApartFromGlibc(t *testing.T) {
 	if err := writeBunState(bunState{Bad: []string{"9.9.9"}}); err != nil {
 		t.Fatal(err)
 	}
-	if rel, _ := filepath.Rel(filepath.Dir(bunRoot()), glibc); rel != filepath.Join("bun", BunVersion, magpieBun()) {
+	if rel, _ := filepath.Rel(filepath.Dir(bunRoot()), glibc); rel != filepath.Join("bun", BunVersion, pigeonBun()) {
 		t.Fatalf("a glibc Bun is kept at %s, not where it was before", glibc)
 	}
 

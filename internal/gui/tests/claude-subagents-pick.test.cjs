@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // Claude Code's subagents left unset are Claude Code's pick, not "same as
-// model" (KorenKrita on Discord): magpie then writes no
+// model" (KorenKrita on Discord): pigeon then writes no
 // CLAUDE_CODE_SUBAGENT_MODEL, and Claude Code takes the Agent call's model,
 // then the subagent's own model:, then the session's (2.1.306). The
 // Subagents line of the opened row's Tiers says so, its title says what a
@@ -15,12 +15,12 @@ const { test } = require("node:test");
 const { chromium, webkit } = require("playwright");
 
 const assets = path.resolve(__dirname, "../assets");
-const models = [{ value: "magpie/v/glm", label: "GLM", ref: "v/glm" }, { value: "magpie/v/flash", label: "Flash", ref: "v/flash" }];
+const models = [{ value: "pigeon/v/glm", label: "GLM", ref: "v/glm" }, { value: "pigeon/v/flash", label: "Flash", ref: "v/flash" }];
 const tiers = ["opus", "sonnet", "haiku", "fable"];
 const claude = (id, routed) => ({
   id, name: "Claude Code", path: "/test/settings.json", icon: "claudecode-color", wired: routed,
   fields: [
-    { key: "model", label: "model", value: routed ? "magpie/v/glm" : "opus", options: routed ? models : [{ value: "opus" }] },
+    { key: "model", label: "model", value: routed ? "pigeon/v/glm" : "opus", options: routed ? models : [{ value: "opus" }] },
     ...tiers.map((tier) => ({ key: tier, label: tier, value: "", options: models })),
     { key: "subagent", label: "subagents", value: "", options: routed ? models : [] },
     { key: "auto_mode", label: "auto mode", value: "", options: routed ? models : [] },
@@ -101,7 +101,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.ok(first.includes(w.pick) && first.includes(w.note), first);
         await page.locator("#pop #list li", { hasText: "Flash" }).first().click();
         await page.waitForFunction((s) => document.querySelector(s + " .v:not(.empty)"), sub);
-        assert.deepEqual(sets, [{ agent: "claude", field: "subagent", value: "magpie/v/flash" }]);
+        assert.deepEqual(sets, [{ agent: "claude", field: "subagent", value: "pigeon/v/flash" }]);
 
         // its own pick takes the model out again
         await page.locator(sub).click();

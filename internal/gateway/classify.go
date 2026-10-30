@@ -3,9 +3,9 @@ package gateway
 // A rule with an intent (provider.Rule.Intent) is for a kind of message:
 // as a user's turn begins, the group's classifier model is asked which of
 // the intents the user's message is — once, before the turn goes anywhere,
-// and never again within it. The call goes through magpie itself, so the
-// classifier is any model magpie has, with its keys, failover and usage;
-// it shows in the usage as magpie's own call. When it can't say
+// and never again within it. The call goes through pigeon itself, so the
+// classifier is any model pigeon has, with its keys, failover and usage;
+// it shows in the usage as pigeon's own call. When it can't say
 // (it fails, is slow, or answers something else) no intent matches, and
 // the trace tells why.
 
@@ -26,12 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
-// RouterAgent is the User-Agent magpie's own classifier calls carry.
-const RouterAgent = "magpie-router/1"
+// RouterAgent is the User-Agent pigeon's own classifier calls carry.
+const RouterAgent = "pigeon-router/1"
 
 var (
 	classifyKeep = 10 * time.Minute // an answer, for the same message and intents

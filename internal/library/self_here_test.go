@@ -179,8 +179,8 @@ func TestCarriedOwnServerIsEachComputersMagpie(t *testing.T) {
 		t.Fatalf("one library carried two ways:\n%s\n%s", a, b)
 	}
 	for _, s := range onMac.MCP {
-		if s.Name == selfServerName && s.Command != magpieCommand {
-			t.Errorf("carried as %q, want %q", s.Command, magpieCommand)
+		if s.Name == selfServerName && s.Command != pigeonCommand {
+			t.Errorf("carried as %q, want %q", s.Command, pigeonCommand)
 		}
 		if s.Name == "fs" && s.Command != "npx" {
 			t.Errorf("the user's server carried as %q", s.Command)

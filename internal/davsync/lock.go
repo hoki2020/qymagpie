@@ -6,22 +6,22 @@ import (
 	"os"
 	"time"
 
-	"github.com/yetone/magpie/internal/filelock"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/filelock"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
-// ErrBusy is a wait for another magpie's sync that ran out of time.
-var ErrBusy = errors.New("another magpie is syncing: try again in a moment")
+// ErrBusy is a wait for another pigeon's sync that ran out of time.
+var ErrBusy = errors.New("another pigeon is syncing: try again in a moment")
 
 // lock keeps what reads or writes sync's files — a sync, Configure, Off,
-// Dismiss — to one at a time across magpies: the gateway's syncs every
-// Every, and magpie webdav from a terminal meanwhile, would each save
-// sync-state.json over the other's. It keeps them apart within one magpie
+// Dismiss — to one at a time across pigeons: the gateway's syncs every
+// Every, and pigeon webdav from a terminal meanwhile, would each save
+// sync-state.json over the other's. It keeps them apart within one pigeon
 // too, each taking it through a descriptor of its own, and is taken before
-// mu, so a wait for another magpie never holds mu. The system holds it on
-// sync.lock and lets it go when the magpie holding it ends, however it
+// mu, so a wait for another pigeon never holds mu. The system holds it on
+// sync.lock and lets it go when the pigeon holding it ends, however it
 // ends, so none is ever left behind. The file stays: taken away, one
-// magpie could hold the lock on it while another took one on a new file.
+// pigeon could hold the lock on it while another took one on a new file.
 func lock(ctx context.Context) (unlock func(), err error) {
 	os.MkdirAll(settings.Dir(), 0o755)
 	f, err := os.OpenFile(path("sync.lock"), os.O_CREATE|os.O_RDWR, 0o600)

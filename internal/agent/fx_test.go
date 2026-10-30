@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 func TestFx(t *testing.T) {
@@ -154,7 +154,7 @@ func TestFxKeepsTheUsersSettings(t *testing.T) {
 		if err := json.Unmarshal([]byte(raw), &s); err != nil {
 			t.Fatalf("%v\n%s", err, raw)
 		}
-		p := s.Providers[magpieID]
+		p := s.Providers[pigeonID]
 		if p.ReviewerModel != "relay/glm-4.6" || p.ToolChoiceMode != "omit" {
 			t.Errorf("%s: the user's settings not kept:\n%s", when, raw)
 		}

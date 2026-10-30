@@ -17,8 +17,8 @@ package gateway
 // it is one member, planned by its own.
 
 import (
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/routes"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/routes"
 )
 
 // keyWeight is a candidate's weight: its key's, 1 when none.

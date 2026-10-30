@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // #1839: the calls magpie made by itself — its routing classifier's (UA
@@ -82,11 +82,11 @@ func TestSummaryCountsMagpiesOwnCallsApart(t *testing.T) {
 	if ownModel != 2 {
 		t.Fatalf("model: %d own calls: %+v", ownModel, s.Models)
 	}
-	// magpie's calls are an agent's row of their own, as before ("magpie"
+	// magpie's calls are an agent's row of their own, as before ("pigeon"
 	// where the agents are loaded, its User-Agent's name here)
 	mine := 0
 	for _, g := range s.Agents {
-		if (Record{Agent: g.ID}).ByMagpie() {
+		if (Record{Agent: g.ID}).ByPigeon() {
 			mine += g.Calls
 		} else if g.Own != (OwnShare{}) {
 			t.Fatalf("an agent's row has an own share: %+v", g)
@@ -110,7 +110,7 @@ func TestSummaryCountsMagpiesOwnCallsApart(t *testing.T) {
 // search, the image description; an agent's is not.
 func TestByMagpie(t *testing.T) {
 	for ua, want := range map[string]bool{"magpie-router/1": true, "magpie-search/1": true, "magpie-vision/1": true, "magpie": true, "claude-cli/2.1": false, "codex_cli_rs/0.50": false, "": false} {
-		if got := (Record{Agent: ua}).ByMagpie(); got != want {
+		if got := (Record{Agent: ua}).ByPigeon(); got != want {
 			t.Errorf("%q: %v, want %v", ua, got, want)
 		}
 	}

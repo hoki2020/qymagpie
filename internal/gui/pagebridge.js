@@ -1,6 +1,6 @@
-// The page's side of a plugin page's messages to magpie's window
+// The page's side of a plugin page's messages to pigeon's window
 // (docs/subsystems/plugin-runtime.md, P4). A plugin's page loads it with
-// <script src="_magpie/bridge.js"></script>; it is served beside every
+// <script src="_pigeon/bridge.js"></script>; it is served beside every
 // page's own files.
 //
 //   await magpie.ready            the window's theme, once it has answered
@@ -21,12 +21,12 @@
 // A panel (magpie.panels) is as tall as what it draws: the window is told
 // its height as it changes.
 //
-// What the page leaves unstyled takes magpie's look: the bridge adds a
+// What the page leaves unstyled takes pigeon's look: the bridge adds a
 // stylesheet of no weight (:where()) for the font, colours, headings,
 // buttons, fields and tables, and the theme's colours are the page's
-// --magpie-<token> variables.
+// --pigeon-<token> variables.
 //
-// The page can't reach the network or magpie's API itself: everything goes
+// The page can't reach the network or pigeon's API itself: everything goes
 // through the window, which answers only what the package declared. An
 // error the page doesn't catch shows the window's "This page stopped
 // working" in its place.
@@ -40,7 +40,7 @@
     const id = ++next;
     return new Promise((resolve, reject) => {
       waiting.set(id, { resolve, reject });
-      parent.postMessage({ magpie: 1, id, method, params }, "*");
+      parent.postMessage({ pigeon: 1, id, method, params }, "*");
     });
   }
   function paint(theme) {
@@ -49,7 +49,7 @@
     // the frame's canvas matches the window's, not a white sheet in dark
     root.style.colorScheme = theme.dark ? "dark" : "light";
     root.lang = theme.lang || "en";
-    for (const [k, v] of Object.entries(theme.tokens || {})) root.style.setProperty("--magpie-" + k, v);
+    for (const [k, v] of Object.entries(theme.tokens || {})) root.style.setProperty("--pigeon-" + k, v);
   }
   addEventListener("message", (e) => {
     if (e.source !== parent) return;
@@ -71,7 +71,7 @@
     if (m.error) w.reject(new Error(m.error)); else w.resolve(m.result);
   });
   function report(err) {
-    parent.postMessage({ magpie: 1, method: "error", params: { message: String(err?.message || err) } }, "*");
+    parent.postMessage({ pigeon: 1, method: "error", params: { message: String(err?.message || err) } }, "*");
   }
   // a script's error reaches a sandboxed page only as "Script error." (its
   // files are another origin's to it); the window then says "The page hit
@@ -118,7 +118,7 @@
     const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
     if (h === told) return;
     told = h;
-    parent.postMessage({ magpie: 1, method: "size", params: { height: h } }, "*");
+    parent.postMessage({ pigeon: 1, method: "size", params: { height: h } }, "*");
   };
   const watch = () => {
     new ResizeObserver(() => {
@@ -128,35 +128,35 @@
     size();
   };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", watch); else watch();
-  // magpie's look for what the page leaves unstyled: its font, colours,
+  // pigeon's look for what the page leaves unstyled: its font, colours,
   // headings, buttons, fields and tables, so a page with no stylesheet of
   // its own reads as part of the window, not a browser's default sheet.
   // Every rule is :where(), of no weight: any rule of the page's wins.
   const base = document.createElement("style");
   base.dataset.magpie = "base";
   base.textContent = `
-:where(html) { background: var(--magpie-bg, Canvas); color: var(--magpie-fg, CanvasText); font: 13px/1.45 var(--magpie-font, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif); -webkit-font-smoothing: antialiased; }
+:where(html) { background: var(--pigeon-bg, Canvas); color: var(--pigeon-fg, CanvasText); font: 13px/1.45 var(--pigeon-font, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif); -webkit-font-smoothing: antialiased; }
 :where(body) { margin: 0; padding: 20px 24px; }
 :where(h1, h2, h3, h4) { font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
 :where(h1) { font-size: 20px; } :where(h2) { font-size: 15px; } :where(h3, h4) { font-size: 13px; }
 :where(p) { margin: 0 0 8px; }
-:where(small, .muted) { color: var(--magpie-muted, GrayText); }
-:where(a) { color: var(--magpie-accent, LinkText); text-decoration: none; }
+:where(small, .muted) { color: var(--pigeon-muted, GrayText); }
+:where(a) { color: var(--pigeon-accent, LinkText); text-decoration: none; }
 :where(a:hover) { text-decoration: underline; }
 :where(button, input, textarea, select) { font: inherit; color: inherit; }
-:where(button) { background: var(--magpie-card, ButtonFace); border: 1px solid var(--magpie-line, ButtonBorder); border-radius: 6px; padding: 3px 10px; }
-:where(button:hover:not(:disabled)) { border-color: var(--magpie-muted, ButtonBorder); }
-:where(button[aria-pressed="true"], button[aria-selected="true"]) { background: var(--magpie-accent-soft, Highlight); border-color: transparent; color: var(--magpie-accent, HighlightText); }
+:where(button) { background: var(--pigeon-card, ButtonFace); border: 1px solid var(--pigeon-line, ButtonBorder); border-radius: 6px; padding: 3px 10px; }
+:where(button:hover:not(:disabled)) { border-color: var(--pigeon-muted, ButtonBorder); }
+:where(button[aria-pressed="true"], button[aria-selected="true"]) { background: var(--pigeon-accent-soft, Highlight); border-color: transparent; color: var(--pigeon-accent, HighlightText); }
 :where(button:disabled) { opacity: .5; }
-:where(input, textarea, select) { background: var(--magpie-card, Field); border: 1px solid var(--magpie-line, ButtonBorder); border-radius: 6px; padding: 4px 8px; }
-:where(:focus-visible) { outline: 2px solid var(--magpie-accent, Highlight); outline-offset: 1px; }
+:where(input, textarea, select) { background: var(--pigeon-card, Field); border: 1px solid var(--pigeon-line, ButtonBorder); border-radius: 6px; padding: 4px 8px; }
+:where(:focus-visible) { outline: 2px solid var(--pigeon-accent, Highlight); outline-offset: 1px; }
 :where(table) { border-collapse: collapse; width: 100%; }
-:where(th) { text-align: left; font-weight: 500; font-size: 12px; color: var(--magpie-muted, GrayText); }
-:where(th, td) { padding: 6px 8px; border-bottom: 1px solid var(--magpie-line, ButtonBorder); }
-:where(code, kbd, pre) { font-family: var(--magpie-code, ui-monospace, Menlo, monospace); font-size: 12px; }
-:where(pre) { background: var(--magpie-card, Canvas); border: 1px solid var(--magpie-line, ButtonBorder); border-radius: 8px; padding: 8px 10px; overflow: auto; }
-:where(hr) { border: 0; border-top: 1px solid var(--magpie-line, ButtonBorder); margin: 12px 0; }
-:where(::selection) { background: var(--magpie-accent-soft, Highlight); }
+:where(th) { text-align: left; font-weight: 500; font-size: 12px; color: var(--pigeon-muted, GrayText); }
+:where(th, td) { padding: 6px 8px; border-bottom: 1px solid var(--pigeon-line, ButtonBorder); }
+:where(code, kbd, pre) { font-family: var(--pigeon-code, ui-monospace, Menlo, monospace); font-size: 12px; }
+:where(pre) { background: var(--pigeon-card, Canvas); border: 1px solid var(--pigeon-line, ButtonBorder); border-radius: 8px; padding: 8px 10px; overflow: auto; }
+:where(hr) { border: 0; border-top: 1px solid var(--pigeon-line, ButtonBorder); margin: 12px 0; }
+:where(::selection) { background: var(--pigeon-accent-soft, Highlight); }
 `;
   (document.head || document.documentElement).prepend(base);
   window.magpie = api;

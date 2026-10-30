@@ -1,4 +1,4 @@
-body { margin: 0; padding: 16px; font: 13px/1.5 var(--magpie-font, system-ui); color: var(--magpie-fg); background: var(--magpie-bg); }
+body { margin: 0; padding: 16px; font: 13px/1.5 var(--pigeon-font, system-ui); color: var(--pigeon-fg); background: var(--pigeon-bg); }
 h1 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
 p { margin: 0 0 4px; }
-button { font: inherit; color: var(--magpie-accent); background: none; border: 0; padding: 0; cursor: pointer; }
+button { font: inherit; color: var(--pigeon-accent); background: none; border: 0; padding: 0; cursor: pointer; }

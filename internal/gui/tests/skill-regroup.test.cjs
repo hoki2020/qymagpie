@@ -2,7 +2,7 @@
 // Group again (White Immortal on Discord: of mattpocock/skills added a while
 // ago only 20 were grouped, the rest under On this computer, and nothing
 // to group them again by). The Skills head has Group again, which asks
-// magpie to trace the skills to their repositories once more and draws
+// pigeon to trace the skills to their repositories once more and draws
 // the page it answers with: the 18 join the 20, and the status says how
 // many did. Every language, at a narrow width too, in Chromium and WebKit;
 // the API is faked here.
@@ -15,7 +15,7 @@ const { chromium, webkit } = require("playwright");
 const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/me";
 const agent = (id, name, icon) => ({ id, name, icon, skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
-// copies moved into the library: grouped by what magpie traced them to
+// copies moved into the library: grouped by what pigeon traced them to
 const copy = (repo) => (name) => ({ name, kind: "folder", source: `${HOME}/.claude/skills/${name}`, repo, description: "d", agents: ["claude"] });
 const NAMES = Array.from({ length: 38 }, (_, i) => "skill-" + String(i).padStart(2, "0"));
 
@@ -98,7 +98,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
           assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
 
           await b.click();
-          // busy while magpie fetches the repositories
+          // busy while pigeon fetches the repositories
           await page.waitForFunction(() => document.querySelector(".lib-regroup")?.disabled);
           assert.equal((await v.locator(".lib-regroup").textContent()).trim(), w.busy);
           state.answer();

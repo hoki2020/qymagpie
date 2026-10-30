@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 func main() {

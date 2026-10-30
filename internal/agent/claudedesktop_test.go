@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/desktopdir"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/gateway"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/desktopdir"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // desktopSandbox is a home of its own with nothing of this machine's in
@@ -507,7 +507,7 @@ func TestClaudeDesktopMSIX(t *testing.T) {
 	if err := a.Field("provider").Set("magpie"); err != nil {
 		t.Fatal(err)
 	}
-	if a.Field("provider").Get() != magpieID {
+	if a.Field("provider").Get() != pigeonID {
 		t.Fatal("not on magpie")
 	}
 	for _, q := range []desktopPaths{p, r} {

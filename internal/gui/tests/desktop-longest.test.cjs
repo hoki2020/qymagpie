@@ -19,7 +19,7 @@ function fixture(lang) {
   const state = () => ({
     agents: [{
       id: "claude-desktop", name: "Claude Desktop", path: "/test/claude_desktop_config.json", icon: "claude-color", wired: true,
-      fields: [{ key: "provider", label: "provider", value: "magpie", options: [{ value: "magpie", label: "magpie", icon: "magpie" }] }],
+      fields: [{ key: "provider", label: "provider", value: "pigeon", options: [{ value: "pigeon", label: "pigeon", icon: "pigeon" }] }],
       models: { shown: 2, listed: 2, by: [{ name: "OpenCode Go", icon: "opencode", n: 2 }], names: ["DeepSeek V4 Pro", "Exo Free"] },
     }],
     profiles: [], settings,

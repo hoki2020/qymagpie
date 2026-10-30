@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/sessions"
+	"github.com/hoki2020/pigeon/internal/sessions"
 )
 
 func codexCompactionCall(at time.Time, responseID string, input, output int, compacted bool) sessions.Call {

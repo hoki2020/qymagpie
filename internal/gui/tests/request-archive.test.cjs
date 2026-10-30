@@ -206,7 +206,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         "Request archive", "Upload failed", "Last upload failed: {e}", "Not saved", "Last save failed: {e}",
         "Keeps each call’s headers and bodies, secrets taken out, in {where}",
         "Keeps each call’s headers and bodies, secrets taken out, on this computer in {where}, the oldest removed past {size}",
-        "Not in the archive on this computer: it is saved just after the call, the oldest are removed past the archive's size, or the save failed (magpie's log says why)",
+        "Not in the archive on this computer: it is saved just after the call, the oldest are removed past the archive's size, or the save failed (pigeon's log says why)",
       ].flatMap((k) => ["zh", "zh-TW", "ja", "de"].filter((l) => !I18N[l][k]).map((l) => l + " " + k)));
       assert.deepEqual(missing, [], "every string has its Chinese, Japanese and German");
       assert.deepEqual(errors, []);

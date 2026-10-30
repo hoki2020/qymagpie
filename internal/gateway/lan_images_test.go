@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // Another computer on the network draws with the magpie shared there
@@ -61,7 +61,7 @@ func TestLANDraws(t *testing.T) {
 	}
 
 	// a magpie with it as a Remote magpie, signed with the key
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: secrets[0], Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(host.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: secrets[0], Preset: provider.RemotePigeonPreset, Chat: strings.TrimPrefix(host.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestRemoteMagpieVideos(t *testing.T) {
 		h.ServeHTTP(w, r)
 	}))
 	t.Cleanup(host.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: secrets[0], Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(host.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: secrets[0], Preset: provider.RemotePigeonPreset, Chat: strings.TrimPrefix(host.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}

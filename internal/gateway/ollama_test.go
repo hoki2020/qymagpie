@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hoki2020/pigeon/internal/access"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/settings"
 	"github.com/tidwall/gjson"
-	"github.com/yetone/magpie/internal/access"
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/settings"
 )
 
 // ollamaPlan is a provider with a model that sees, thinks and has a

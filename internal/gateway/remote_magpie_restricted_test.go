@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // caa536733's rule for a remote magpie's quota, credit and rate refusals,
@@ -41,7 +41,7 @@ func TestRemoteMagpieRestrictedRestsTheModel(t *testing.T) {
 		io.WriteString(w, `{"id":"x","choices":[{"index":0,"message":{"role":"assistant","content":"from `+req.Model+`"},"finish_reason":"stop"}]}`)
 	}))
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "k",
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "k",
 		Chat: remote.URL + "/v1", Models: []string{"workbuddy/glm-5.3-flash", "kimi/kimi-k3"}}); err != nil {
 		t.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func TestRemoteMagpieRestrictedRestsTheModel(t *testing.T) {
 // quota, credit and rate refusals are; the key's own limit there still
 // rests the whole remote (#2077).
 func TestRemoteMagpieVerifyAndKeyLimitScoping(t *testing.T) {
-	c := candidate{p: provider.Provider{ID: "office", Preset: provider.RemoteMagpiePreset, Key: "k"}, model: "gemini/gemini-3-flash", rest: "office"}
+	c := candidate{p: provider.Provider{ID: "office", Preset: provider.RemotePigeonPreset, Key: "k"}, model: "gemini/gemini-3-flash", rest: "office"}
 	if !remoteModelRest(c, failRestricted, http.Header{}) || !remoteModelRest(c, failVerify, http.Header{}) {
 		t.Error("a restricted or verify refusal from the other magpie rests the whole remote, not the model")
 	}
@@ -116,7 +116,7 @@ func TestRemoteMagpieVerifyHeldOnTheModel(t *testing.T) {
 		io.WriteString(w, `{"id":"x","choices":[{"index":0,"message":{"role":"assistant","content":"from `+req.Model+`"},"finish_reason":"stop"}]}`)
 	}))
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "k",
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "k",
 		Chat: remote.URL + "/v1", Models: []string{"antigravity/gemini-3-pro", "kimi/kimi-k3"}}); err != nil {
 		t.Fatal(err)
 	}

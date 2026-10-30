@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yetone/magpie/internal/proc"
+	"github.com/hoki2020/pigeon/internal/proc"
 )
 
 // toolWait is how long a tool that reads the system's proxy gets. scutil

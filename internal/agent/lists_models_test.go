@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // listsSandbox is a HOME of its own with one provider of two models.
@@ -42,7 +42,7 @@ func TestEveryPickerOfMagpiesModelsCanBeNarrowed(t *testing.T) {
 			}
 			for _, o := range f.Options(vals) {
 				refs = refs || o.Ref != ""
-				magpie = magpie || o.Value == magpieID
+				magpie = magpie || o.Value == pigeonID
 			}
 		}
 		switch {
@@ -133,7 +133,7 @@ func TestZCodeListsOnlyThePicked(t *testing.T) {
 			personal = append(personal, id.(string))
 		}
 		for _, r := range d.Config.ModelConfigRules.ProviderModelRules {
-			if r["providerId"] == magpieID {
+			if r["providerId"] == pigeonID {
 				ruled = append(ruled, r["modelId"].(string))
 			}
 		}

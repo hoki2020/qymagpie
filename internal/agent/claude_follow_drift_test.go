@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // claudeOpusThenSonnet is #1050's Claude Code before the switch: on
@@ -57,7 +57,7 @@ func sonnetFollowsAsBefore(t *testing.T, a *Agent, path string) {
 
 // The main model moved onto the Sonnet 5.5 magpie had given the sonnet tier
 // and the subagents, in Claude Code's own /model (whose list magpie writes,
-// each "· via magpie"): the two now follow the main model, read as empty,
+// each "· via pigeon"): the two now follow the main model, read as empty,
 // and run on the model magpie set them to. That isn't "changed outside
 // magpie" (#1050, cjyrainbow: Claude Code · WSL Ubuntu 已在 magpie 之外换掉
 // claude/claude-sonnet-5-5[1m] while everything still went through magpie).

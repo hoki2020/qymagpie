@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/usage"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/usage"
 )
 
 // #2505 (h4rk8s): DSH names its session in x-deepseek-harness-session-id
@@ -46,7 +46,7 @@ func TestDshMarksSessionAndCompaction(t *testing.T) {
 		h.ServeHTTP(w, r)
 	}))
 	t.Cleanup(remote.Close)
-	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Key: "rk", Models: []string{"fake/m1"}, Chat: remote.URL + "/v1"}); err != nil {
+	if err := provider.Save(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Key: "rk", Models: []string{"fake/m1"}, Chat: remote.URL + "/v1"}); err != nil {
 		t.Fatal(err)
 	}
 	records := func(n int) []usage.Record {

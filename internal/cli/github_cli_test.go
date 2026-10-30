@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/davsync"
+	"github.com/hoki2020/pigeon/internal/davsync"
 )
 
 func TestGitHubCmd(t *testing.T) {
@@ -25,7 +25,7 @@ func TestGitHubCmd(t *testing.T) {
 	}
 	for _, k := range []syncKind{webdavKind, s3Kind} {
 		for _, args := range [][]string{{"off"}, {"set", "keys=no"}} {
-			if err := syncCmd(k, args); err == nil || !strings.Contains(err.Error(), "magpie github") {
+			if err := syncCmd(k, args); err == nil || !strings.Contains(err.Error(), "pigeon github") {
 				t.Fatalf("%s %v changed GitHub sync: %v", k.cmd, args, err)
 			}
 		}

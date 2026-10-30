@@ -1,6 +1,6 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
 // A plugin installed a moment ago has no subscriptions named for it yet: the
-// Installed list is drawn from what the plugins said the last time magpie asked
+// Installed list is drawn from what the plugins said the last time pigeon asked
 // them, which a plugin installed since hasn't been asked about yet, and asking
 // them means every plugin's vendor answering, one at a time.
 //
@@ -45,8 +45,8 @@ function server(lang, state) {
 }
 
 const words = {
-  en: { signsIn: "Signs in to", nothing: "Signs in to nothing magpie can use" },
-  zh: { signsIn: "可登录", nothing: "没有 magpie 能用的登录" },
+  en: { signsIn: "Signs in to", nothing: "Signs in to nothing pigeon can use" },
+  zh: { signsIn: "可登录", nothing: "没有 pigeon 能用的登录" },
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {

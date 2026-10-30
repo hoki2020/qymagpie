@@ -21,7 +21,7 @@ func TestPluginsPickerWhereItCan(t *testing.T) {
 		want bool
 	}{
 		{"the app", &pickerWin{}, true},
-		{"magpie web", webHost{}, false},
+		{"pigeon web", webHost{}, false},
 		{"no host", nil, false},
 	} {
 		if got := pluginsState(context.Background(), c.w).Picker; got != c.want {

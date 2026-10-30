@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/codexcat"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/codexcat"
+	"github.com/hoki2020/pigeon/internal/provider"
 	"gopkg.in/yaml.v3"
 )
 
@@ -156,11 +156,11 @@ func TestInferredGroupImagesReachAgentCatalogs(t *testing.T) {
 		t.Fatal(err)
 	}
 	id := "auto/claude-sonnet-4-5"
-	oc := magpieProviderJSON("opencode").(map[string]any)["models"].(map[string]any)[id].(map[string]any)
+	oc := pigeonProviderJSON("opencode").(map[string]any)["models"].(map[string]any)[id].(map[string]any)
 	if _, ok := oc["attachment"]; ok || !reflect.DeepEqual(oc["modalities"].(map[string]any)["input"], []string{"text", "image"}) {
 		t.Fatalf("OpenCode group image input: %v", oc)
 	}
-	pi := magpieProviderJSON("pi").(map[string]any)["models"].([]map[string]any)
+	pi := pigeonProviderJSON("pi").(map[string]any)["models"].([]map[string]any)
 	found := false
 	for _, m := range pi {
 		if m["id"] == id {
@@ -179,7 +179,7 @@ func TestInferredGroupImagesReachAgentCatalogs(t *testing.T) {
 			Input []string `json:"input_modalities"`
 		} `json:"models"`
 	}
-	if err := json.Unmarshal(codexcat.Catalog(magpieModels("codex")), &codex); err != nil {
+	if err := json.Unmarshal(codexcat.Catalog(pigeonModels("codex")), &codex); err != nil {
 		t.Fatal(err)
 	}
 	for _, m := range codex.Models {

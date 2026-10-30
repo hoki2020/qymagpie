@@ -153,7 +153,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         // the pointer on a day: its date and what it had, inside the card
         const busy = DAYS.find((d) => d.date === iso(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 10)));
         const cell = heat.locator(`.heat-grid i[data-date="${busy.date}"]`);
-        // the reader wheels the page to the card (magpie puts back a scroll by
+        // the reader wheels the page to the card (pigeon puts back a scroll by
         // code), and the pointer then rests on a day
         await p.mouse.move(width / 2, 300);
         for (let i = 0; i < 20; i++) {
@@ -190,7 +190,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         assert.equal(await cell.getAttribute("class"), "l4");
         assert.notEqual(await cells.last().getAttribute("class"), "l4");
         assert.deepEqual(await p.evaluate(() => [window.scrollY, document.querySelector("#view-usage").scrollTop, document.querySelector("#ledHeatScroll").scrollLeft]), at, "a click scrolled");
-        assert.equal(await p.evaluate(() => localStorage.getItem("magpie.ledHeatMetric")), "calls");
+        assert.equal(await p.evaluate(() => localStorage.getItem("pigeon.ledHeatMetric")), "calls");
 
         // the filters: no period or day; a model picked in the ranking asks again with it
         assert(asked.length >= 1 && !asked.at(-1).has("period") && !asked.at(-1).has("day"), "asked: " + asked.at(-1));

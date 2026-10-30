@@ -1,20 +1,20 @@
-// Package all registers every built-in plugin. Only magpie's main imports
+// Package all registers every built-in plugin. Only pigeon's main imports
 // it: core never imports a plugin, and a plugin never imports another.
 package all
 
 import (
-	_ "github.com/yetone/magpie/plugins/budget"
-	_ "github.com/yetone/magpie/plugins/gateway"
-	_ "github.com/yetone/magpie/plugins/groups"
-	_ "github.com/yetone/magpie/plugins/library"
-	_ "github.com/yetone/magpie/plugins/middleware"
-	_ "github.com/yetone/magpie/plugins/otel"
-	_ "github.com/yetone/magpie/plugins/redact"
-	_ "github.com/yetone/magpie/plugins/rotation"
-	_ "github.com/yetone/magpie/plugins/routing"
-	_ "github.com/yetone/magpie/plugins/search"
-	_ "github.com/yetone/magpie/plugins/sessions"
-	_ "github.com/yetone/magpie/plugins/tools"
-	_ "github.com/yetone/magpie/plugins/usage"
-	_ "github.com/yetone/magpie/plugins/warmups"
+	_ "github.com/hoki2020/pigeon/plugins/budget"
+	_ "github.com/hoki2020/pigeon/plugins/gateway"
+	_ "github.com/hoki2020/pigeon/plugins/groups"
+	_ "github.com/hoki2020/pigeon/plugins/library"
+	_ "github.com/hoki2020/pigeon/plugins/middleware"
+	_ "github.com/hoki2020/pigeon/plugins/otel"
+	_ "github.com/hoki2020/pigeon/plugins/redact"
+	_ "github.com/hoki2020/pigeon/plugins/rotation"
+	_ "github.com/hoki2020/pigeon/plugins/routing"
+	_ "github.com/hoki2020/pigeon/plugins/search"
+	_ "github.com/hoki2020/pigeon/plugins/sessions"
+	_ "github.com/hoki2020/pigeon/plugins/tools"
+	_ "github.com/hoki2020/pigeon/plugins/usage"
+	_ "github.com/hoki2020/pigeon/plugins/warmups"
 )

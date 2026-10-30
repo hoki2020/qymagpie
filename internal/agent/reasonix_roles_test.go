@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 	"os"
 	"testing"
 )
@@ -25,14 +25,14 @@ func TestReasonixIndependentRolesAndRestore(t *testing.T) {
 	must(a.Field("model").Set("native/other"))
 	cfg, err := readReasonix(a.Path)
 	must(err)
-	if cfg.magpie().Name == "" || a.Check() != "" {
+	if cfg.pigeon().Name == "" || a.Check() != "" {
 		t.Fatal("Executor switch removed active Plan connection")
 	}
 	must(a.Field("planner").Set(""))
 	must(a.Field("model").Set(""))
 	cfg, err = readReasonix(a.Path)
 	must(err)
-	if cfg.magpie().Name != "" || *cfg.DefaultModel != "native/other" || cfg.Agent.Planner == nil || *cfg.Agent.Planner != "native/other" {
+	if cfg.pigeon().Name != "" || *cfg.DefaultModel != "native/other" || cfg.Agent.Planner == nil || *cfg.Agent.Planner != "native/other" {
 		t.Fatalf("incorrect restore: %+v", cfg)
 	}
 	if _, exists := editEnvForReasonixTest(env); exists {

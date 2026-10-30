@@ -9,9 +9,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 func TestOpenCodeVariants(t *testing.T) {
@@ -107,7 +107,7 @@ func TestOpenCodeVariantsInOrder(t *testing.T) {
 
 	// as an older magpie wrote it: the same block from a map, keys sorted
 	var block map[string]any
-	if err := json.Unmarshal([]byte(mustJSON(t, magpieProviderJSON("opencode"))), &block); err != nil {
+	if err := json.Unmarshal([]byte(mustJSON(t, pigeonProviderJSON("opencode"))), &block); err != nil {
 		t.Fatal(err)
 	}
 	if err := edit.SetJSON(path, edit.KV{Path: "provider.magpie", Value: block}); err != nil {
@@ -289,7 +289,7 @@ func TestOpenCodeNoResellerLevelsForSwitchModel(t *testing.T) {
 			t.Errorf("%s: variants %v (listed %v), want %d", id, m.Variants, ok, want)
 		}
 	}
-	pi, _ := json.Marshal(magpieProviderJSON("pi"))
+	pi, _ := json.Marshal(pigeonProviderJSON("pi"))
 	var piCfg struct {
 		Models []struct {
 			ID        string         `json:"id"`

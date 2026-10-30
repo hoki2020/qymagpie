@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // The tray menu is in the page's language: the setting, or the system's
@@ -47,7 +47,7 @@ func TestTrayMenuLabels(t *testing.T) {
 		}
 	}
 	de := trayMenuLabels("de", "0.1.500", "0.1.501")
-	if de != (trayLabels{"magpie öffnen", "Version 0.1.500", "Zum Aktualisieren auf 0.1.501 neu starten", "magpie beenden"}) {
+	if de != (trayLabels{"pigeon öffnen", "Version 0.1.500", "Zum Aktualisieren auf 0.1.501 neu starten", "pigeon beenden"}) {
 		t.Errorf("de: %+v", de)
 	}
 	for lang, want := range map[string]string{"de": "en", "en": "en", "zh": "zh", "zh-TW": "zh"} {
@@ -69,7 +69,7 @@ func TestTrayMenuLabels(t *testing.T) {
 		t.Errorf("zh restart: %q", l.restart)
 	}
 	en := trayMenuLabels("en", "0.1.500", "0.1.501")
-	if en != (trayLabels{"Open magpie", "Version 0.1.500", "Restart to Update to 0.1.501", "Quit magpie"}) {
+	if en != (trayLabels{"Open pigeon", "Version 0.1.500", "Restart to Update to 0.1.501", "Quit pigeon"}) {
 		t.Errorf("en: %+v", en)
 	}
 	env := map[string]string{"LC_ALL": "C", "LANG": "zh_CN.UTF-8"}

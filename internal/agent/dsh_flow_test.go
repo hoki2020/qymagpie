@@ -8,8 +8,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/yetone/magpie/internal/provider"
-	"github.com/yetone/magpie/internal/testenv"
+	"github.com/hoki2020/pigeon/internal/provider"
+	"github.com/hoki2020/pigeon/internal/testenv"
 )
 
 // A profile's patch list written in flow style, as dsh's own writers leave
@@ -167,7 +167,7 @@ func TestDshDocStartOnlyFirst(t *testing.T) {
 		"--- x\n- id: a\n",
 		"[]\n---\n- id: a\n",
 	} {
-		if _, _, err := dshParse("p.yml", raw); err == nil || !strings.Contains(err.Error(), "not a list of entries magpie can edit") {
+		if _, _, err := dshParse("p.yml", raw); err == nil || !strings.Contains(err.Error(), "not a list of entries pigeon can edit") {
 			t.Fatalf("%q: want the file refused, got %v", raw, err)
 		}
 	}

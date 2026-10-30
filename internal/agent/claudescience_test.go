@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yetone/magpie/internal/gateway"
+	"github.com/hoki2020/pigeon/internal/gateway"
 )
 
 // fakeScience is claude-science's daemon as its CLI tells it: status,
@@ -88,7 +88,7 @@ func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
 		t.Fatal("connected before Connect")
 	}
 
-	if err := field.Set(magpieID); err != nil {
+	if err := field.Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	if got, ok := f.base(); !ok || got != gateway.URL() {
@@ -97,12 +97,12 @@ func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
 	if want := []string{"status", "stop", "serve --detached --no-browser --port 8123", "status"}; !slices.Equal(f.calls, want) {
 		t.Errorf("ran %q, want %q", f.calls, want)
 	}
-	if field.Get() != magpieID || a.Check() != "" || !strings.Contains(a.Notice(), "Claude account") {
+	if field.Get() != pigeonID || a.Check() != "" || !strings.Contains(a.Notice(), "Claude account") {
 		t.Errorf("after Connect: %q, check %q, notice %q", field.Get(), a.Check(), a.Notice())
 	}
 	// set again, as Connect does after connecting (Pick): left running
 	f.calls = nil
-	if err := field.Set(magpieID); err != nil || !slices.Equal(f.calls, []string{"status"}) {
+	if err := field.Set(pigeonID); err != nil || !slices.Equal(f.calls, []string{"status"}) {
 		t.Errorf("set again: %v, ran %q", err, f.calls)
 	}
 	if !strings.Contains(a.Launch(), scienceVar+"="+gateway.URL()) && !strings.Contains(a.Launch(), `$env:`+scienceVar+`="`+gateway.URL()) {
@@ -161,7 +161,7 @@ func TestClaudeScienceRestartsItsDaemon(t *testing.T) {
 	}
 	// and with none installed there is nothing to connect
 	scienceBin = func() string { return "" }
-	if err := field.Set(magpieID); err == nil || field.Get() != "" || a.detect() {
+	if err := field.Set(pigeonID); err == nil || field.Get() != "" || a.detect() {
 		t.Errorf("connected with none installed: %v", err)
 	}
 }

@@ -18,7 +18,7 @@ const CUT = "the WebDAV server kept 0 of 6869 bytes of 5f0c-2026-08-29.magpie-us
 
 function serve(lang, sync) {
   const settings = {
-    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/magpie",
+    theme: "light", lang, tray: "panel", version: "test", dir: "/tmp/pigeon",
     gateway: "http://127.0.0.1:3425", visionModels: [], imageGenModels: [],
     fx: { rate: 7.2, stale: false },
   };

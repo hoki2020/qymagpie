@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yetone/magpie/internal/gwmw"
-	"github.com/yetone/magpie/internal/pii"
-	"github.com/yetone/magpie/internal/redact"
-	"github.com/yetone/magpie/internal/settings"
+	"github.com/hoki2020/pigeon/internal/gwmw"
+	"github.com/hoki2020/pigeon/internal/pii"
+	"github.com/hoki2020/pigeon/internal/redact"
+	"github.com/hoki2020/pigeon/internal/settings"
 )
 
 // Masker masks as the settings say, read on each call.

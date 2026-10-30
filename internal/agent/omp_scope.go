@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/yetone/magpie/internal/edit"
+	"github.com/hoki2020/pigeon/internal/edit"
 	"gopkg.in/yaml.v3"
 )
 
@@ -11,13 +11,13 @@ import (
 // session is held to while it names anything: the default role starts only
 // when the list takes its model in, else omp picks another model from the
 // list (main.ts buildSessionOptions, sdk.ts resolveAllowedModels and
-// pickDefaultAvailableModel), so a model magpie picks outside it never
+// pickDefaultAvailableModel), so a model pigeon picks outside it never
 // starts (#1769). omp's other roles are resolved against every model it has
 // (task/executor.ts resolveModelOverride, session/model-controls.ts
 // resolveRoleModelFull, both on modelRegistry.getAvailable()), so only the
 // default role is held to the list.
 //
-// The list is the user's: magpie adds the default role's model to it as Pi's
+// The list is the user's: pigeon adds the default role's model to it as Pi's
 // fix did (#160), keeps the entries, their order and comments,
 // and never makes a list where there is none or an empty one. Its plain
 // entries hold in every folder; an entry scoped to folders ({path, models})
@@ -37,13 +37,13 @@ func ompScopePlain(n *yaml.Node) []string {
 	return out
 }
 
-// ompEvery is the entry magpie adds to enabledModels for its own models:
-// every model magpie writes into models.yml for omp, which are the ones its
+// ompEvery is the entry pigeon adds to enabledModels for its own models:
+// every model pigeon writes into models.yml for omp, which are the ones its
 // Agents page offers. omp matches a glob with Bun.Glob, whose * stops at a
-// slash, and a model of magpie's is magpie/<provider>/<model>, so it takes
+// slash, and a model of pigeon's is magpie/<provider>/<model>, so it takes
 // **. With the default role's model alone there, omp's picker and Ctrl+P
-// left out every other model magpie gives it (#1769, real-jacket).
-const ompEvery = magpieID + "/**"
+// left out every other model pigeon gives it (#1769, real-jacket).
+const ompEvery = pigeonID + "/**"
 
 // ompTakes reports whether an enabledModels entry surely takes in model, a
 // provider/model with no level: Pi's rules (piTakes), with the levels omp
@@ -71,15 +71,15 @@ func ompScopeTakes(plain []string, model string) bool {
 	return false
 }
 
-// ompScopeOwnMagpie says whether the user chose for themselves which of
-// magpie's models the list holds: an entry on magpie with a glob or a
+// ompScopeOwnPigeon says whether the user chose for themselves which of
+// pigeon's models the list holds: an entry on pigeon with a glob or a
 // thinking level, or a glob of theirs that takes model in (deepseek/*,
-// which omp matches against the id alone), is theirs, not one magpie added.
-func ompScopeOwnMagpie(plain []string, model string) bool {
+// which omp matches against the id alone), is theirs, not one pigeon added.
+func ompScopeOwnPigeon(plain []string, model string) bool {
 	for _, p := range plain {
 		m, level := ompLevel(strings.TrimSpace(p))
 		glob := strings.ContainsAny(m, "*?[")
-		if glob && ompTakes(m, model) || strings.HasPrefix(strings.ToLower(m), magpieID+"/") && (glob || level != "") {
+		if glob && ompTakes(m, model) || strings.HasPrefix(strings.ToLower(m), pigeonID+"/") && (glob || level != "") {
 			return true
 		}
 	}
@@ -88,11 +88,11 @@ func ompScopeOwnMagpie(plain []string, model string) bool {
 
 // ompScopeWith lets a session start on model, a provider/model, when
 // config.yml's enabledModels has plain entries and none takes it in. For
-// one of magpie's it is ompEvery that joins the end, in place of the
-// models of magpie's the list names one by one (what magpie added before),
-// so omp's picker has every model magpie offers it beside the user's own;
-// unless the user picked which of magpie's the list holds
-// (ompScopeOwnMagpie), when only model joins it. Another model joins as
+// one of pigeon's it is ompEvery that joins the end, in place of the
+// models of pigeon's the list names one by one (what pigeon added before),
+// so omp's picker has every model pigeon offers it beside the user's own;
+// unless the user picked which of pigeon's the list holds
+// (ompScopeOwnPigeon), when only model joins it. Another model joins as
 // itself.
 func ompScopeWith(cfg, model string) error {
 	return edit.EditYAMLNode(cfg, "enabledModels", func(n *yaml.Node) (bool, bool) {
@@ -100,8 +100,8 @@ func ompScopeWith(cfg, model string) error {
 		if len(plain) == 0 {
 			return false, false
 		}
-		onMagpie := strings.HasPrefix(strings.ToLower(model), magpieID+"/")
-		if !onMagpie || ompScopeOwnMagpie(plain, model) {
+		onPigeon := strings.HasPrefix(strings.ToLower(model), pigeonID+"/")
+		if !onPigeon || ompScopeOwnPigeon(plain, model) {
 			if ompScopeTakes(plain, model) {
 				return false, false
 			}
@@ -110,7 +110,7 @@ func ompScopeWith(cfg, model string) error {
 		}
 		kept := n.Content[:0:0]
 		for _, c := range n.Content {
-			if c.Kind == yaml.ScalarNode && ompScopeMagpieOne(c.Value) {
+			if c.Kind == yaml.ScalarNode && ompScopePigeonOne(c.Value) {
 				continue
 			}
 			kept = append(kept, c)
@@ -120,16 +120,16 @@ func ompScopeWith(cfg, model string) error {
 	})
 }
 
-// ompScopeMagpieOne is a plain entry naming one of magpie's models, with
-// no glob or level: what magpie adds, or ompEvery takes in all the same.
-func ompScopeMagpieOne(v string) bool {
+// ompScopePigeonOne is a plain entry naming one of pigeon's models, with
+// no glob or level: what pigeon adds, or ompEvery takes in all the same.
+func ompScopePigeonOne(v string) bool {
 	v = strings.TrimSpace(v)
-	return !strings.ContainsAny(v, "*?[") && strings.HasPrefix(strings.ToLower(v), magpieID+"/")
+	return !strings.ContainsAny(v, "*?[") && strings.HasPrefix(strings.ToLower(v), pigeonID+"/")
 }
 
-// ompScopeWithout takes magpie's models out of enabledModels's plain
+// ompScopeWithout takes pigeon's models out of enabledModels's plain
 // entries, ompEvery among them, once nothing else in config.yml is on
-// magpie, and its provider leaves models.yml: there they would name
+// pigeon, and its provider leaves models.yml: there they would name
 // nothing. A list left empty is removed, never written as [].
 func ompScopeWithout(cfg string) error {
 	return edit.EditYAMLNode(cfg, "enabledModels", func(n *yaml.Node) (bool, bool) {
@@ -139,7 +139,7 @@ func ompScopeWithout(cfg string) error {
 		kept := n.Content[:0:0]
 		for _, c := range n.Content {
 			if c.Kind == yaml.ScalarNode && (strings.EqualFold(strings.TrimSpace(c.Value), ompEvery) ||
-				!strings.ContainsAny(c.Value, "*?[") && strings.HasPrefix(strings.ToLower(strings.TrimSpace(c.Value)), magpieID+"/")) {
+				!strings.ContainsAny(c.Value, "*?[") && strings.HasPrefix(strings.ToLower(strings.TrimSpace(c.Value)), pigeonID+"/")) {
 				continue
 			}
 			kept = append(kept, c)
@@ -183,10 +183,10 @@ func ompScopeOnce(cfg string) error {
 	})
 }
 
-// ompScopeFoldersOnMagpie says whether an entry of enabledModels scoped to
-// folders names one of magpie's models: the user's own, which keeps
-// magpie's provider as a role on it does.
-func ompScopeFoldersOnMagpie(cfg string) (used bool, err error) {
+// ompScopeFoldersOnPigeon says whether an entry of enabledModels scoped to
+// folders names one of pigeon's models: the user's own, which keeps
+// pigeon's provider as a role on it does.
+func ompScopeFoldersOnPigeon(cfg string) (used bool, err error) {
 	err = edit.EditYAMLNode(cfg, "enabledModels", func(n *yaml.Node) (bool, bool) {
 		if n == nil || n.Kind != yaml.SequenceNode {
 			return false, false
@@ -198,7 +198,7 @@ func ompScopeFoldersOnMagpie(cfg string) (used bool, err error) {
 			var walk func(*yaml.Node)
 			walk = func(n *yaml.Node) {
 				if n.Kind == yaml.ScalarNode {
-					ompRefs(n.Value, func(m string) string { used = used || usesMagpie(m); return m })
+					ompRefs(n.Value, func(m string) string { used = used || usesPigeon(m); return m })
 				}
 				for _, c := range n.Content {
 					walk(c)

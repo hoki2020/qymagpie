@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yetone/magpie/internal/edit"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/edit"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // TestClaudeAutoModeReview: Claude Code in auto mode behind magpie on a
@@ -176,7 +176,7 @@ func TestT3CodeAutoModeReview(t *testing.T) {
 	path := filepath.Join(home, ".t3", "userdata", "settings.json")
 	writeFile(t, path, `{}`)
 	a := t3code(home)
-	if err := a.Field("provider").Set(magpieID); err != nil {
+	if err := a.Field("provider").Set(pigeonID); err != nil {
 		t.Fatal(err)
 	}
 	review := func() (string, bool) {
@@ -185,7 +185,7 @@ func TestT3CodeAutoModeReview(t *testing.T) {
 		if err := json.Unmarshal([]byte(readFile(path)), &file); err != nil {
 			t.Fatal(err)
 		}
-		for _, v := range t3Format(t, file["providerInstances"][magpieID]).Environment {
+		for _, v := range t3Format(t, file["providerInstances"][pigeonID]).Environment {
 			if v.Name == claudeReviewEnv {
 				return v.Value, true
 			}

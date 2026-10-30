@@ -10,8 +10,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/yetone/magpie/internal/catalog"
-	"github.com/yetone/magpie/internal/provider"
+	"github.com/hoki2020/pigeon/internal/catalog"
+	"github.com/hoki2020/pigeon/internal/provider"
 )
 
 // A Remote magpie's list has the image models the other magpie draws with,
@@ -70,7 +70,7 @@ func TestRemoteMagpieModels(t *testing.T) {
 		h.ServeHTTP(w, r)
 	}))
 	t.Cleanup(remote.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemoteMagpiePreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Preset: provider.RemotePigeonPreset, Chat: strings.TrimPrefix(remote.URL, "http://")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func TestRemoteMagpieOldList(t *testing.T) {
 		io.WriteString(w, `{"object":"list","data":[{"id":"relay-a/claude-sonnet-5","object":"model","owned_by":"relay-a","display_name":"Claude Sonnet 5","native_endpoints":["/v1/messages"]}]}`)
 	}))
 	t.Cleanup(old.Close)
-	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: "k", Preset: provider.RemoteMagpiePreset, Chat: old.URL})
+	id, err := provider.Add(provider.Provider{ID: "office", Name: "Office", Key: "k", Preset: provider.RemotePigeonPreset, Chat: old.URL})
 	if err != nil {
 		t.Fatal(err)
 	}
